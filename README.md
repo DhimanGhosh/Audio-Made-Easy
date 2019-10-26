@@ -12,6 +12,8 @@ This app lets you:
 
 		$ git clone https://github.com/pybites/bday-app
 
-2. open terminal / cmd and go to that cloned path:
 
-    $ python app.py
+2. Open terminal / cmd and go to that cloned path:
+
+		$ python app.py
+

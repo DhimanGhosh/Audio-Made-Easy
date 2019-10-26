@@ -10,7 +10,7 @@ This app lets you:
 
 1. Clone this repo:
 
-		$ git clone https://github.com/pybites/bday-app
+		$ git clone https://github.com/DhimanGhosh/Music-Theory.git
 
 
 2. Open terminal / cmd and go to that cloned path:

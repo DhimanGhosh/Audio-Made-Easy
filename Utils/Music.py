@@ -8,12 +8,6 @@ class Music:
             self.__note = self.__notes[p-1]
         else:
             self.__note = note
-        '''if len(self.__note) > 2:
-            return None
-        elif len(self.__note) == 2 and self.__note[1] != '#' or self.__note[1] != 'b':
-            return None
-        
-        self.__note = self.__note[0].upper() + self.__note[1:]'''
         self.__tone = 2
         self.__semi_tone = 1
         self.__major = ''

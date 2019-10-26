@@ -4,7 +4,7 @@
 This app lets you:
 - Ease your work while looking for any notes, scales, chords, etc.
 - Shifting of chords with change of scale
-- (Only for Guitar Players) Best Capo Position for difficult chords to make it play as open
+- (Only for Guitar Players) Best Capo Position for difficult chords to make it play as close as possible to open
 
 ## How to run it
 

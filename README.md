@@ -1,4 +1,4 @@
-# Music Theory Guide
+# Music Theory Guide - v-1.0
 > Difficult to find a suitable scale! Consult "Music Theory Guide"
 
 This app lets you:

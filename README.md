@@ -18,6 +18,6 @@ This app lets you:
 		$ python app.py
 
 # Music Theory Guide (v-1.1)
-## How to run it
+## What is new
 - Added support for 'b' notation along with '#'
 - Added a note validity check

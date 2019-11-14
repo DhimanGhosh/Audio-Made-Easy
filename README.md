@@ -17,3 +17,7 @@ This app lets you:
 
 		$ python app.py
 
+# Music Theory Guide (v-1.1)
+Whats New:
+- Added support for 'b' notation along with '#'
+- Added a note validity check

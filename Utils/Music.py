@@ -1,11 +1,11 @@
 class Music:
     def __init__(self, note):
-        self.__notes = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
+        self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
+        self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
         self.__open_pos_chords = ['A','Am','C','D','Dm','E','Em','G']
 
-        if note[-1] == 'b':
-            p = self.__note_position_in_list(note[:-1])
-            self.__note = self.__notes[p-1]
+        if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':
+            self.__note = note[0]
         else:
             self.__note = note
         self.__tone = 2
@@ -19,38 +19,55 @@ class Music:
         self.__chord_prog_in_min_scale_formula = [self.__minor,self.__minor,self.__major,self.__major+'/'+self.__minor,self.__major+'/'+self.__minor,self.__major,self.__major]
 
     def __note_position_in_list(self, note):
-        for i in range(len(self.__notes)):
-            if self.__notes[i] == note:
+        valid_list = self.__valid_list(note)
+        for i in range(len(valid_list)):
+            if valid_list[i] == note:
                 return i
     
     def valid_note(self, note):
-        if note in self.__notes: # Make this list to represent as 'b' along with '#'; w.r.t input (#/b)
-            return True
-        return False
+        if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':
+            note = note[0]
+        if note in self.__notesS:
+            return ('S', True)
+        if note in self.__notesb:
+            return ('b', True)
+        return ('0', False)
+    
+    def __valid_list(self, note):
+        is_valid_note = self.valid_note(note)
+        music_list_to_look = is_valid_note[0]
+        if music_list_to_look == 'S':
+            return self.__notesS
+        elif music_list_to_look == 'b':
+            return self.__notesb
+        elif music_list_to_look == '0':
+            return None
 
     def major_scale(self):
+        valid_list = self.__valid_list(self.__note)
         position = self.__note_position_in_list(self.__note)
-
-        notes_in_scale = [self.__notes[position]]
         
+        notes_in_scale = [valid_list[position]]
+
         for i in range(6):
             position = position + self.__maj_scale_formula[i]
-            if position >= len(self.__notes):
-                position = position % len(self.__notes)
-            notes_in_scale.append(self.__notes[position])
+            if position >= len(valid_list):
+                position = position % len(valid_list)
+            notes_in_scale.append(valid_list[position])
 
         return notes_in_scale
 
     def __major_scale(self, note):
+        valid_list = self.__valid_list(self.__note)
         position = self.__note_position_in_list(note)
 
-        notes_in_scale = [self.__notes[position]]
+        notes_in_scale = [valid_list[position]]
         
         for i in range(6):
             position = position + self.__maj_scale_formula[i]
-            if position >= len(self.__notes):
-                position = position % len(self.__notes)
-            notes_in_scale.append(self.__notes[position])
+            if position >= len(valid_list):
+                position = position % len(valid_list)
+            notes_in_scale.append(valid_list[position])
 
         return notes_in_scale
 
@@ -71,10 +88,11 @@ class Music:
         return scale
 
     def note_in_major_scales(self):
+        valid_list = self.__valid_list(self.__note)
         notes_scales = []
         scales = []
-        for i in range(len(self.__notes)):
-            notes_scales.append(self.__major_scale(self.__notes[i]))
+        for i in range(len(valid_list)):
+            notes_scales.append(self.__major_scale(valid_list[i]))
         
         for i in range(12):
             for j in range(7):
@@ -83,12 +101,13 @@ class Music:
         return scales
 
     def capo_pos_note_shift(self, capo_pos = 0):
+        valid_list = self.__valid_list(self.__note)
         position = 0
-        for i in range(len(self.__notes)):
-            if self.__notes[i] == self.__note:
+        for i in range(len(valid_list)):
+            if valid_list[i] == self.__note:
                 position = i
 
-        new_note = self.__notes[position - capo_pos]
+        new_note = valid_list[position - capo_pos]
         return new_note
 
     def capo_pos_scale_shift(self, capo_pos = 0):
@@ -97,15 +116,16 @@ class Music:
         return new_scale
 
     def minor_scale(self):
+        valid_list = self.__valid_list(self.__note)
         position = self.__note_position_in_list(self.__note)
 
-        notes_in_scale = [self.__notes[position]]
+        notes_in_scale = [valid_list[position]]
         
         for i in range(6):
             position = position + self.__min_scale_formula[i]
-            if position >= len(self.__notes):
-                position = position % len(self.__notes)
-            notes_in_scale.append(self.__notes[position])
+            if position >= len(valid_list):
+                position = position % len(valid_list)
+            notes_in_scale.append(valid_list[position])
 
         return notes_in_scale
 

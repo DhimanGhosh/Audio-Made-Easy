@@ -29,7 +29,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.major_scale()
                 print("Notes for {} Major Scale: ".format(note) + ' '.join(result))
@@ -47,7 +47,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.major_chord()
                 print("Major Chord Progression for {} Major Scale: ".format(note) + ' '.join(result))
@@ -65,7 +65,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.notes_in_major_scale()
                 print("Notes in {} Major Scale: ".format(note) + ' '.join(result))
@@ -83,7 +83,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.note_in_major_scales()
                 print("{} Major Note is present in Scales: ".format(note) + ' '.join(result))
@@ -101,7 +101,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 capo_position = int(input('Capo on Fret Number: '))
                 result = music.capo_pos_note_shift(capo_position)
@@ -120,7 +120,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 capo_position = int(input('Capo on Fret Number: '))
                 new_note = music.capo_pos_note_shift(capo_position)
@@ -141,7 +141,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.minor_scale()
                 print("Notes for {} Minor Scale: ".format(note) + ' '.join(result))
@@ -159,7 +159,7 @@ class Menu:
             else:
                 break
         music = Music(note)
-        if music.valid_note(note):
+        if music.valid_note(note)[1]:
             if music != None:
                 result = music.notes_in_minor_scale()
                 print("Notes in {} Minor Scale: ".format(note) + ' '.join(result))

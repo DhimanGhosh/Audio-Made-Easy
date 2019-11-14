@@ -20,9 +20,9 @@ class Wrong:
         if len(self.__get_wrong_count()) >= 3:
             if self.__wrong_count[-3:] == [True]*3:
                 if self.__made_right_choice_atleast_once:
-                    print('Session Closed!\nYou have consecutive \'three\' wrong entries!\nThanks for consulting music theory guide!\nSee you soon!')
+                    print('Session Closed!\nYou have consecutive \'3\' wrong entries!\nThanks for consulting music theory guide!\nSee you soon!')
                 else:
-                    print('Session Closed!\nYou have consecutive \'three\' wrong entries!\nSee you soon!')
+                    print('Session Closed!\nYou have consecutive \'3\' wrong entries!\nSee you soon!')
                 exit()
 
     def __wrong_count_dec(self):

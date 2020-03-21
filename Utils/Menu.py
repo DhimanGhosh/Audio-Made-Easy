@@ -1,5 +1,6 @@
-from .Music import Music
 # Logic for each choice of menu
+from .Music import Music
+#from mingus.midi import fluidsynth
 
 class Menu:
     def __init__(self):
@@ -16,8 +17,10 @@ class Menu:
             6. Scale shift with capo position (Guitar)
             7. Minor Scale
             8. Notes in Minor Scale
-            9. Best Capo position for easy play (Feature coming soon)
-            10. Quit
+            9. Play Tone Based on Note
+            10. Relative Minor/Major
+            11. Best Capo position for easy play (Feature coming soon)
+            12. Quit
         ''')
 
     def major_scale(self, wob):
@@ -105,7 +108,7 @@ class Menu:
             if music != None:
                 capo_position = int(input('Capo on Fret Number: '))
                 result = music.capo_pos_note_shift(capo_position)
-                print("Result Note for {} with Capo at {}: ".format(note, capo_position) + result)
+                print("Result Note for {} with Capo at {}: {}".format(note, capo_position, result))
             else:
                 self.Study_Music_Theory()
         else:
@@ -167,6 +170,60 @@ class Menu:
                 self.Study_Music_Theory()
         else:
             self.Study_Music()
+    
+    def note_beep(self, wob):
+        wob.set_wrong_flag(False)
+        while True:
+            note = input("Note: ")
+            if note is '':
+                continue
+            else:
+                break
+        music = Music(note)
+        if music.valid_note(note)[1]:
+            if music != None:
+                #fluidsynth.play_Note(64,0,100)
+                pass
+            else:
+                self.Study_Music_Theory()
+        else:
+            self.Study_Music()
+    
+    def relative_minor_major(self, wob):
+        wob.set_wrong_flag(False)
+        scl = input('1. Relative Major\n2. Relative Minor\nChoice: ')
+        if int(scl) == 1:
+            while True:
+                note = input("Note: ")
+                if note is '':
+                    continue
+                else:
+                    break
+            music = Music(note)
+            if music.valid_note(note)[1]:
+                if music != None:
+                    result = music.relative_major(note)
+                    print("Relative Major of {}m is: {}".format(note, result))
+                else:
+                    self.Study_Music_Theory()
+            else:
+                self.Study_Music()
+        elif int(scl) == 2:
+            while True:
+                note = input("Note: ")
+                if note is '':
+                    continue
+                else:
+                    break
+            music = Music(note)
+            if music.valid_note(note)[1]:
+                if music != None:
+                    result = music.relative_minor(note)
+                    print("Relative Minor of {} is: {}".format(note, result))
+                else:
+                    self.Study_Music_Theory()
+            else:
+                self.Study_Music()
     
     def best_capo_position(self, wob):
         wob.set_wrong_flag(False)

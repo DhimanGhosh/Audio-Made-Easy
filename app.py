@@ -2,7 +2,7 @@ def run():
     wrg = Wrong()
     ch = 0
     count = 0
-    while ch != 10:
+    while ch != 12:
         menu = Menu()
         try:
             ch = int(input("Choice: "))
@@ -40,10 +40,16 @@ def run():
             menu.notes_in_minor_scale(wrg)
 
         elif ch == 9:
+            menu.note_beep(wrg)
+        
+        elif ch == 10:
+            menu.relative_minor_major(wrg)
+
+        elif ch == 11:
             menu.best_capo_position(wrg)
             count -= 1
             
-        elif ch < 1 or ch > 10:
+        elif ch < 1 or ch > 12:
             menu.wrong_entry(wrg)
             count -= 1
             

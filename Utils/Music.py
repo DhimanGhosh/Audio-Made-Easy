@@ -2,7 +2,7 @@ class Music:
     def __init__(self, note):
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
         self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
-        self.__open_pos_chords = ['A','Am','C','D','Dm','E','Em','G']
+        self.__open_pos_chords = ['0_A','0_Am','0_B','0_Bm','0_C','0_D','0_Dm','0_E','0_Em','0_F','0_Fm','0_G']
 
         if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':
             self.__note = note[0]
@@ -31,7 +31,9 @@ class Music:
             return ('S', True)
         if note in self.__notesb:
             return ('b', True)
-        return ('0', False)
+        if '0_' + note in self.__open_pos_chords:
+            return ('0', False)
+        return ('', False)
     
     def __valid_list(self, note):
         is_valid_note = self.valid_note(note)
@@ -41,7 +43,7 @@ class Music:
         elif music_list_to_look == 'b':
             return self.__notesb
         elif music_list_to_look == '0':
-            return None
+            return self.__open_pos_chords
 
     def major_scale(self):
         valid_list = self.__valid_list(self.__note)
@@ -141,5 +143,13 @@ class Music:
                 scale[i] = scale[i] + self.__chord_prog_in_min_scale_formula[i]
         return scale
 
-    def open_pos_chords(self):
-        pass
+    def relative_minor(self, major_scale):
+        return self.__valid_list(major_scale)[self.__note_position_in_list(major_scale) - 3] + 'm'
+
+    def relative_major(self, minor_scale):
+        return self.__valid_list(minor_scale)[self.__note_position_in_list(minor_scale) + 3]
+
+    def best_capo_position(self, *chords):
+        for chord in chords:
+            pass
+    

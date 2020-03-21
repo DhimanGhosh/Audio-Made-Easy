@@ -142,6 +142,32 @@ class MusicTest(unittest.TestCase):
         else:
             self.assertFalse(result != expected_result)
             print('Result:\tFAIL')
+    
+    def test_valid_relative_major(self):
+        print('Relative Major Key...')
+        note = 'A'
+        music = Music(note)
+        result = music.relative_major(note)
+        expected_result = 'C'
+        if result == expected_result:
+            self.assertTrue(result == expected_result)
+            print('Result:\tPASS')
+        else:
+            self.assertFalse(result != expected_result)
+            print('Result:\tFAIL')
+    
+    def test_valid_relative_minor(self):
+        print('Relative Minor Key...')
+        note = 'C'
+        music = Music(note)
+        result = music.relative_minor(note)
+        expected_result = 'Am'
+        if result == expected_result:
+            self.assertTrue(result == expected_result)
+            print('Result:\tPASS')
+        else:
+            self.assertFalse(result != expected_result)
+            print('Result:\tFAIL')
         
     def tearDown(self):
         print('Test Completed')

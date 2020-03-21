@@ -25,3 +25,7 @@ This app lets you:
 # Music Theory Guide (v-1.2)
 ## What's new
 - Find Respective Relative Minor or Major Key
+
+# Music Theory Guide (v-1.3)
+## What's new
+- Now listen to user choice note tone

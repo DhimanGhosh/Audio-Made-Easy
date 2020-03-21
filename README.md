@@ -21,3 +21,7 @@ This app lets you:
 ## What's new
 - Added support for 'b' notation along with '#'
 - Added a note validity check
+
+# Music Theory Guide (v-1.2)
+## What's new
+- Find Respective Relative Minor or Major Key

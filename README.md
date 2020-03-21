@@ -17,14 +17,10 @@ This app lets you:
 
 		$ python app.py
 
-
-
 # Music Theory Guide (v-1.1)
 ## What's new
 - Added support for 'b' notation along with '#'
 - Added a note validity check
-
-
 
 # Music Theory Guide (v-1.2)
 ## What's new

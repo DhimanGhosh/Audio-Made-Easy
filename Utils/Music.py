@@ -1,3 +1,6 @@
+from . import Note_Tone as tone
+from winsound import Beep
+
 class Music:
     def __init__(self, note):
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
@@ -17,6 +20,37 @@ class Music:
         self.__chord_prog_in_maj_scale_formula = [self.__major,self.__minor,self.__minor,self.__major,self.__major,self.__minor,self.__diminished]
         self.__min_scale_formula = [self.__tone,self.__semi_tone,self.__tone,self.__tone,self.__semi_tone,self.__tone,self.__tone]
         self.__chord_prog_in_min_scale_formula = [self.__minor,self.__minor,self.__major,self.__major+'/'+self.__minor,self.__major+'/'+self.__minor,self.__major,self.__major]
+        
+        self.__octave0 = tone.notes(0)
+        self.__octave1 = tone.notes(1)
+
+        # Notes Frequency, Octave 0
+        self.__C0  = self.__octave0[0]
+        self.__Cs0 = self.__octave0[1]
+        self.__D0  = self.__octave0[2]
+        self.__Ds0 = self.__octave0[3]
+        self.__E0  = self.__octave0[4]
+        self.__F0  = self.__octave0[5]
+        self.__Fs0 = self.__octave0[6]
+        self.__G0  = self.__octave0[7]
+        self.__Gs0 = self.__octave0[8]
+        self.__A0  = self.__octave0[9]
+        self.__As0 = self.__octave0[10]
+        self.__B0  = self.__octave0[11]
+
+        # Notes Frequency, Octave 1
+        self.__C1  = self.__octave1[0]
+        self.__Cs1 = self.__octave1[1]
+        self.__D1  = self.__octave1[2]
+        self.__Ds1 = self.__octave1[3]
+        self.__E1  = self.__octave1[4]
+        self.__F1  = self.__octave1[5]
+        self.__Fs1 = self.__octave1[6]
+        self.__G1  = self.__octave1[7]
+        self.__Gs1 = self.__octave1[8]
+        self.__A1  = self.__octave1[9]
+        self.__As1 = self.__octave1[10]
+        self.__B1  = self.__octave1[11]
 
     def __note_position_in_list(self, note):
         valid_list = self.__valid_list(note)
@@ -153,3 +187,31 @@ class Music:
         for chord in chords:
             pass
     
+    def __note_freq_detection(self, note):
+        if note == 'C':
+            return self.__C0
+        elif note == 'C#':
+            return self.__Cs0
+        elif note == 'D':
+            return self.__D0
+        elif note == 'D#':
+            return self.__Ds0
+        elif note == 'E':
+            return self.__E0
+        elif note == 'F':
+            return self.__F0
+        elif note == 'F#':
+            return self.__Fs0
+        elif note == 'G':
+            return self.__G0
+        elif note == 'G#':
+            return self.__Gs0
+        elif note == 'A':
+            return self.__A0
+        elif note == 'A#':
+            return self.__As0
+        elif note == 'B':
+            return self.__B0
+    
+    def note_beep(self, note):
+        Beep(self.__note_freq_detection(note), 300)

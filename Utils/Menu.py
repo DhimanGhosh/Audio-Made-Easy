@@ -1,7 +1,5 @@
 # Logic for each choice of menu
 from .Music import Music
-from . import Note_Tone as tone
-from winsound import Beep
 
 class Menu:
     def __init__(self):
@@ -23,22 +21,6 @@ class Menu:
             11. Best Capo position for easy play (Feature coming soon)
             12. Quit
         ''')
-
-        octave = tone.notes()
-
-        # Notes Frequency, Octave 0
-        self.__C  = octave[0]
-        self.__Cs = octave[1]
-        self.__D  = octave[2]
-        self.__Ds = octave[3]
-        self.__E  = octave[4]
-        self.__F  = octave[5]
-        self.__Fs = octave[6]
-        self.__G  = octave[7]
-        self.__Gs = octave[8]
-        self.__A  = octave[9]
-        self.__As = octave[10]
-        self.__B  = octave[11]
 
     def major_scale(self, wob):
         wob.set_wrong_flag(False)
@@ -188,33 +170,7 @@ class Menu:
         else:
             self.Study_Music()
     
-    def __note_freq_detection(self, note):
-        if note == 'C':
-            return self.__C
-        elif note == 'C#':
-            return self.__Cs
-        elif note == 'D':
-            return self.__D
-        elif note == 'D#':
-            return self.__Ds
-        elif note == 'E':
-            return self.__E
-        elif note == 'F':
-            return self.__F
-        elif note == 'F#':
-            return self.__Fs
-        elif note == 'G':
-            return self.__G
-        elif note == 'G#':
-            return self.__Gs
-        elif note == 'A':
-            return self.__A
-        elif note == 'A#':
-            return self.__As
-        elif note == 'B':
-            return self.__B
-    
-    def note_beep(self, wob):
+    def play_tone(self, wob):
         wob.set_wrong_flag(False)
         while True:
             note = input("Note: ")
@@ -225,8 +181,7 @@ class Menu:
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
-                Beep(self.__note_freq_detection(note), 300)
-                pass
+                music.note_beep(note)
             else:
                 self.Study_Music_Theory()
         else:

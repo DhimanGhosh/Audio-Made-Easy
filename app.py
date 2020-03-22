@@ -40,7 +40,7 @@ def run():
             menu.notes_in_minor_scale(wrg)
 
         elif ch == 9:
-            menu.note_beep(wrg)
+            menu.play_tone(wrg)
         
         elif ch == 10:
             menu.relative_minor_major(wrg)

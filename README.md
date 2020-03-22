@@ -28,4 +28,5 @@ This app lets you:
 
 # Music Theory Guide (v-1.3)
 ## What's new
-- Now listen to user choice note tone
+- Listen to user choice note tone
+- Listen to tones of multiple notes or notes in a scale

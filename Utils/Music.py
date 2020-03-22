@@ -22,24 +22,24 @@ class Music:
         self.__min_scale_formula = [self.__tone,self.__semi_tone,self.__tone,self.__tone,self.__semi_tone,self.__tone,self.__tone]
         self.__chord_prog_in_min_scale_formula = [self.__minor,self.__minor,self.__major,self.__major+'/'+self.__minor,self.__major+'/'+self.__minor,self.__major,self.__major]
         
-        self.__octave0 = tone.notes(0)
-        self.__octave1 = tone.notes(1)
+        self.__octave4 = tone.notes(4)
+        self.__octave5 = tone.notes(5)
 
-        self.__octaves = self.__octave0 + self.__octave1
+        self.__octaves = self.__octave4 + self.__octave5
 
         # Notes Frequency, Octave 0
-        self.__C0  = self.__octave0[0]
-        self.__Cs0 = self.__octave0[1]
-        self.__D0  = self.__octave0[2]
-        self.__Ds0 = self.__octave0[3]
-        self.__E0  = self.__octave0[4]
-        self.__F0  = self.__octave0[5]
-        self.__Fs0 = self.__octave0[6]
-        self.__G0  = self.__octave0[7]
-        self.__Gs0 = self.__octave0[8]
-        self.__A0  = self.__octave0[9]
-        self.__As0 = self.__octave0[10]
-        self.__B0  = self.__octave0[11]
+        self.__C4  = self.__octave4[0]
+        self.__Cs4 = self.__octave4[1]
+        self.__D4  = self.__octave4[2]
+        self.__Ds4 = self.__octave4[3]
+        self.__E4  = self.__octave4[4]
+        self.__F4  = self.__octave4[5]
+        self.__Fs4 = self.__octave4[6]
+        self.__G4  = self.__octave4[7]
+        self.__Gs4 = self.__octave4[8]
+        self.__A4  = self.__octave4[9]
+        self.__As4 = self.__octave4[10]
+        self.__B4  = self.__octave4[11]
 
     def __note_position_in_list(self, note):
         valid_list = self.__valid_list(note)
@@ -100,17 +100,21 @@ class Music:
         scale = self.major_scale()
         return [scale[0], scale[2], scale[4]]
 
-    def notes_in_major_scale(self):
-        scale = self.major_scale()
-        for i in range(len(scale)):
-            scale[i] = scale[i] + self.__chord_prog_in_maj_scale_formula[i]
-        return scale
+    def minor_chord(self):
+        scale = self.minor_scale()
+        return [scale[0], scale[2], scale[4]]
 
-    def __notes_in_major_scale(self, note):
-        scale = self.__major_scale(note)
-        for i in range(len(scale)):
-            scale[i] = scale[i] + self.__chord_prog_in_maj_scale_formula[i]
-        return scale
+    def notes_in_major_scale(self):
+        notes = self.major_scale()
+        for i in range(len(notes)):
+            notes[i] = notes[i] + self.__chord_prog_in_maj_scale_formula[i]
+        return notes
+
+    def __notes_in_major_scale(self, scale):
+        notes = self.__major_scale(scale)
+        for i in range(len(notes)):
+            notes[i] = notes[i] + self.__chord_prog_in_maj_scale_formula[i]
+        return notes
 
     def note_in_major_scales(self):
         valid_list = self.__valid_list(self.__note)
@@ -119,8 +123,8 @@ class Music:
         for i in range(len(valid_list)):
             notes_scales.append(self.__major_scale(valid_list[i]))
         
-        for i in range(12):
-            for j in range(7):
+        for i in range(len(notes_scales)):
+            for j in range(len(notes_scales[0])):
                 if self.__note == notes_scales[i][j]:
                     scales.append(notes_scales[i][0])
         return scales
@@ -169,52 +173,66 @@ class Music:
         return notes_in_scale
 
     def notes_in_minor_scale(self):
-        scale = self.minor_scale()
-        for i in range(len(scale)):
+        notes = self.minor_scale()
+        for i in range(len(notes)):
             if '/' in self.__chord_prog_in_min_scale_formula[i]:
-                join_formula = '/' + scale[i]
-                scale[i] = scale[i] + self.__chord_prog_in_min_scale_formula[i]
-                parts = scale[i].split('/')
-                scale[i] = join_formula.join(parts)+' '
+                join_formula = '/' + notes[i]
+                notes[i] = notes[i] + self.__chord_prog_in_min_scale_formula[i]
+                parts = notes[i].split('/')
+                notes[i] = join_formula.join(parts)+' '
             else:
-                scale[i] = scale[i] + self.__chord_prog_in_min_scale_formula[i]
-        return scale
+                notes[i] = notes[i] + self.__chord_prog_in_min_scale_formula[i]
+        return notes
+
+    def __notes_in_minor_scale(self, scale):
+        notes = self.__minor_scale(scale)
+        for i in range(len(notes)):
+            if '/' in self.__chord_prog_in_min_scale_formula[i]:
+                join_formula = '/' + notes[i]
+                notes[i] = notes[i] + self.__chord_prog_in_min_scale_formula[i]
+                parts = notes[i].split('/')
+                notes[i] = join_formula.join(parts)+' '
+            else:
+                notes[i] = notes[i] + self.__chord_prog_in_min_scale_formula[i]
+        return notes
 
     def relative_minor(self, major_scale):
+        print('Major Scale: ' + major_scale)
         return self.__valid_list(major_scale)[self.__note_position_in_list(major_scale) - 3] + 'm'
 
     def relative_major(self, minor_scale):
+        print('Minor Scale: ' + minor_scale)
         return self.__valid_list(minor_scale)[self.__note_position_in_list(minor_scale) + 3]
 
-    def best_capo_position(self, *chords):
+    def best_capo_position(self, chords):
         for chord in chords:
             pass
     
     def __note_freq_detection(self, note):
         if note == 'C':
-            return self.__C0
+            return self.__C4
         elif note == 'C#':
-            return self.__Cs0
+            return self.__Cs4
         elif note == 'D':
-            return self.__D0
+            return self.__D4
         elif note == 'D#':
-            return self.__Ds0
+            return self.__Ds4
         elif note == 'E':
-            return self.__E0
+            return self.__E4
         elif note == 'F':
-            return self.__F0
+            return self.__F4
         elif note == 'F#':
-            return self.__Fs0
+            return self.__Fs4
         elif note == 'G':
-            return self.__G0
+            return self.__G4
         elif note == 'G#':
-            return self.__Gs0
+            return self.__Gs4
         elif note == 'A':
-            return self.__A0
+            return self.__A4
         elif note == 'A#':
-            return self.__As0
+            return self.__As4
         elif note == 'B':
-            return self.__B0
+            return self.__B4
     
     def note_beep(self, note):
         Beep(self.__note_freq_detection(note), 300)
@@ -254,3 +272,63 @@ class Music:
         for freq in scale_freq:
             Beep(freq, 300)
             sleep(0.5)
+    
+    def __chord_in_scales(self, chord):
+        # Major and Minor Scales containing Chords
+        if 'm' in chord and 'dim' not in chord:
+            note = chord[:-1]
+        else:
+            note = chord
+        
+        valid_list = self.__valid_list(note)
+        
+        # Major Scales with this chord
+        notes_scales = {}
+        major_scales_with_chord = []
+        for i in range(len(valid_list)):
+            notes_scales[valid_list[i]] = self.__notes_in_major_scale(valid_list[i])
+
+        for k,v in notes_scales.items():
+            if chord in v:
+                major_scales_with_chord.append(k)
+        
+        # Minor Scales with this chord
+        notes_scales = {}
+        minor_scales_with_chord = []
+        for i in range(len(valid_list)):
+            min_scale1 = min_scale = self.__notes_in_minor_scale(valid_list[i])
+            for scale in min_scale:
+                if '/' in scale:
+                    min_scale1.remove(scale)
+                    min_scale1.extend(scale.split('/'))
+            notes_scales[valid_list[i] + 'm'] = min_scale1
+        
+        for k,v in notes_scales.items():
+            if chord in v:
+                minor_scales_with_chord.append(k)
+        
+        scales = major_scales_with_chord + minor_scales_with_chord
+        return scales
+    
+    def common_scale(self, chords):
+        scales_from_chords = []
+        for chord in chords:
+            scales_from_chords.append(self.__chord_in_scales(chord))
+        list_of_sets = []
+        for scale in scales_from_chords:
+            list_of_sets.append(set(scale))
+        result = list_of_sets[0]
+        if len(list_of_sets) > 2:
+            for i in range(1, len(list_of_sets)):
+                result = result.intersection(list_of_sets[i])
+        result = list(result)
+        if len(result) == 2:
+            minor_note_in_result = [item for item in result if 'm' in item][0]
+            minor_note_index = result.index(minor_note_in_result)
+            major_note_index = minor_note_index - 1
+            if self.relative_minor(result[major_note_index]) == result[minor_note_index] and self.relative_major(result[minor_note_index][:-1]) == result[major_note_index]:
+                return (result, 'R')
+            else:
+                return (result, 'NR')
+        else:
+            return (result, '')

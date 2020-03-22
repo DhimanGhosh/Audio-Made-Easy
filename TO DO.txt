@@ -1,3 +1,4 @@
 1. Best Guitar Capo position for easy play
 2. Django Implementation (Web Application)
 3. add 'valid_input()' function to Menu.py to avoid repetative input and validity check
+4. Play Piano

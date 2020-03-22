@@ -30,3 +30,7 @@ This app lets you:
 ## What's new
 - Listen to user choice note tone
 - Listen to tones of multiple notes or notes in a scale
+
+# Music Theory Guide (v-1.4)
+## What's new
+- Get to know the scale of a song from a set of chords

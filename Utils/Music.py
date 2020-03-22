@@ -1,8 +1,9 @@
 from . import Note_Tone as tone
 from winsound import Beep
+from time import sleep
 
 class Music:
-    def __init__(self, note):
+    def __init__(self, note='C'):
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
         self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
         self.__open_pos_chords = ['0_A','0_Am','0_B','0_Bm','0_C','0_D','0_Dm','0_E','0_Em','0_F','0_Fm','0_G']
@@ -24,6 +25,8 @@ class Music:
         self.__octave0 = tone.notes(0)
         self.__octave1 = tone.notes(1)
 
+        self.__octaves = self.__octave0 + self.__octave1
+
         # Notes Frequency, Octave 0
         self.__C0  = self.__octave0[0]
         self.__Cs0 = self.__octave0[1]
@@ -37,20 +40,6 @@ class Music:
         self.__A0  = self.__octave0[9]
         self.__As0 = self.__octave0[10]
         self.__B0  = self.__octave0[11]
-
-        # Notes Frequency, Octave 1
-        self.__C1  = self.__octave1[0]
-        self.__Cs1 = self.__octave1[1]
-        self.__D1  = self.__octave1[2]
-        self.__Ds1 = self.__octave1[3]
-        self.__E1  = self.__octave1[4]
-        self.__F1  = self.__octave1[5]
-        self.__Fs1 = self.__octave1[6]
-        self.__G1  = self.__octave1[7]
-        self.__Gs1 = self.__octave1[8]
-        self.__A1  = self.__octave1[9]
-        self.__As1 = self.__octave1[10]
-        self.__B1  = self.__octave1[11]
 
     def __note_position_in_list(self, note):
         valid_list = self.__valid_list(note)
@@ -94,7 +83,7 @@ class Music:
         return notes_in_scale
 
     def __major_scale(self, note):
-        valid_list = self.__valid_list(self.__note)
+        valid_list = self.__valid_list(note)
         position = self.__note_position_in_list(note)
 
         notes_in_scale = [valid_list[position]]
@@ -165,6 +154,20 @@ class Music:
 
         return notes_in_scale
 
+    def __minor_scale(self, note):
+        valid_list = self.__valid_list(note)
+        position = self.__note_position_in_list(note)
+
+        notes_in_scale = [valid_list[position]]
+        
+        for i in range(6):
+            position = position + self.__min_scale_formula[i]
+            if position >= len(valid_list):
+                position = position % len(valid_list)
+            notes_in_scale.append(valid_list[position])
+
+        return notes_in_scale
+
     def notes_in_minor_scale(self):
         scale = self.minor_scale()
         for i in range(len(scale)):
@@ -215,3 +218,39 @@ class Music:
     
     def note_beep(self, note):
         Beep(self.__note_freq_detection(note), 300)
+    
+    def note_beep_seq(self, notes):
+        # Play notes from same octave
+        for note in notes:
+            Beep(self.__note_freq_detection(note), 300)
+            sleep(0.5)
+
+    def note_beep_scale(self, scale_mode, scale):
+        # Play notes using 2 octaves
+        if scale_mode == 'm':
+            notes = self.__minor_scale(scale)
+            note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
+            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 12]
+
+            position = 0
+            scale_freq = [scale_freq_range[position]]
+        
+            for i in range(6):
+                position = position + self.__min_scale_formula[i]
+                scale_freq.append(scale_freq_range[position])
+
+        else:
+            notes = self.__major_scale(scale)
+            note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
+            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 12]
+
+            position = 0
+            scale_freq = [scale_freq_range[position]]
+        
+            for i in range(6):
+                position = position + self.__maj_scale_formula[i]
+                scale_freq.append(scale_freq_range[position])
+        
+        for freq in scale_freq:
+            Beep(freq, 300)
+            sleep(0.5)

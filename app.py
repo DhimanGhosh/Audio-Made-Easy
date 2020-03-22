@@ -2,7 +2,7 @@ def run():
     wrg = Wrong()
     ch = 0
     count = 0
-    while ch != 12:
+    while ch != 13:
         menu = Menu()
         try:
             ch = int(input("Choice: "))
@@ -38,18 +38,21 @@ def run():
 
         elif ch == 8:
             menu.notes_in_minor_scale(wrg)
-
-        elif ch == 9:
-            menu.play_tone(wrg)
         
-        elif ch == 10:
+        elif ch == 9:
             menu.relative_minor_major(wrg)
 
+        elif ch == 10:
+            menu.play_tone(wrg)
+
         elif ch == 11:
+            menu.play_tone_in_seq(wrg)
+
+        elif ch == 12:
             menu.best_capo_position(wrg)
             count -= 1
             
-        elif ch < 1 or ch > 12:
+        elif ch < 1 or ch > 13:
             menu.wrong_entry(wrg)
             count -= 1
             

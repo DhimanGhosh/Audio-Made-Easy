@@ -16,10 +16,11 @@ class Menu:
             6. Scale shift with capo position (Guitar)
             7. Minor Scale
             8. Notes in Minor Scale
-            9. Play Tone Based on Note
-            10. Relative Minor/Major
-            11. Best Capo position for easy play (Feature coming soon)
-            12. Quit
+            9. Relative Minor/Major
+            10. Play Tone Based on Note
+            11. Play Tone in Sequence (Scale / Note Sequence)
+            12. Best Capo position for easy play (Feature coming soon)
+            13. Quit
         ''')
 
     def major_scale(self, wob):
@@ -170,23 +171,6 @@ class Menu:
         else:
             self.Study_Music()
     
-    def play_tone(self, wob):
-        wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
-        music = Music(note)
-        if music.valid_note(note)[1]:
-            if music != None:
-                music.note_beep(note)
-            else:
-                self.Study_Music_Theory()
-        else:
-            self.Study_Music()
-    
     def relative_minor_major(self, wob):
         wob.set_wrong_flag(False)
         scl = input('1. Relative Major\n2. Relative Minor\nChoice: ')
@@ -222,6 +206,73 @@ class Menu:
                     self.Study_Music_Theory()
             else:
                 self.Study_Music()
+    
+    def play_tone(self, wob):
+        wob.set_wrong_flag(False)
+        while True:
+            note = input("Note: ")
+            if note is '':
+                continue
+            else:
+                break
+        music = Music(note)
+        if music.valid_note(note)[1]:
+            if music != None:
+                music.note_beep(note)
+            else:
+                self.Study_Music_Theory()
+        else:
+            self.Study_Music()
+    
+    def play_tone_in_seq(self, wob):
+        wob.set_wrong_flag(False)
+        ch = input('1. Play Notes in a Scale\n2. Play Note Sequence\nChoice: ')
+        if int(ch) == 1:
+            min_maj = input("1. Minor Scale\n2. Major Scale\nChoice: ")
+            if int(min_maj) == 1:
+                while True:
+                    scale = input("Scale: ")
+                    if scale is '':
+                        continue
+                    else:
+                        break
+                music = Music(scale)
+                if music.valid_note(scale)[1]:
+                    if music != None:
+                        music.note_beep_scale('m', scale)
+                    else:
+                        self.Study_Music_Theory()
+                else:
+                    self.Study_Music()
+            elif int(min_maj) == 2:
+                while True:
+                    scale = input("Scale: ")
+                    if scale is '':
+                        continue
+                    else:
+                        break
+                music = Music(scale)
+                if music.valid_note(scale)[1]:
+                    if music != None:
+                        music.note_beep_scale('M', scale)
+                    else:
+                        self.Study_Music_Theory()
+                else:
+                    self.Study_Music()
+        elif int(ch) == 2:
+            while True:
+                notes = input("Notes: ")
+                if notes is '':
+                    continue
+                else:
+                    break
+            music = Music()
+            music.note_beep_seq(notes.split())
+    
+    def scale_from_chords(self, wob):
+        wob.set_wrong_flag(False)
+        # Find Scale from chords and use in best_capo_position() for up-shifting or down-shifting
+        pass
     
     def best_capo_position(self, wob):
         wob.set_wrong_flag(False)

@@ -197,11 +197,9 @@ class Music:
         return notes
 
     def relative_minor(self, major_scale):
-        print('Major Scale: ' + major_scale)
         return self.__valid_list(major_scale)[self.__note_position_in_list(major_scale) - 3] + 'm'
 
     def relative_major(self, minor_scale):
-        print('Minor Scale: ' + minor_scale)
         return self.__valid_list(minor_scale)[self.__note_position_in_list(minor_scale) + 3]
 
     def best_capo_position(self, chords):
@@ -283,7 +281,7 @@ class Music:
         valid_list = self.__valid_list(note)
         
         # Major Scales with this chord
-        notes_scales = {}
+        notes_scales = dict()
         major_scales_with_chord = []
         for i in range(len(valid_list)):
             notes_scales[valid_list[i]] = self.__notes_in_major_scale(valid_list[i])
@@ -293,7 +291,7 @@ class Music:
                 major_scales_with_chord.append(k)
         
         # Minor Scales with this chord
-        notes_scales = {}
+        notes_scales = dict()
         minor_scales_with_chord = []
         for i in range(len(valid_list)):
             min_scale1 = min_scale = self.__notes_in_minor_scale(valid_list[i])

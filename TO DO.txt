@@ -1,3 +1,4 @@
 1. Best Guitar Capo position for easy play
-2. Django Implementation (Web Application) / GUI Software
-3. Play Piano
+2. "DESIGN a Prototype for GUI Application" and save as image
+3. Django Implementation (Web Application) / GUI Software
+4. Play Piano

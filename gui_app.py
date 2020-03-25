@@ -10,12 +10,16 @@ class MyPanel(wx.Panel):
     def __init__(self, parent):
         super(MyPanel, self).__init__(parent)
         
-        self.label = wx.StaticText(self, label='Hello There', style=wx.ALIGN_CENTER)
+        self.label1 = wx.StaticText(self, label='This is Label 1', style=wx.ALIGN_CENTER)
+        self.label2 = wx.StaticText(self, label='This is Label 2', style=wx.ALIGN_CENTER)
 
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        vbox.Add(self.label, 0, wx.EXPAND)
+        vbox.Add(self.label1, 0, wx.EXPAND)
+        hbox.Add(self.label2, 0, wx.EXPAND)
+
+        self.SetSizer(vbox)
 
 class MyApp(wx.App):
     def OnInit(self):

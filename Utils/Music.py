@@ -246,7 +246,7 @@ class Music:
         if scale_mode == 'm':
             notes = self.__minor_scale(scale)
             note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
-            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 12]
+            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 13]
 
             position = 0
             scale_freq = [scale_freq_range[position]]
@@ -258,7 +258,7 @@ class Music:
         else:
             notes = self.__major_scale(scale)
             note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
-            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 12]
+            scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 13]
 
             position = 0
             scale_freq = [scale_freq_range[position]]
@@ -266,6 +266,8 @@ class Music:
             for i in range(6):
                 position = position + self.__maj_scale_formula[i]
                 scale_freq.append(scale_freq_range[position])
+        
+        scale_freq.append(scale_freq_range[position + 1]) # Adding 8th Note from Next Octave for that Scale
         
         for freq in scale_freq:
             Beep(freq, 300)

@@ -2,3 +2,4 @@
 2. Django Implementation (Web Application) / GUI Software
 3. add 'valid_input()' function to Menu.py to avoid repetative input and validity check
 4. Play Piano
+5. Convert Flat 'b' notation to Sharp '#' in Utils/Music.py

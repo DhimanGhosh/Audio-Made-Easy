@@ -1,5 +1,3 @@
 1. Best Guitar Capo position for easy play
 2. Django Implementation (Web Application) / GUI Software
-3. add 'valid_input()' function in Utils/Menu.py to avoid repetative input and validity check
-4. Play Piano
-5. add 'b2s()' function in Utils/Music.py to convert Flat 'b' notation to Sharp '#'
+3. Play Piano

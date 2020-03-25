@@ -24,15 +24,19 @@ class Menu:
             14. Best Capo position for easy play (Feature coming soon)
             15. Quit
         ''')
-
-    def major_scale(self, wob):
-        wob.set_wrong_flag(False)
+    
+    def __valid_input(self, input_text): # Control empty user input
         while True:
-            note = input("Note: ")
-            if note is '':
+            data = input("{}: ".format(input_text))
+            if data is '':
                 continue
             else:
                 break
+        return data
+
+    def major_scale(self, wob):
+        wob.set_wrong_flag(False)
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -45,12 +49,7 @@ class Menu:
 
     def major_chord(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -63,12 +62,7 @@ class Menu:
 
     def notes_in_major_scale(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -81,12 +75,7 @@ class Menu:
 
     def note_in_major_scales(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -99,12 +88,7 @@ class Menu:
 
     def note_shift_with_capo_position(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -118,12 +102,7 @@ class Menu:
 
     def scale_shift_with_capo_position(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Original Scale: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Original Scale')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -139,12 +118,7 @@ class Menu:
 
     def minor_scale(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -157,12 +131,7 @@ class Menu:
 
     def minor_chord(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -175,12 +144,7 @@ class Menu:
 
     def notes_in_minor_scale(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -195,12 +159,7 @@ class Menu:
         wob.set_wrong_flag(False)
         scl = input('1. Relative Major\n2. Relative Minor\nChoice: ')
         if int(scl) == 1:
-            while True:
-                note = input("Minor Note: ")
-                if note is '':
-                    continue
-                else:
-                    break
+            note = self.__valid_input('Minor Note')
             music = Music(note)
             if music.valid_note(note)[1]:
                 if music != None:
@@ -211,12 +170,7 @@ class Menu:
             else:
                 self.Study_Music()
         elif int(scl) == 2:
-            while True:
-                note = input("Major Note: ")
-                if note is '':
-                    continue
-                else:
-                    break
+            note = self.__valid_input('Minor Note')
             music = Music(note)
             if music.valid_note(note)[1]:
                 if music != None:
@@ -229,12 +183,7 @@ class Menu:
     
     def play_tone(self, wob):
         wob.set_wrong_flag(False)
-        while True:
-            note = input("Note: ")
-            if note is '':
-                continue
-            else:
-                break
+        note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
@@ -250,12 +199,7 @@ class Menu:
         if int(ch) == 1:
             min_maj = input("1. Minor Scale\n2. Major Scale\nChoice: ")
             if int(min_maj) == 1:
-                while True:
-                    scale = input("Scale: ")
-                    if scale is '':
-                        continue
-                    else:
-                        break
+                scale = self.__valid_input('Scale')
                 music = Music(scale)
                 if music.valid_note(scale)[1]:
                     if music != None:
@@ -265,12 +209,7 @@ class Menu:
                 else:
                     self.Study_Music()
             elif int(min_maj) == 2:
-                while True:
-                    scale = input("Scale: ")
-                    if scale is '':
-                        continue
-                    else:
-                        break
+                scale = self.__valid_input('Scale')
                 music = Music(scale)
                 if music.valid_note(scale)[1]:
                     if music != None:
@@ -280,19 +219,14 @@ class Menu:
                 else:
                     self.Study_Music()
         elif int(ch) == 2:
-            while True:
-                notes = input("Notes: ")
-                if notes is '':
-                    continue
-                else:
-                    break
+            notes = self.__valid_input('Notes')
             music = Music()
             music.note_beep_seq(notes.split())
     
     def scale_from_chords(self, wob):
         wob.set_wrong_flag(False)
         # Find Scale from chords and use in best_capo_position() for up-shifting or down-shifting
-        chords = input('Chords: ')
+        chords = self.__valid_input('Chords: ')
         music = Music()
         common_scale = music.common_scale(chords.split())
         result = common_scale[0]

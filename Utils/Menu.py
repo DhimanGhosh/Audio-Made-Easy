@@ -318,4 +318,3 @@ class Menu:
     
     def Study_Music(self):
         print('Invalid Music Notation!\nI am not here to teach you MUSIC but Guide!')
-        exit()

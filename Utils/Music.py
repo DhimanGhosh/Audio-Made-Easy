@@ -40,6 +40,9 @@ class Music:
         self.__A4  = self.__octave4[9]
         self.__As4 = self.__octave4[10]
         self.__B4  = self.__octave4[11]
+    
+    def __b2s(self, note):
+        return self.__notesS[self.__note_position_in_list(note)]
 
     def __note_position_in_list(self, note):
         valid_list = self.__valid_list(note)

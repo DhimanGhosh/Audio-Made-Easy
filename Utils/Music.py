@@ -57,8 +57,8 @@ class Music:
             return ('S', True)
         if note in self.__notesb:
             return ('b', True)
-        if '0_' + note in self.__open_pos_chords:
-            return ('0', False)
+        if '0_' + note in self.__open_pos_chords: # Used for 'best_capo_position()'
+            return ('0', True)
         return ('', False)
     
     def __valid_list(self, note):
@@ -210,6 +210,7 @@ class Music:
             pass
     
     def __note_freq_detection(self, note):
+        note = self.__b2s(note)
         if note == 'C':
             return self.__C4
         elif note == 'C#':
@@ -239,13 +240,13 @@ class Music:
         Beep(self.__note_freq_detection(note), 300)
     
     def note_beep_seq(self, notes):
-        # Play notes from same octave
+        # Play notes from same octave(4)
         for note in notes:
             Beep(self.__note_freq_detection(note), 300)
             sleep(0.5)
 
     def note_beep_scale(self, scale_mode, scale):
-        # Play notes using 2 octaves
+        # Play notes using 2 octaves(4, 5)
         if scale_mode == 'm':
             notes = self.__minor_scale(scale)
         else:

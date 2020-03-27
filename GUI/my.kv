@@ -1,31 +1,14 @@
-<MyGrid>
+<Spinner>:
+    color: 0.3, 0.6, 0.7, 1
+    size_hint: 0.3, 0.3
 
-    fname: fname
-    lname: lname
-    email: email
+<MyLayout>
+    FloatLayout:
+        size: root.height, root.width
 
-    GridLayout:
-        cols: 1
-        size: root.width, root.height
-
-        GridLayout:
-            cols: 2
-            Label:
-                text: "First Name"
-            TextInput:
-                id: fname
-                multiline: False
-            Label:
-                text: "Last Name"
-            TextInput:
-                id: lname
-                multiline: False
-            Label:
-                text: "Email"
-            TextInput:
-                id: email
-                multiline: False
-
-        Button:
-            text: "Submit"
-            on_press: root.btn()
+        Spinner:
+            id: menu_select
+            text: "Select"
+            values: root.spinner_vals
+            size: 500, 50
+            pos_hint: {'x' : 0.5, 'y' : 0.5, 'top' : 1}

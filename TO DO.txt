@@ -1,4 +1,8 @@
-1. Best Guitar Capo position for easy play
-2. "DESIGN a Prototype for GUI Application" and save as image
-3. Django Implementation (Web Application) / GUI Software
-4. Play Piano
+> Best Guitar Capo position for easy play
+> GUI Software
+> Play Piano
+
+
+GUI Software:
+> Change "input_menu" values w.r.t. notation selection [on_press: root.detect_notation()] {'on_change'}
+> On Selecting any value from "input_menu"; show the output in "output" TextArea

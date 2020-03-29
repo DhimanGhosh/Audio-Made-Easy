@@ -4,5 +4,4 @@
 
 
 GUI Software:
-> Change "input_menu" values w.r.t. notation selection [on_press: root.detect_notation()] {'on_change'}
 > On Selecting any value from "input_menu"; show the output in "output" TextArea

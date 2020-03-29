@@ -14,7 +14,7 @@ class MainLayout(Widget):
     notes = notesS
     nS = ObjectProperty(None)
     nb = ObjectProperty(None)
-    current_active_notation = nS # For change in radio-button change notations for input_menu
+    current_active_notation = nS # For change in radio-button; change notations for input_menu
     option_menu = ObjectProperty(None)
     input_menu = ObjectProperty(None)
 

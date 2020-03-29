@@ -22,12 +22,18 @@ class MainLayout(Widget):
         print(self.option_menu.text)
 
     def detect_notation(self):
+        if self.input_menu.text in self.notes:
+            note_pos = self.notes.index(self.input_menu.text)
+
         if self.nS.active:
             self.notes = self.notesS
+            self.current_active_notation = self.nS
             print("Sharp Notation Selected")
         elif self.nb.active:
             self.notes = self.notesb
+            self.current_active_notation = self.nb
             print("Flat Notation Selected")
+        self.input_menu.text = self.notes[note_pos]
         self.ids.input_menu.values = self.notes
 
 class MusicTheoryGuideApp(App):

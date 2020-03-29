@@ -25,6 +25,7 @@
                 id: nS
                 active: True
                 group: 'notation'
+                on_active: root.detect_notation()
 
             Label:
                 text: '#'
@@ -32,6 +33,7 @@
             CheckBox:
                 id: nb
                 group: 'notation'
+                on_active: root.detect_notation()
 
             Label:
                 text: 'b'
@@ -53,7 +55,7 @@
             id: input_menu
             text: "Select"
             values: root.notes
-            on_press: root.detect_notation()
+            # on_press: root.detect_notation()
             # mode: disabled
 
         Label:

@@ -20,6 +20,10 @@ class MainLayout(Widget):
         print(self.option_menu.text)
 
     def detect_notation(self):
+        note_pos = 0
+        if self.input_menu.text != "Select":
+            note_pos = self.notes.index(self.input_menu.text)
+        
         if self.nS.active:
             self.notes = self.notesS
             print("Sharp Notation Selected")
@@ -31,7 +35,8 @@ class MainLayout(Widget):
         if self.input_menu.text == "Select":
             self.input_menu.text = "Select"
         elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
-            self.input_menu.text = self.notes[self.notes.index(self.input_menu.text)]
+            note_pos = self.notes.index(self.input_menu.text)
+        self.input_menu.text = self.notes[note_pos]
 
 class MusicTheoryGuideApp(App):
     def build(self):

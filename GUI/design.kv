@@ -1,3 +1,11 @@
+#:import Factory kivy.factory.Factory
+#:set color_button (0.784, 0.443, 0.216, 1)  # brown
+#:set color_button_pressed (0.659, 0.522, 0.431, 1)  # darker brown
+#:set color_font (0.957, 0.890, 0.843, 1)  # off white
+
+<MySpinnerOption@SpinnerOption>:
+    color: color_font
+
 <Spinner>:
     color: 0.1, 0.8, 0.6, 1
     size_hint: 0.3, 0.3
@@ -10,6 +18,7 @@
     nb: nb
     option_menu: option_menu
     input_menu: input_menu
+    output: output
 
     GridLayout:
         cols: 2
@@ -46,9 +55,11 @@
         Spinner:
             id: option_menu
             text: "Select"
-            on_press: root.get_input_data()
             values: root.spinner_vals
-            # on_select: root.get_input_data()
+            background_color: color_button if self.state == 'normal' else color_button_pressed
+            color: color_font
+            option_cls: Factory.get("MySpinnerOption")
+            # on_select: root.get_option_data()
 
         Label:
             text: "Input"
@@ -57,12 +68,16 @@
             id: input_menu
             text: "Select"
             values: root.notes
+            background_color: color_button if self.state == 'normal' else color_button_pressed
+            color: color_font
+            option_cls: Factory.get("MySpinnerOption")
             # mode: disabled
 
         Label:
             text: "Output"
 
-        TextInput:
+        Button:
             id: output
-            multiline: False
+            text: "Click Me"
+            on_press: root.show_result()
             # mode: disabled

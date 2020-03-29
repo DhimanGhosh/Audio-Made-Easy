@@ -1,11 +1,13 @@
 <Spinner>:
     color: 0.1, 0.8, 0.6, 1
     size_hint: 0.3, 0.3
-    size: 500, 50
-    pos_hint: {'x' : 0.5, 'top' : 1}
+    size: (500, 50)
+    pos_hint: {'center_x' : 0.5, 'center_y' : 0.5}
 
 <MainLayout>:
 
+    nS: nS
+    nb: nb
     option_menu: option_menu
     input_menu: input_menu
 
@@ -20,16 +22,16 @@
             rows: 1
             # Radio-Buttons for # / b
             CheckBox:
+                id: nS
                 active: True
                 group: 'notation'
-                id: nS
 
             Label:
                 text: '#'
 
             CheckBox:
-                group: 'notation'
                 id: nb
+                group: 'notation'
 
             Label:
                 text: 'b'
@@ -40,7 +42,9 @@
         Spinner:
             id: option_menu
             text: "Select"
+            on_press: root.get_input_data()
             values: root.spinner_vals
+            # on_value_press: root.get_input_data()
 
         Label:
             text: "Input"
@@ -48,7 +52,8 @@
         Spinner:
             id: input_menu
             text: "Select"
-            values: root.notesS
+            values: root.notes
+            on_press: root.detect_notation()
             # mode: disabled
 
         Label:

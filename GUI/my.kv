@@ -5,6 +5,10 @@
     pos_hint: {'x' : 0.5, 'top' : 1}
 
 <MyLayout>:
+
+    option_menu: option_menu
+    input_menu: input_menu
+
     GridLayout:
         cols: 2
         size: root.width, root.height
@@ -13,13 +17,26 @@
             text: "Notation"
 
         GridLayout:
-            cols: 2
+            rows: 1
             # Radio-Buttons for # / b
+            CheckBox:
+                active: True
+                group: 'Radio Button'
+
+            Label:
+                text: '#'
+
+            CheckBox:
+                group: 'Radio Button'
+
+            Label:
+                text: 'b'
 
         Label:
             text: "Options"
 
         Spinner:
+            id: option_menu
             text: "Select"
             values: root.spinner_vals
 
@@ -27,6 +44,7 @@
             text: "Input"
         # Enable Spinner / ListView (Multi-select) enable/disable based on Select Data
         Spinner:
+            id: input_menu
             text: "Select"
             values: root.notesS
             # mode: disabled

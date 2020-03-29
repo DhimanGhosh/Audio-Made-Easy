@@ -14,7 +14,6 @@ class MainLayout(Widget):
     notes = notesS
     nS = ObjectProperty(None)
     nb = ObjectProperty(None)
-    current_active_notation = nS # For change in radio-button; change notations for input_menu
     option_menu = ObjectProperty(None)
     input_menu = ObjectProperty(None)
 
@@ -22,19 +21,19 @@ class MainLayout(Widget):
         print(self.option_menu.text)
 
     def detect_notation(self):
-        if self.input_menu.text in self.notes:
-            note_pos = self.notes.index(self.input_menu.text)
-
         if self.nS.active:
             self.notes = self.notesS
-            self.current_active_notation = self.nS
             print("Sharp Notation Selected")
         elif self.nb.active:
             self.notes = self.notesb
-            self.current_active_notation = self.nb
             print("Flat Notation Selected")
-        self.input_menu.text = self.notes[note_pos]
         self.ids.input_menu.values = self.notes
+        
+        if self.input_menu.text == "Select":
+            self.input_menu.text = "Select"
+        elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
+            note_pos = self.notes.index(self.input_menu.text)
+            self.input_menu.text = self.notes[note_pos]
 
 class MusicTheoryGuideApp(App):
     def build(self):

@@ -26,10 +26,8 @@ class MainLayout(Widget):
         
         if self.nS.active:
             self.notes = self.notesS
-            print("Sharp Notation Selected")
         elif self.nb.active:
             self.notes = self.notesb
-            print("Flat Notation Selected")
         self.ids.input_menu.values = self.notes
         
         if self.input_menu.text == "Select":

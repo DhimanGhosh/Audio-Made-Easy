@@ -19,5 +19,7 @@ class MyApp(App):
     def build(self):
         return MyLayout()
 
+kv = Builder.load_file('design.kv')
+
 if __name__ == "__main__":
     MyApp().run()

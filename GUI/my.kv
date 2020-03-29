@@ -1,14 +1,39 @@
 <Spinner>:
-    color: 0.3, 0.6, 0.7, 1
+    color: 0.1, 0.8, 0.6, 1
     size_hint: 0.3, 0.3
+    size: 500, 50
+    pos_hint: {'x' : 0.5, 'top' : 1}
 
-<MyLayout>
-    FloatLayout:
-        size: root.height, root.width
+<MyLayout>:
+    GridLayout:
+        cols: 2
+        size: root.width, root.height
+
+        Label:
+            text: "Notation"
+
+        GridLayout:
+            cols: 2
+            # Radio-Buttons for # / b
+
+        Label:
+            text: "Options"
 
         Spinner:
-            id: menu_select
             text: "Select"
             values: root.spinner_vals
-            size: 500, 50
-            pos_hint: {'x' : 0.5, 'y' : 0.5, 'top' : 1}
+
+        Label:
+            text: "Input"
+        # Enable Spinner / ListView (Multi-select) enable/disable based on Select Data
+        Spinner:
+            text: "Select"
+            values: root.notesS
+            # mode: disabled
+
+        Label:
+            text: "Output"
+
+        TextInput:
+            multiline: False
+            # mode: disabled

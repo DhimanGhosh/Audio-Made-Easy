@@ -4,7 +4,7 @@
     size: 500, 50
     pos_hint: {'x' : 0.5, 'top' : 1}
 
-<MyLayout>:
+<MainLayout>:
 
     option_menu: option_menu
     input_menu: input_menu
@@ -21,13 +21,15 @@
             # Radio-Buttons for # / b
             CheckBox:
                 active: True
-                group: 'Radio Button'
+                group: 'notation'
+                id: nS
 
             Label:
                 text: '#'
 
             CheckBox:
-                group: 'Radio Button'
+                group: 'notation'
+                id: nb
 
             Label:
                 text: 'b'

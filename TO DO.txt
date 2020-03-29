@@ -4,4 +4,6 @@
 
 
 GUI Software:
-> On Selecting any value from "input_menu"; show the output in "output" TextArea
+> On Selecting any value from "input_menu" or "option_menu":
+        if both the menu "Select" is not showing (some-thing is selected);
+        show the output in "output" TextArea

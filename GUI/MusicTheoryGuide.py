@@ -15,7 +15,21 @@ from kivy.config import Config
 from Music import Music
 
 class MainLayout(Widget):
-    spinner_vals = ['Major Scale', 'Major Chord', 'Notes in Major Scale', 'Note in Major Scales', 'Note shift with capo position (Guitar)', 'Scale shift with capo position (Guitar)', 'Minor Scale', 'Minor Chord', 'Notes in Minor Scale', 'Relative Minor/Major', 'Play Tone Based on Note', 'Play Tone in Sequence (Scale / Note Sequence)', 'Scale from Chords']
+    spinner_vals = (
+        'Major Scale',
+        'Major Chord',
+        'Notes in Major Scale',
+        'Note in Major Scales',
+        'Note shift with capo position (Guitar)',
+        'Scale shift with capo position (Guitar)',
+        'Minor Scale',
+        'Minor Chord',
+        'Notes in Minor Scale',
+        'Relative Minor/Major',
+        'Play Tone Based on Note',
+        'Play Tone in Sequence (Scale / Note Sequence)',
+        'Scale from Chords'
+        )
     music = Music()
     notesS = music.notesS
     notesb = music.notesb
@@ -35,6 +49,12 @@ class MainLayout(Widget):
                 self.output.text = '     '.join(result)
             
             elif self.option_menu.text == self.spinner_vals[1]: # "Major Chord"
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.major_chord()
+                self.output.text = '     '.join(result)
+            
+            elif self.option_menu.text == self.spinner_vals[2]: # "Notes in Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.major_chord()

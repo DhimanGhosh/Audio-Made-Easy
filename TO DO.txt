@@ -8,3 +8,4 @@ GUI Software:
         if both the menu "Select" is not showing (some-thing is selected);
         show the output in "output" TextArea
 > Add Functionality to RESET App
+> Dynamically change the "input_menu" wrt value of "option_menu"

@@ -114,12 +114,12 @@ class MainLayout(Widget):
             self.input_menu.text = "Select"
         elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
             note_pos = self.notes.index(self.input_menu.text)
-            self.show_result()
         
         if note_pos != 999:
             self.input_menu.text = self.notes[note_pos]
         else:
             self.input_menu.text = "Select"
+        self.show_result()
 
 class MusicTheoryGuideApp(App):
     def build(self):

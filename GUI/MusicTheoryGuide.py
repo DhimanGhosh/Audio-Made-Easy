@@ -19,16 +19,14 @@ class MainLayout(Widget):
         'Major Scale',
         'Major Chord',
         'Notes in Major Scale',
-        'Note in Major Scales',
-        'Note shift with capo position (Guitar)',
         'Scale shift with capo position (Guitar)',
         'Minor Scale',
         'Minor Chord',
         'Notes in Minor Scale',
         'Relative Minor/Major',
+        'Scale from Chords',
         'Play Tone Based on Note',
-        'Play Tone in Sequence (Scale / Note Sequence)',
-        'Scale from Chords'
+        'Play Tone in Sequence (Scale / Note Sequence)'
         )
     music = Music()
     notesS = music.notesS
@@ -57,9 +55,50 @@ class MainLayout(Widget):
             elif self.option_menu.text == self.spinner_vals[2]: # "Notes in Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
-                result = music.major_chord()
+                result = music.notes_in_major_scale()
                 self.output.text = '     '.join(result)
-
+            
+            elif self.option_menu.text == self.spinner_vals[3]: # "Scale shift with capo position (Guitar)"
+                pass
+            
+            elif self.option_menu.text == self.spinner_vals[4]: # "Minor Scale"
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.minor_scale()
+                self.output.text = '     '.join(result)
+            
+            elif self.option_menu.text == self.spinner_vals[5]: # "Minor Chord"
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.minor_chord()
+                self.output.text = '     '.join(result)
+            
+            elif self.option_menu.text == self.spinner_vals[6]: # "Notes in Minor Scale"
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.notes_in_minor_scale()
+                self.output.text = '     '.join(result)
+            
+            elif self.option_menu.text == self.spinner_vals[7]: # "Relative Minor/Major"
+                pass
+            
+            elif self.option_menu.text == self.spinner_vals[8]: # "Scale from Chords"
+                pass
+            
+            elif self.option_menu.text == self.spinner_vals[9]: # "Play Tone Based on Note"
+                self.output.text = "Playing..."
+                note = self.input_menu.text
+                music = Music(note)
+                music.note_beep(note)
+                self.output.text = "Click Me"
+            
+            elif self.option_menu.text == self.spinner_vals[10]: # "Play Tone in Sequence (Scale / Note Sequence)"
+                self.output.text = "Playing..."
+                scale = self.input_menu.text
+                music = Music(scale)
+                music.note_beep_scale('M', scale)
+                self.output.text = "Click Me"
+                
     def detect_notation(self):
         note_pos = 999
         if self.input_menu.text != "Select":

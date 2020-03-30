@@ -130,6 +130,5 @@ if __name__ == "__main__":
     kv = Builder.load_file('design.kv')
     Window.size = (700, 400)
     Config.set('graphics', 'resizable', False)
-    sys.path.append(os.chdir('..'))
     
     MusicTheoryGuideApp().run()

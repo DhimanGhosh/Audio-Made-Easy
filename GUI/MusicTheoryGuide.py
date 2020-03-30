@@ -98,6 +98,7 @@ class MainLayout(Widget):
                 music = Music(scale)
                 music.note_beep_scale('M', scale)
                 self.output.text = "Click Me"
+                pass # Incomplete
                 
     def detect_notation(self):
         note_pos = 999

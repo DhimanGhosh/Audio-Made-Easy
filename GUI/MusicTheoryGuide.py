@@ -120,7 +120,9 @@ class MainLayout(Widget):
             self.input_menu.text = self.notes[note_pos]
         else:
             self.input_menu.text = "Select"
-        self.show_result()
+        
+        if self.output.text != "Click Me":
+            self.show_result()
 
 class MusicTheoryGuideApp(App):
     def build(self):

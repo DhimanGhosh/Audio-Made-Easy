@@ -6,5 +6,7 @@
 GUI Software:
 > On Selecting any value from "input_menu" or "option_menu":
         if both the menu "Select" is not showing (some-thing is selected);
-        show the output in "output" TextArea
-> Add Functionality to RESET App
+        show the output in "output" TextArea {Functionality yet to be added}
+> On Changing Selection of Notation;
+        change the value of "output" also {Functionality sometimes working}
+> Add Functionality to RESET App {Functionality yet to be added}

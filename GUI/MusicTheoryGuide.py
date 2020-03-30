@@ -16,8 +16,9 @@ from Music import Music
 
 class MainLayout(Widget):
     spinner_vals = ['Major Scale', 'Major Chord', 'Notes in Major Scale', 'Note in Major Scales', 'Note shift with capo position (Guitar)', 'Scale shift with capo position (Guitar)', 'Minor Scale', 'Minor Chord', 'Notes in Minor Scale', 'Relative Minor/Major', 'Play Tone Based on Note', 'Play Tone in Sequence (Scale / Note Sequence)', 'Scale from Chords']
-    notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
-    notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
+    music = Music()
+    notesS = music.notesS
+    notesb = music.notesb
     notes = notesS
     nS = ObjectProperty(None)
     nb = ObjectProperty(None)
@@ -30,11 +31,14 @@ class MainLayout(Widget):
             if self.option_menu.text == self.spinner_vals[0]: # "Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
-                result = music.notes_in_major_scale()
+                result = music.major_scale()
                 self.output.text = '     '.join(result)
             
             elif self.option_menu.text == self.spinner_vals[1]: # "Major Chord"
-                pass
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.major_chord()
+                self.output.text = '     '.join(result)
 
     def detect_notation(self):
         note_pos = 999

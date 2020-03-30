@@ -1,11 +1,13 @@
-from . import Note_Tone as tone
+import Note_Tone as tone
 from winsound import Beep
 from time import sleep
 
 class Music:
     def __init__(self, note='C'):
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
+        self.notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
         self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
+        self.notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
         self.__open_pos_chords = ['0_A','0_Am','0_B','0_Bm','0_C','0_D','0_Dm','0_E','0_Em','0_F','0_Fm','0_G']
 
         if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':

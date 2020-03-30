@@ -12,19 +12,13 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.config import Config
 
-# from Utils.Menu import Menu
+from Music import Music
 
 class MainLayout(Widget):
     spinner_vals = ['Major Scale', 'Major Chord', 'Notes in Major Scale', 'Note in Major Scales', 'Note shift with capo position (Guitar)', 'Scale shift with capo position (Guitar)', 'Minor Scale', 'Minor Chord', 'Notes in Minor Scale', 'Relative Minor/Major', 'Play Tone Based on Note', 'Play Tone in Sequence (Scale / Note Sequence)', 'Scale from Chords']
     notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
     notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
     notes = notesS
-    tone = 2
-    semi_tone = 1
-    major = ''
-    minor = 'm'
-    diminished = 'dim'
-    maj_scale_formula = [tone,tone,semi_tone,tone,tone,tone,semi_tone]
     nS = ObjectProperty(None)
     nb = ObjectProperty(None)
     option_menu = ObjectProperty(None)
@@ -33,18 +27,14 @@ class MainLayout(Widget):
 
     def show_result(self):
         if self.option_menu.text != "Select" and self.input_menu.text != "Select":
-            note = self.input_menu.text
-            position = self.notes.index(note)
             if self.option_menu.text == self.spinner_vals[0]: # "Major Scale"
-                notes_in_scale = [self.notes[position]]
-
-                for i in range(6):
-                    position = position + self.maj_scale_formula[i]
-                    if position >= len(self.notes):
-                        position = position % len(self.notes)
-                    notes_in_scale.append(self.notes[position])
-
-                self.output.text = '     '.join(notes_in_scale)
+                note = self.input_menu.text
+                music = Music(note)
+                result = music.notes_in_major_scale()
+                self.output.text = '     '.join(result)
+            
+            elif self.option_menu.text == self.spinner_vals[1]: # "Major Chord"
+                pass
 
     def detect_notation(self):
         note_pos = 999
@@ -61,6 +51,7 @@ class MainLayout(Widget):
             self.input_menu.text = "Select"
         elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
             note_pos = self.notes.index(self.input_menu.text)
+            self.show_result()
         
         if note_pos != 999:
             self.input_menu.text = self.notes[note_pos]

@@ -68,7 +68,17 @@ def run():
     else:
         print('See you soon!')
 
+def __linux_pkg_install(pkg): # Install all the dependencies first time
+    #print('Check: {}'.format(os.system('apt-cache policy {}'.format(pkg))))
+    if os.system('apt list --installed | grep {} > /dev/null'.format(pkg)) != 0:
+        os.system('sudo apt-get -y install {}'.format(pkg))
+
 if __name__ == '__main__':
-    from Utils.Wrong import Wrong
-    from Utils.Menu import Menu
+    import sys, platform, os
+    if platform.system() == 'Linux':
+        sys.path.insert(0, './Utils/')
+        __linux_pkg_install('speech-dispatchere')
+
+    from Wrong import Wrong
+    from Menu import Menu
     run()

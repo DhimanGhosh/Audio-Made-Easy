@@ -1,7 +1,8 @@
 > Best Guitar Capo position for easy play
-> GUI Software
-> Play Piano
-
+> Text-To-Speech
+> Play audio / Create Audio File; based on text-note-freq-duration [Play Instrumental Song - from text]
+> Note Detection from live-audio / audio-file [Create text - from Instruments]
+> Play any Musical-Instrument
 
 GUI Software:
 > On Selecting any value from "input_menu" or "option_menu":

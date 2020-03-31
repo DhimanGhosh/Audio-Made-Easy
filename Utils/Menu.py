@@ -1,5 +1,6 @@
 # Logic for each choice of menu
-from .Music import Music
+from Music import Music
+import platform
 
 class Menu:
     def __init__(self):
@@ -24,18 +25,28 @@ class Menu:
             14. Best Capo position for easy play (Feature coming soon)
             15. Quit
         ''')
+        self.__talk('Welcome to Music Theory Guide')
     
+    def __talk(self, text):
+        if platform.system() == 'Linux':
+            music = Music()
+            music.linux_speech(text)
+
     def __valid_input(self, input_text): # Control empty user input
         while True:
+            self.__talk('Enter {}'.format(input_text))
             data = input("{}: ".format(input_text))
             if data is '':
+                self.__talk('Invalid {} Entered'.format(input_text))
                 continue
             else:
                 break
+        self.__talk('You entered {}'.format(data))
         return data
 
     def major_scale(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Major Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -49,6 +60,7 @@ class Menu:
 
     def major_chord(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Minor Chord')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -62,6 +74,7 @@ class Menu:
 
     def notes_in_major_scale(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Notes in Major Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -75,6 +88,7 @@ class Menu:
 
     def note_in_major_scales(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Note in Major Scales')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -88,11 +102,12 @@ class Menu:
 
     def note_shift_with_capo_position(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Note in Major Scales')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
-                capo_position = int(input('Capo on Fret Number: '))
+                capo_position = int(self.__valid_input('Capo on Fret Number'))
                 result = music.capo_pos_note_shift(capo_position)
                 print("Result Note for {} with Capo at {}: {}".format(note, capo_position, result))
             else:
@@ -102,11 +117,12 @@ class Menu:
 
     def scale_shift_with_capo_position(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Scale shift with capo position')
         note = self.__valid_input('Original Scale')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
-                capo_position = int(input('Capo on Fret Number: '))
+                capo_position = int(self.__valid_input('Capo on Fret Number'))
                 new_note = music.capo_pos_note_shift(capo_position)
                 result = music.capo_pos_scale_shift(capo_position)
                 print("Result Scale for {} with Capo at {}: {}".format(note, capo_position, new_note))
@@ -118,6 +134,7 @@ class Menu:
 
     def minor_scale(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Minor Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -131,6 +148,7 @@ class Menu:
 
     def minor_chord(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Minor Chord')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -144,6 +162,7 @@ class Menu:
 
     def notes_in_minor_scale(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Notes in Minor Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -157,6 +176,7 @@ class Menu:
     
     def relative_minor_major(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Relative Minor / Major')
         scl = input('1. Relative Major\n2. Relative Minor\nChoice: ')
         if int(scl) == 1:
             note = self.__valid_input('Minor Note')
@@ -183,6 +203,7 @@ class Menu:
     
     def play_tone(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Play Tone Based on Note')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
@@ -195,6 +216,7 @@ class Menu:
     
     def play_tone_in_seq(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Play Tone in Sequence')
         ch = input('1. Play Notes in a Scale\n2. Play Note Sequence\nChoice: ')
         if int(ch) == 1:
             min_maj = input("1. Minor Scale\n2. Major Scale\nChoice: ")
@@ -225,6 +247,7 @@ class Menu:
     
     def scale_from_chords(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('You chose Scale from Chords')
         # Find Scale from chords and use in best_capo_position() for up-shifting or down-shifting
         chords = self.__valid_input('Chords: ')
         music = Music()
@@ -240,6 +263,8 @@ class Menu:
     
     def best_capo_position(self, wob):
         wob.set_wrong_flag(False)
+        self.__talk('Best Capo position for easy play')
+        self.__talk('Sorry Feature Coming soon')
         print('Sorry Feature Coming soon...')
 
     def wrong_entry(self, wob):
@@ -247,8 +272,10 @@ class Menu:
         print('Wrong Entry!\nTry Again...\n')
 
     def Study_Music_Theory(self):
+        self.__talk('Go and study basic music theory first')
         print('Go and study basic music theory first!!!')
         exit()
     
     def Study_Music(self):
+        self.__talk('Invalid Music Notation!')
         print('Invalid Music Notation!\nI am not here to teach you MUSIC but Guide!')

@@ -214,9 +214,9 @@ class Music:
     def relative_major(self, minor_scale):
         return self.__valid_list(minor_scale)[self.__note_position_in_list(minor_scale) + 3]
 
-    def best_capo_position(self, chords):
+    '''def best_capo_position(self, chords):
         for chord in chords:
-            pass
+            pass'''
     
     def __note_freq_detection(self, note):
         note = self.__b2s(note)

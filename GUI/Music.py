@@ -48,6 +48,10 @@ class Music:
         self.__As4 = self.__octave4[10]
         self.__B4  = self.__octave4[11]
     
+    def linux_speech(self, text):
+        os.system('spd-say "{}"'.format(text))
+        sleep(len(text)/10) # Wait for the speech to end; Else next speech will play before ending; if given one after another
+
     def __b2s(self, note):
         return self.__notesS[self.__note_position_in_list(note)]
 
@@ -242,14 +246,21 @@ class Music:
             return self.__As4
         elif note == 'B':
             return self.__B4
+
+    def freq_beep(self, freq, dur=300):
+        if platform.system() == 'Windows':
+            winsound.Beep(freq, dur)
+        elif platform.system() == 'Linux':
+            os.system('play -nq -t alsa synth {} sine {}'.format(dur/1000, freq))
     
-    def note_beep(self, note):
-        Beep(self.__note_freq_detection(note), 300)
+    def note_beep(self, note, dur=300):
+        freq = self.__note_freq_detection(note)
+        self.freq_beep(freq, dur)
     
     def note_beep_seq(self, notes):
         # Play notes from same octave(4)
         for note in notes:
-            Beep(self.__note_freq_detection(note), 300)
+            self.note_beep(note)
             sleep(0.5)
 
     def note_beep_scale(self, scale_mode, scale):
@@ -272,9 +283,9 @@ class Music:
         scale_freq.append(scale_freq_range[position + 1]) # Adding 8th Note from Next Octave for that Scale
         
         for freq in scale_freq:
-            Beep(freq, 300)
+            self.freq_beep(freq)
             sleep(0.5)
-    
+
     def __chord_in_scales(self, chord):
         # Major and Minor Scales containing Chords
         if 'm' in chord and 'dim' not in chord:

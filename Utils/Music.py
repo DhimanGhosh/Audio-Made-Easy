@@ -244,7 +244,7 @@ class Music:
             return self.__As4
         elif note == 'B':
             return self.__B4
-    
+
     def freq_beep(self, freq, dur=300):
         if platform.system() == 'Windows':
             winsound.Beep(freq, dur)
@@ -281,9 +281,9 @@ class Music:
         scale_freq.append(scale_freq_range[position + 1]) # Adding 8th Note from Next Octave for that Scale
         
         for freq in scale_freq:
-            freq_beep(freq)
+            self.freq_beep(freq)
             sleep(0.5)
-    
+
     def __chord_in_scales(self, chord):
         # Major and Minor Scales containing Chords
         if 'm' in chord and 'dim' not in chord:

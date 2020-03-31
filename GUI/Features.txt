@@ -1,0 +1,11 @@
+Major Scale
+Major Chord
+Notes in Major Scale
+Scale shift with capo position (Guitar)
+Minor Scale
+Minor Chord
+Notes in Minor Scale
+Relative Minor/Major
+Scale from Chords
+Play Tone Based on Note
+Play Tone in Sequence (Scale / Note Sequence)

@@ -1,7 +1,32 @@
-import platform
 from time import sleep
 import Note_Tone as tone
 
+# ----- MINGUS ----- #
+# mingus.core
+import mingus.core.notes as notes
+import mingus.core.chords as chords
+import mingus.core.intervals as intervals
+import mingus.core.chords as chords
+import mingus.core.scales as scales
+import mingus.core.value as value
+import mingus.core.meter as meter
+import mingus.core.keys as keys
+import mingus.core.progressions as progressions
+
+# mingus.containers
+from mingus.containers import Note, NoteContainer, Bar, Composition, Suite
+from mingus.containers.instrument import Instrument, Piano, Guitar, MidiInstrument, MidiPercussionInstrument
+from mingus.containers.track import Track
+
+# mingus.midi
+from mingus.midi import fluidsynth, midi_events, midi_file_in, midi_file_out, midi_track, Sequencer, SequencerObserver
+from mingus.midi.sequencer import Sequencer
+
+# mingus.extra
+import mingus.extra.lilypond as lilypond
+# ----- MINGUS ----- #
+
+import platform
 if platform.system() == 'Linux':
     import os
 elif platform.system() == 'Windows':

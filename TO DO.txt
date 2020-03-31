@@ -1,3 +1,7 @@
+Music.py:
+> In "valid_note()" Check for redundant '#' and 'b'
+
+Feature:
 > Best Guitar Capo position for easy play
 > Text-To-Speech
 > Play audio / Create Audio File; based on text-note-freq-duration [Play Instrumental Song - from text] (Text-To-Speech)

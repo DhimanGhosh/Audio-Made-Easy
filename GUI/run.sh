@@ -1,0 +1,2 @@
+python MusicTheoryGuide.py
+pause

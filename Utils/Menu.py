@@ -248,7 +248,7 @@ class Menu:
     def scale_from_chords(self, wob):
         wob.set_wrong_flag(False)
         self.__talk('You chose Scale from Chords')
-        # Find Scale from chords and use in best_capo_position() for up-shifting or down-shifting
+        # Find Scale from chords and use in best_capo_position() for up-shifting / down-shifting
         chords = self.__valid_input('Chords: ')
         music = Music()
         common_scale = music.common_scale(chords.split())

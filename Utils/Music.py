@@ -48,7 +48,7 @@ class Music:
     
     def linux_speech(self, text):
         os.system('spd-say "{}"'.format(text))
-        sleep(len(text)/10) # Wait for the speech to end
+        sleep(len(text)/10) # Wait for the speech to end; Else next speech will play before ending; if given one after another
 
     def __b2s(self, note):
         return self.__notesS[self.__note_position_in_list(note)]

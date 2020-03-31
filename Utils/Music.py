@@ -24,6 +24,9 @@ from mingus.midi.sequencer import Sequencer
 
 # mingus.extra
 import mingus.extra.lilypond as lilypond
+import mingus.extra.tunings as tunings
+import mingus.extra.tablature as tablature
+import mingus.extra.fft as fft
 # ----- MINGUS ----- #
 
 import platform

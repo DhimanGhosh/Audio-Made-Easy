@@ -1,11 +1,12 @@
-import Note_Tone as tone
 from time import sleep
 import platform
 
 if platform.system() == 'Linux':
     import os
+    import Note_Tone as tone
 elif platform.system() == 'Windows':
     import winsound
+    from . import Note_Tone as tone
 
 class Music:
     def __init__(self, note='C'):

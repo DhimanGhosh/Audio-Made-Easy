@@ -78,7 +78,9 @@ if __name__ == '__main__':
     if platform.system() == 'Linux':
         sys.path.insert(0, './Utils/')
         __linux_pkg_install('speech-dispatchere')
-
-    from Wrong import Wrong
-    from Menu import Menu
+        from Wrong import Wrong
+        from Menu import Menu
+    else:
+        from Utils.Wrong import Wrong
+        from Utils.Menu import Menu
     run()

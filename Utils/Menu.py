@@ -1,6 +1,9 @@
 # Logic for each choice of menu
-from Music import Music
 import platform
+if platform.system() == 'Linux':
+    from Music import Music
+else:
+    from .Music import Music
 
 class Menu:
     def __init__(self):

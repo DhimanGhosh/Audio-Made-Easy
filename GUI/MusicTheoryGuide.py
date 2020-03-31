@@ -15,19 +15,9 @@ from kivy.config import Config
 from Music import Music
 
 class MainLayout(Widget):
-    spinner_vals = (
-        'Major Scale',
-        'Major Chord',
-        'Notes in Major Scale',
-        'Scale shift with capo position (Guitar)',
-        'Minor Scale',
-        'Minor Chord',
-        'Notes in Minor Scale',
-        'Relative Minor/Major',
-        'Scale from Chords',
-        'Play Tone Based on Note',
-        'Play Tone in Sequence (Scale / Note Sequence)'
-        )
+    spinner_vals = tuple()
+    with open('Features.txt', 'r') as f:
+        spinner_vals = tuple(f.readlines())
     music = Music()
     notesS = music.notesS
     notesb = music.notesb

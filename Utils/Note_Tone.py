@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 def notes(octave = 4):
     # Notes Frequency, Octave 0
     C0  = 0

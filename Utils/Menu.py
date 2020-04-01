@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Logic for each choice of menu
 import platform
 if platform.system() == 'Linux':

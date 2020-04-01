@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 class Wrong:
     __wrong_flag = False
     __wrong_count = []

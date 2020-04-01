@@ -1,6 +1,8 @@
-from time import sleep
-import Note_Tone as tone
+#!/usr/bin/env python3
 
+from time import sleep
+from . import Note_Tone as tone
+'''
 # ----- MINGUS ----- #
 # mingus.core
 import mingus.core.notes as notes
@@ -28,17 +30,23 @@ import mingus.extra.tunings as tunings
 import mingus.extra.tablature as tablature
 import mingus.extra.fft as fft
 # ----- MINGUS ----- #
-
+'''
 import platform
 if platform.system() == 'Linux':
     import os
 elif platform.system() == 'Windows':
     import winsound
 
+class Mingus_Helper:
+    def note_validity_redundancy_remover(self, note):
+        pass
+
 class Music:
     def __init__(self, note='C'):
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
+        self.notesS = self.__notesS
         self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
+        self.notesb = self.__notesb
         self.__open_pos_chords = ['0_A','0_Am','0_B','0_Bm','0_C','0_D','0_Dm','0_E','0_Em','0_F','0_Fm','0_G']
 
         if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':

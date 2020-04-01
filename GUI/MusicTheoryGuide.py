@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''
     from a.b import c as d
     Same as:
@@ -12,7 +14,10 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.config import Config
 
-from Music import Music
+root_dir = os.path.realpath('..')
+sys.path.insert(0, root_dir)
+
+from Utils.Music import Music
 
 class MainLayout(Widget):
     spinner_vals = tuple()

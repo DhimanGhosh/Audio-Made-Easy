@@ -21,7 +21,8 @@ from Utils.Music import Music
 
 class MainLayout(Widget):
     spinner_vals = tuple()
-    with open('Features.txt', 'r') as f:
+    features = root_dir + '/Utils/Features.txt'
+    with open(features, 'r') as f:
         spinner_vals = tuple(f.readlines())
     music = Music()
     notesS = music.notesS

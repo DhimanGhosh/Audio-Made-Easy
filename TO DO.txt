@@ -4,6 +4,7 @@ Feature:
 > Play audio / Create Audio File; based on text-note-freq-duration [Play Instrumental Song - from text] (Text-To-Speech)
 > Note Detection from live-audio / audio-file [Create text - from Instruments] (Speech-To-Text)
 > Play any Musical-Instrument
+> Listen to music and live create sheet-misic in lilypod
 
 GUI Software:
 > On Selecting any value from "input_menu" or "option_menu":

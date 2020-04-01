@@ -405,9 +405,6 @@ class Music:
     def note_in_major_scales(self):
         '''
         Objective: Return the major scales where the note is present
-
-        Description:
-            1. 
         '''
         valid_list = self.__valid_list(self.__note)
         notes_scales = []

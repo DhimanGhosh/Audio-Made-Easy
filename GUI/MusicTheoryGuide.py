@@ -41,6 +41,10 @@ class MainLayout(Widget):
     input_menu = ObjectProperty(None)
     output = ObjectProperty(None)
 
+    def __update_input_spinner_vals(self, sub_spinner, vals):
+        self.ids.sub_spinner.text = 'Select'
+        self.ids.sub_spinner.values = vals
+
     def show_result(self):
         if self.option_menu.text != "Select" and self.input_menu.text != "Select":
             if self.option_menu.text == self.options_spinner_vals[0]: # "Major Scale"
@@ -84,11 +88,9 @@ class MainLayout(Widget):
             
             elif self.option_menu.text == self.options_spinner_vals[7]: # "Relative Minor/Major"
                 # Create New Spinner Menu for (Relative Major and Relative Minor Option)
-                relative_scale_spinner = Spinner(
-                    text='Select',
-                    values=('Relative Minor', 'Relative Major')
-                )
-                self.input_menu.values = relative_scale_spinner.values
+                values = ('Relative Minor', 'Relative Major')
+                self.__update_input_spinner_vals(sub_spinner=self.input_menu, vals=values)
+                pass
             
             elif self.option_menu.text == self.options_spinner_vals[8]: # "Scale from Chords"
                 pass

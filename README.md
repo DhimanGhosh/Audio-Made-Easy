@@ -34,3 +34,9 @@ This app lets you:
 # Music Theory Guide (v-1.4)
 ## What's new
 - Get to know the scale of a song from a set of chords
+
+# Music Theory Guide (v-2.0)
+## What's new
+- Added GUI version of this Application
+- Now Control everything from a GUI (developed in KIVY)
+- Added support for LINUX

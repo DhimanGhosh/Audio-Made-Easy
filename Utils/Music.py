@@ -342,7 +342,7 @@ class Music:
         '''
         valid_list = self.__valid_list(self.__note)
         position = self.__note_position_in_list(self.__note)
-        print('Note:',self.__note)
+
         notes_in_scale = [valid_list[position]]
 
         for i in range(6):

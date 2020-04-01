@@ -205,13 +205,21 @@ class _Note_Tone:
 
 
 class _Mingus_Helper:
+    def __original_notation_intact(self, note):
+        if len(note) > 1:
+            return note[1]
+        return note
+
     def note_validity_chk_redundancy_remover(self, note):
         '''
         Objective: Check if note is valid or not; if so remove any redundancy from the note
         '''
         if M_notes.is_valid_note(note):
-            note = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
-            return (note, True)
+            note1 = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
+            if self.__original_notation_intact(note) not in note1:
+                return (note, True)
+            else:
+                return (note1, True)
         return (note, False)
 
 
@@ -283,6 +291,12 @@ class Music:
         '''
         return self.__notesS[self.__note_position_in_list(note)]
 
+    def __s2b(self, note):
+        '''
+        Objective: Convert Sharp'#' note to Flat'b' note
+        '''
+        return self.__notesb[self.__note_position_in_list(note)]
+
     def __note_position_in_list(self, note):
         '''
         Objective: Find the position of a note in a valid_list
@@ -290,12 +304,10 @@ class Music:
         Description:
             1. Check if note is valid or not
             2. if so check for list in which the valid note will fall ('#' / 'b' / '0')
-            3. Find the position of the note in that list (can be alse be implemented with 'list.index()')
+            3. Find the position of the note in that list
         '''
         valid_list = self.__valid_list(note)
-        for i in range(len(valid_list)):
-            if valid_list[i] == note:
-                return i
+        return valid_list.index(note)
     
     def valid_note(self, note):
         '''
@@ -598,9 +610,9 @@ class Music:
         '''
         # Play notes using 2 octaves(4, 5)
         if scale_mode == 'm':
-            notes = self.__minor_scale(scale)
-        else:
-            notes = self.__major_scale(scale)
+            notes = self.__minor_scale(self.__s2b(scale))
+        elif scale_mode == 'M':
+            notes = self.__major_scale(self.__b2s(scale))
 
         note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
         scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 13]

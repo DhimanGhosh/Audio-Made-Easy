@@ -1,3 +1,26 @@
+import datetime
+today = datetime.date.today()
+someday = datetime.date(2020, 3, 31)
+diff = someday - today
+days_passed = abs(diff.days)
+if days_passed > 1:
+    days_passed_str = '{} days back'.format(days_passed)
+else:
+    days_passed_str = 'Yesterday'
+print(
+'''
+_________________________________________________________________________
+| Application           : Music Theory Guide                            |
+| Objective             : Help you in understanding and creating music  |
+| Languages Used        : Python3, Kivy                                 |
+| Executing Interface   : CLI & GUI                                     |
+| Development Date      : Started (26/10/2019) - Till Date              |
+| Last Stable Release   : Version 2.0 (31/03/2020) - {}          |
+| Developer             : Dhiman Ghosh                                  |
+_________________________________________________________________________
+'''.format(days_passed_str)
+)
+
 def run():
     wrg = Wrong()
     ch = 0

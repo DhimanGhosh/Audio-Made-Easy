@@ -97,13 +97,16 @@ class MainLayout(Widget):
                 self.output.text = "Playing..."
                 scale = self.input_menu.text
                 music = Music(scale)
-                music.note_beep_scale('M', scale)
+                if self.nS.active:
+                    music.note_beep_scale('M', scale)
+                elif self.nb.active:
+                    music.note_beep_scale('m', scale)
                 self.output.text = "Click Me"
                 pass # Incomplete
                 
     def detect_notation(self):
         note_pos = 999
-        if self.input_menu.text != "Select":
+        if self.input_menu.text != "Select" or self.option_menu.text != "Select":
             note_pos = self.notes.index(self.input_menu.text)
         
         if self.nS.active:
@@ -123,6 +126,8 @@ class MainLayout(Widget):
             self.input_menu.text = "Select"
         
         if self.output.text != "Click Me":
+            self.show_result()
+        elif self.output.text == "Click Me" and self.option_menu.text == self.spinner_vals[10]:
             self.show_result()
 
 class MusicTheoryGuideApp(App):

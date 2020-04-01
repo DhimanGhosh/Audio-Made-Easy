@@ -283,6 +283,12 @@ class Music:
         '''
         return self.__notesS[self.__note_position_in_list(note)]
 
+    def __s2b(self, note):
+        '''
+        Objective: Convert Sharp'#' note to Flat'b' note
+        '''
+        return self.__notesb[self.__note_position_in_list(note)]
+
     def __note_position_in_list(self, note):
         '''
         Objective: Find the position of a note in a valid_list
@@ -598,9 +604,9 @@ class Music:
         '''
         # Play notes using 2 octaves(4, 5)
         if scale_mode == 'm':
-            notes = self.__minor_scale(scale)
-        else:
-            notes = self.__major_scale(scale)
+            notes = self.__minor_scale(self.__s2b(scale))
+        elif scale_mode == 'M':
+            notes = self.__major_scale(self.__b2s(scale))
 
         note_octave_pos = self.__octaves.index(self.__note_freq_detection(notes[0]))
         scale_freq_range = self.__octaves[note_octave_pos : note_octave_pos + 13]

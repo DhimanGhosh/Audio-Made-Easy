@@ -48,10 +48,10 @@ class MainLayout(Widget):
                 result = music.major_chord()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[2]: # "Notes in Major Scale"
+            elif self.option_menu.text == self.spinner_vals[2]: # "Chords in Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
-                result = music.notes_in_major_scale()
+                result = music.chords_in_major_scale()
                 self.output.text = '     '.join(result)
             
             elif self.option_menu.text == self.spinner_vals[3]: # "Scale shift with capo position (Guitar)"
@@ -69,10 +69,10 @@ class MainLayout(Widget):
                 result = music.minor_chord()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[6]: # "Notes in Minor Scale"
+            elif self.option_menu.text == self.spinner_vals[6]: # "Chords in Minor Scale"
                 note = self.input_menu.text
                 music = Music(note)
-                result = music.notes_in_minor_scale()
+                result = music.chords_in_minor_scale()
                 self.output.text = '     '.join(result)
             
             elif self.option_menu.text == self.spinner_vals[7]: # "Relative Minor/Major"

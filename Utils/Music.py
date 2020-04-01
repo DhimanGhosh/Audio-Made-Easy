@@ -2,35 +2,36 @@
 
 from time import sleep
 from . import Note_Tone as tone
-'''
+
 # ----- MINGUS ----- #
 # mingus.core
-import mingus.core.notes as notes
-import mingus.core.chords as chords
-import mingus.core.intervals as intervals
-import mingus.core.chords as chords
-import mingus.core.scales as scales
-import mingus.core.value as value
-import mingus.core.meter as meter
-import mingus.core.keys as keys
-import mingus.core.progressions as progressions
+import mingus.core.notes as M_notes
+import mingus.core.chords as M_chords
+import mingus.core.intervals as M_intervals
+import mingus.core.chords as M_chords
+import mingus.core.scales as M_scales
+import mingus.core.value as M_value
+import mingus.core.meter as M_meter
+import mingus.core.keys as M_keys
+import mingus.core.progressions as M_progressions
 
 # mingus.containers
-from mingus.containers import Note, NoteContainer, Bar, Composition, Suite
-from mingus.containers.instrument import Instrument, Piano, Guitar, MidiInstrument, MidiPercussionInstrument
-from mingus.containers.track import Track
+from mingus.containers import Note as M_Note, NoteContainer as M_NoteContainer, Bar as M_Bar, Composition as M_Composition, Suite as M_Suite
+from mingus.containers.instrument import Instrument as M_Instrument, Piano as M_Piano, Guitar as M_Guitar, MidiInstrument as M_MidiInstrument, MidiPercussionInstrument as M_MidiPercussionInstrument
+from mingus.containers.track import Track as M_Track
 
 # mingus.midi
-from mingus.midi import fluidsynth, midi_events, midi_file_in, midi_file_out, midi_track, Sequencer, SequencerObserver
-from mingus.midi.sequencer import Sequencer
+# from mingus.midi import fluidsynth
+from mingus.midi import midi_events as M_midi_events, midi_file_in as M_midi_file_in, midi_file_out as M_midi_file_out, midi_track as M_midi_track, Sequencer as M_Sequencer, SequencerObserver as M_SequencerObserver
+from mingus.midi.sequencer import Sequencer as M_Sequencer
 
 # mingus.extra
-import mingus.extra.lilypond as lilypond
-import mingus.extra.tunings as tunings
-import mingus.extra.tablature as tablature
-import mingus.extra.fft as fft
+import mingus.extra.lilypond as M_lilypond
+import mingus.extra.tunings as M_tunings
+import mingus.extra.tablature as M_tablature
+import mingus.extra.fft as M_fft
 # ----- MINGUS ----- #
-'''
+
 import platform
 if platform.system() == 'Linux':
     import os
@@ -38,11 +39,15 @@ elif platform.system() == 'Windows':
     import winsound
 
 class Mingus_Helper:
-    def note_validity_redundancy_remover(self, note):
-        pass
+    def note_validity_chk_redundancy_remover(self, note):
+        if M_notes.is_valid_note(note):
+            note = M_notes.remove_redundant_accidentals(note)
+            return (note, True)
+        return (note, False)
 
 class Music:
     def __init__(self, note='C'):
+        self.__mh = Mingus_Helper()
         self.__notesS = ['A','A#','B','C','C#','D','D#','E','F','F#','G','G#']
         self.notesS = self.__notesS
         self.__notesb = ['A','Bb','Cb','C','Db','D','Eb','Fb','F','Gb','G','Ab']
@@ -96,15 +101,16 @@ class Music:
                 return i
     
     def valid_note(self, note):
-        if len(note) == 3 and note[-2:] == '#b' or note[-2:] == 'b#':
-            note = note[0]
+        is_valid_note = self.__mh.note_validity_chk_redundancy_remover(note)
+        if not is_valid_note[1]:
+            return ('', False)
+        note = is_valid_note[0]
         if note in self.__notesS:
             return ('S', True)
         if note in self.__notesb:
             return ('b', True)
         if '0_' + note in self.__open_pos_chords: # Used for 'best_capo_position()'
             return ('0', True)
-        return ('', False)
     
     def __valid_list(self, note):
         is_valid_note = self.valid_note(note)

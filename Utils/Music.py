@@ -304,12 +304,10 @@ class Music:
         Description:
             1. Check if note is valid or not
             2. if so check for list in which the valid note will fall ('#' / 'b' / '0')
-            3. Find the position of the note in that list (can be alse be implemented with 'list.index()')
+            3. Find the position of the note in that list
         '''
         valid_list = self.__valid_list(note)
-        for i in range(len(valid_list)):
-            if valid_list[i] == note:
-                return i
+        return valid_list.index(note)
     
     def valid_note(self, note):
         '''

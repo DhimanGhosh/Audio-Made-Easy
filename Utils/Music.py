@@ -218,6 +218,8 @@ class _Mingus_Helper:
             note1 = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
             if self.__original_notation_intact(note) not in note1:
                 return (note, True)
+            else:
+                return (note1, True)
         return (note, False)
 
 

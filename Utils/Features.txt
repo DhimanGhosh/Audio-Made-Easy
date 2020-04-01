@@ -1,10 +1,10 @@
 Major Scale
 Major Chord
-Notes in Major Scale
+Chords in Major Scale
 Scale shift with capo position (Guitar)
 Minor Scale
 Minor Chord
-Notes in Minor Scale
+Chords in Minor Scale
 Relative Minor/Major
 Scale from Chords
 Play Tone Based on Note

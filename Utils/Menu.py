@@ -77,14 +77,14 @@ class Menu:
         else:
             self.Study_Music()
 
-    def notes_in_major_scale(self, wob):
+    def chords_in_major_scale(self, wob):
         wob.set_wrong_flag(False)
         self.__talk('You chose Notes in Major Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
-                result = music.notes_in_major_scale()
+                result = music.chords_in_major_scale()
                 print("Notes in {} Major Scale: ".format(note) + ' '.join(result))
             else:
                 self.Study_Music_Theory()
@@ -165,14 +165,14 @@ class Menu:
         else:
             self.Study_Music()
 
-    def notes_in_minor_scale(self, wob):
+    def chords_in_minor_scale(self, wob):
         wob.set_wrong_flag(False)
         self.__talk('You chose Notes in Minor Scale')
         note = self.__valid_input('Note')
         music = Music(note)
         if music.valid_note(note)[1]:
             if music != None:
-                result = music.notes_in_minor_scale()
+                result = music.chords_in_minor_scale()
                 print("Notes in {} Minor Scale: ".format(note) + ' '.join(result))
             else:
                 self.Study_Music_Theory()

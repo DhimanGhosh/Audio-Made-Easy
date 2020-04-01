@@ -210,7 +210,7 @@ class _Mingus_Helper:
         Objective: Check if note is valid or not; if so remove any redundancy from the note
         '''
         if M_notes.is_valid_note(note):
-            note = M_notes.remove_redundant_accidentals(note)
+            note = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
             return (note, True)
         return (note, False)
 
@@ -234,8 +234,9 @@ class Music:
         self.notesb = self.__notesb
         self.__open_pos_chords = ['0_A','0_Am','0_B','0_Bm','0_C','0_D','0_Dm','0_E','0_Em','0_F','0_Fm','0_G']
 
-        if self.valid_note(note)[1]:
-            self.__note = note
+        self.__is_valid_note = self.valid_note(note)
+        if self.__is_valid_note[1]:
+            self.__note = self.__is_valid_note[0]
         
         self.__tone = 2
         self.__semi_tone = 1
@@ -341,7 +342,7 @@ class Music:
         '''
         valid_list = self.__valid_list(self.__note)
         position = self.__note_position_in_list(self.__note)
-        
+        print('Note:',self.__note)
         notes_in_scale = [valid_list[position]]
 
         for i in range(6):

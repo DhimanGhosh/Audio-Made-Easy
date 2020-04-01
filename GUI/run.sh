@@ -1,2 +1,0 @@
-python MusicTheoryGuide.py
-pause

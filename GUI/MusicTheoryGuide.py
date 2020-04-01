@@ -6,7 +6,7 @@
         "import d a.b.c"
     in .kv file
 '''
-import kivy, os, sys
+import kivy, os, sys, platform
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
@@ -14,14 +14,19 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.config import Config
 
-root_dir = os.path.realpath('..')
-sys.path.insert(0, root_dir)
-
-from Utils.Music import Music
+if platform.system() == 'Linux':
+    utils_dir = os.path.realpath('../Utils/')
+    sys.path.insert(0, utils_dir)
+    from Music import Music
+    features = utils_dir + '/Features.txt'
+else:
+    root_dir = os.path.realpath('..')
+    sys.path.insert(0, root_dir)
+    from Utils.Music import Music
+    features = root_dir + '/Utils/Features.txt'
 
 class MainLayout(Widget):
     spinner_vals = tuple()
-    features = root_dir + '/Utils/Features.txt'
     with open(features, 'r') as f:
         spinner_vals = tuple(f.readlines())
     music = Music()

@@ -15,7 +15,7 @@ _________________________________________________________________________
 | Languages Used        : Python3, Kivy                                 |
 | Executing Interface   : CLI & GUI                                     |
 | Development Date      : Started (26/10/2019) - Till Date              |
-| Last Stable Release   : Version 2.0 (31/03/2020) - {}          |
+| Last Stable Release   : Version 2.0 (31/03/2020) - {}        |
 | Developer             : Dhiman Ghosh                                  |
 _________________________________________________________________________
 '''.format(days_passed_str)

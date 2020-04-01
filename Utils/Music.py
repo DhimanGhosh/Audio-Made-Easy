@@ -205,13 +205,19 @@ class _Note_Tone:
 
 
 class _Mingus_Helper:
+    def __original_notation_intact(self, note):
+        if len(note) > 1:
+            return note[1]
+        return note
+
     def note_validity_chk_redundancy_remover(self, note):
         '''
         Objective: Check if note is valid or not; if so remove any redundancy from the note
         '''
         if M_notes.is_valid_note(note):
-            note = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
-            return (note, True)
+            note1 = M_notes.reduce_accidentals(M_notes.remove_redundant_accidentals(note))
+            if self.__original_notation_intact(note) not in note1:
+                return (note, True)
         return (note, False)
 
 

@@ -1,6 +1,3 @@
-Music.py:
-> In "valid_note()" Check for redundant '#' and 'b'
-
 Feature:
 > Best Guitar Capo position for easy play
 > Text-To-Speech

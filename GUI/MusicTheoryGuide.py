@@ -92,6 +92,7 @@ class MainLayout(Widget):
 
         # ----- Change Input Spinner Values ----- #
         ## ---- Relative Major/Minor ---- ##
+        #BUG #2 Sub-Menu for Relative Major/Minor not showing
         if selected_text == self.options_spinner_vals[7]:
             self.ids.input_menu.text = 'Select'
             self.input_spinner_vals = self.rel_maj_min_options

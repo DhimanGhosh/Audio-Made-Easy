@@ -13,6 +13,8 @@ from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.config import Config
+from kivy.uix.spinner import Spinner
+from time import sleep
 
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils/')
@@ -26,74 +28,115 @@ else:
     features = root_dir + '/Utils/Features.txt'
 
 class MainLayout(Widget):
-    spinner_vals = tuple()
+    options_spinner_vals = tuple()
     with open(features, 'r') as f:
-        spinner_vals = tuple(f.readlines())
+        options_spinner_vals = tuple([x.strip() for x in f.readlines()])
     music = Music()
     notesS = music.notesS
     notesb = music.notesb
     notes = notesS
+    input_spinner_vals = tuple()
     nS = ObjectProperty(None)
     nb = ObjectProperty(None)
     option_menu = ObjectProperty(None)
     input_menu = ObjectProperty(None)
     output = ObjectProperty(None)
+    rel_maj_min_options = ('Relative Major', 'Relative Minor')
+    sub_menu_selected = dict()
+
+    def update_input_spinner_vals(self, selected_text):
+        if selected_text == self.options_spinner_vals[7]:
+            self.ids.input_menu.text = 'Select'
+            self.input_spinner_vals = self.rel_maj_min_options
+        elif selected_text in self.rel_maj_min_options:
+            self.ids.input_menu.text = selected_text + ' >> Select Scale'
+            if selected_text == self.rel_maj_min_options[0]:
+                self.input_spinner_vals = tuple([ele + 'm' for ele in self.notes])
+            else:
+                self.input_spinner_vals = tuple(self.notes)
+        else:
+            self.input_spinner_vals = tuple(self.notes)
+        
+        # To Keep track of Selections
+        if self.ids.option_menu.text in self.sub_menu_selected:
+            self.sub_menu_selected[self.ids.option_menu.text].append(selected_text)
+        else:
+            self.sub_menu_selected[self.ids.option_menu.text] = [selected_text]
+        
+        self.ids.input_menu.values = self.input_spinner_vals
 
     def show_result(self):
         if self.option_menu.text != "Select" and self.input_menu.text != "Select":
-            if self.option_menu.text == self.spinner_vals[0]: # "Major Scale"
+            if self.option_menu.text == self.options_spinner_vals[0]: # "Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.major_scale()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[1]: # "Major Chord"
+            elif self.option_menu.text == self.options_spinner_vals[1]: # "Major Chord"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.major_chord()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[2]: # "Chords in Major Scale"
+            elif self.option_menu.text == self.options_spinner_vals[2]: # "Chords in Major Scale"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.chords_in_major_scale()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[3]: # "Scale shift with capo position (Guitar)"
+            elif self.option_menu.text == self.options_spinner_vals[3]: # "Scale shift with capo position (Guitar)"
                 pass
             
-            elif self.option_menu.text == self.spinner_vals[4]: # "Minor Scale"
+            elif self.option_menu.text == self.options_spinner_vals[4]: # "Minor Scale"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.minor_scale()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[5]: # "Minor Chord"
+            elif self.option_menu.text == self.options_spinner_vals[5]: # "Minor Chord"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.minor_chord()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[6]: # "Chords in Minor Scale"
+            elif self.option_menu.text == self.options_spinner_vals[6]: # "Chords in Minor Scale"
                 note = self.input_menu.text
                 music = Music(note)
                 result = music.chords_in_minor_scale()
                 self.output.text = '     '.join(result)
             
-            elif self.option_menu.text == self.spinner_vals[7]: # "Relative Minor/Major"
+            elif self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
+                # Create New Spinner Menu for (Relative Major and Relative Minor Option)
+                print(self.sub_menu_selected)
+                rem_lst = ('Select', self.options_spinner_vals[7])
+                sub_val = self.sub_menu_selected[self.options_spinner_vals[7]]
+                new_val = [i for i in sub_val if i not in rem_lst]
+                self.sub_menu_selected[self.options_spinner_vals[7]] = new_val
+                if self.sub_menu_selected[self.options_spinner_vals[7]][-2] == self.rel_maj_min_options[0] and self.sub_menu_selected[self.options_spinner_vals[7]][-1] is not None:
+                    scale = self.sub_menu_selected[self.options_spinner_vals[7]][-1]
+                    music = Music()
+                    result = music.relative_major(scale[:-1])
+                    self.output.text = result
+                elif self.sub_menu_selected[self.options_spinner_vals[7]][-2] == self.rel_maj_min_options[1] and self.sub_menu_selected[self.options_spinner_vals[7]][-1] is not None:
+                    scale = self.sub_menu_selected[self.options_spinner_vals[7]][-1]
+                    music = Music()
+                    result = music.relative_minor(scale)
+                    self.output.text = result
+                self.ids.input_menu.values = self.rel_maj_min_options
+                #self.sub_menu_selected[self.options_spinner_vals[7]] = list(set(new_val))
+            
+            elif self.option_menu.text == self.options_spinner_vals[8]: # "Scale from Chords"
                 pass
             
-            elif self.option_menu.text == self.spinner_vals[8]: # "Scale from Chords"
-                pass
-            
-            elif self.option_menu.text == self.spinner_vals[9]: # "Play Tone Based on Note"
+            elif self.option_menu.text == self.options_spinner_vals[9]: # "Play Tone Based on Note"
                 self.output.text = "Playing..."
                 note = self.input_menu.text
                 music = Music(note)
                 music.note_beep(note)
                 self.output.text = "Click Me"
             
-            elif self.option_menu.text == self.spinner_vals[10]: # "Play Tone in Sequence (Scale / Note Sequence)"
+            elif self.option_menu.text == self.options_spinner_vals[10]: # "Play Tone in Sequence (Scale / Note Sequence)"
                 self.output.text = "Playing..."
                 scale = self.input_menu.text
                 music = Music(scale)
@@ -104,10 +147,14 @@ class MainLayout(Widget):
                 self.output.text = "Click Me"
                 pass # Incomplete
                 
-    def detect_notation(self):
+    def change_val_with_notation(self):
+        # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
         note_pos = 999
-        if self.input_menu.text != "Select" or self.option_menu.text != "Select":
-            note_pos = self.notes.index(self.input_menu.text)
+        if self.option_menu.text != "Select" or self.input_menu.text != "Select":
+            if self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
+                pass ## <Not Decided>
+            else:
+                note_pos = self.notes.index(self.input_menu.text)
         
         if self.nS.active:
             self.notes = self.notesS
@@ -127,7 +174,7 @@ class MainLayout(Widget):
         
         if self.output.text != "Click Me":
             self.show_result()
-        elif self.output.text == "Click Me" and self.option_menu.text == self.spinner_vals[10]:
+        elif self.output.text == "Click Me" and self.option_menu.text == self.options_spinner_vals[10]:
             self.show_result()
 
 class MusicTheoryGuideApp(App):

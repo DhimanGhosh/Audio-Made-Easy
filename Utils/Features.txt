@@ -5,7 +5,7 @@ Scale shift with capo position (Guitar)
 Minor Scale
 Minor Chord
 Chords in Minor Scale
-Relative Minor/Major
+Relative Major/Minor
 Scale from Chords
 Play Tone Based on Note
 Play Tone in Sequence (Scale / Note Sequence)

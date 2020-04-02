@@ -34,7 +34,7 @@
                 id: nS
                 active: True
                 group: 'notation'
-                on_active: root.detect_notation()
+                on_active: root.change_val_with_notation()
 
             Label:
                 text: '#'
@@ -43,7 +43,7 @@
             CheckBox:
                 id: nb
                 group: 'notation'
-                on_active: root.detect_notation()
+                on_active: root.change_val_with_notation()
 
             Label:
                 text: 'b'
@@ -55,11 +55,11 @@
         Spinner:
             id: option_menu
             text: "Select"
-            values: root.spinner_vals
+            values: root.options_spinner_vals
             background_color: color_button if self.state == 'normal' else color_button_pressed
             color: color_font
             option_cls: Factory.get("MySpinnerOption")
-            # on_select: root.get_option_data()
+            on_text: root.update_input_spinner_vals(self.text)
 
         Label:
             text: "Input"
@@ -67,11 +67,11 @@
         Spinner:
             id: input_menu
             text: "Select"
-            values: root.notes
+            values: root.input_spinner_vals
             background_color: color_button if self.state == 'normal' else color_button_pressed
             color: color_font
             option_cls: Factory.get("MySpinnerOption")
-            # mode: disabled
+            on_text: root.update_input_spinner_vals(self.text)
 
         Label:
             text: "Output"

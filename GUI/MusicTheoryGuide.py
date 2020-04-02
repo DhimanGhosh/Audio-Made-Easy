@@ -45,8 +45,38 @@ class MainLayout(Widget):
     sub_menu_selected = dict()
     option_change_detect = ''
     input_change_detect = ''
+  
+    def change_val_with_notation(self): # Notation Handle ### Incomplete
+        # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
+        note_pos = 999
+        if self.option_menu.text != "Select" or self.input_menu.text != "Select":
+            if self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
+                pass ## <Not Decided>
+            else:
+                note_pos = self.notes.index(self.input_menu.text)
+        
+        if self.nS.active:
+            self.notes = self.notesS
+        elif self.nb.active:
+            self.notes = self.notesb
+        self.ids.input_menu.values = self.notes
+        
+        if self.input_menu.text == "Select":
+            self.input_menu.text = "Select"
+        elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
+            note_pos = self.notes.index(self.input_menu.text)
+        
+        if note_pos != 999:
+            self.input_menu.text = self.notes[note_pos]
+        else:
+            self.input_menu.text = "Select"
+        
+        if self.output.text != "Check Result":
+            self.show_result()
+        elif self.output.text == "Check Result" and self.option_menu.text == self.options_spinner_vals[10]:
+            self.show_result()
 
-    def update_input_spinner_vals(self, selected_text):
+    def update_input_spinner_vals(self, selected_text): # Spinner Handle
         # Detect change in option
         if selected_text == self.option_menu.text and self.option_change_detect != selected_text:
             self.ids.input_menu.text = 'Select'
@@ -77,7 +107,7 @@ class MainLayout(Widget):
         
         self.ids.input_menu.values = self.input_spinner_vals
 
-    def show_result(self):
+    def show_result(self): # Result Handle
         if self.option_menu.text != "Select" and self.input_menu.text != "Select":
             if self.option_menu.text == self.options_spinner_vals[0]: # "Major Scale"
                 note = self.input_menu.text
@@ -158,37 +188,7 @@ class MainLayout(Widget):
                     music.note_beep_scale('m', scale)
                 self.output.text = "Check Result"
                 pass # Incomplete
-                
-    def change_val_with_notation(self): # Incomplete
-        # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
-        note_pos = 999
-        if self.option_menu.text != "Select" or self.input_menu.text != "Select":
-            if self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
-                pass ## <Not Decided>
-            else:
-                note_pos = self.notes.index(self.input_menu.text)
-        
-        if self.nS.active:
-            self.notes = self.notesS
-        elif self.nb.active:
-            self.notes = self.notesb
-        self.ids.input_menu.values = self.notes
-        
-        if self.input_menu.text == "Select":
-            self.input_menu.text = "Select"
-        elif self.input_menu.text in self.notes: # Check if Input Menu has default data or not
-            note_pos = self.notes.index(self.input_menu.text)
-        
-        if note_pos != 999:
-            self.input_menu.text = self.notes[note_pos]
-        else:
-            self.input_menu.text = "Select"
-        
-        if self.output.text != "Check Result":
-            self.show_result()
-        elif self.output.text == "Check Result" and self.option_menu.text == self.options_spinner_vals[10]:
-            self.show_result()
-
+  
 class MusicTheoryGuideApp(App):
     def build(self):
         return MainLayout()

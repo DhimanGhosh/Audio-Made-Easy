@@ -9,9 +9,9 @@ This app lets you:
 ## How to run it
 
 1. Pre-requisites:
-
-		$ Python3 should be installed
-
+```
+Python3 should be installed
+```
 2. Clone this repo:
 
 		$ git clone https://github.com/DhimanGhosh/Music-Theory.git

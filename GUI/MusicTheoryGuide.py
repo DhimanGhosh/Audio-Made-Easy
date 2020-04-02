@@ -118,6 +118,11 @@ class MainLayout(Widget):
                 self.input_spinner_vals = tuple(self.notes)
         ## ---- Scale shift with capo position (Guitar) ---- ##
         
+        ## ---- Chords in Minor Scale ---- ##
+        if selected_text == self.options_spinner_vals[6]:
+            self.input_spinner_vals = tuple([ele + 'm' for ele in self.notes])
+        ## ---- Chords in Minor Scale ---- ##
+
         else: # For no inner lists
             self.input_spinner_vals = tuple(self.notes)
 
@@ -172,7 +177,7 @@ class MainLayout(Widget):
             
             elif self.option_menu.text == self.options_spinner_vals[6]: # "Chords in Minor Scale"
                 note = self.input_menu.text
-                music = Music(note)
+                music = Music(note[:-1])
                 result = music.chords_in_minor_scale()
                 output_text = '     '.join(result) + '\n\n\n' + self.output_text.split('\n')[-1]
             

@@ -45,7 +45,7 @@ class MainLayout(Widget):
     sub_menu_selected = dict()
     option_change_detect = ''
     input_change_detect = ''
-  
+
     def change_val_with_notation(self): # Notation Handle ### Incomplete
         # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
         note_pos = 999
@@ -71,20 +71,20 @@ class MainLayout(Widget):
         else:
             self.input_menu.text = "Select"
         
-        if self.output.text != "Check Result":
+        if self.output.text != "See Result":
             self.show_result()
-        elif self.output.text == "Check Result" and self.option_menu.text == self.options_spinner_vals[10]:
+        elif self.output.text == "See Result" and self.option_menu.text == self.options_spinner_vals[10]:
             self.show_result()
 
     def update_input_spinner_vals(self, selected_text): # Spinner Handle
         # Detect change in option
         if selected_text == self.option_menu.text and self.option_change_detect != selected_text:
             self.ids.input_menu.text = 'Select'
-            self.ids.output.text = 'Check Result'
+            self.ids.output.text = 'See Result'
             self.option_change_detect = selected_text
         elif selected_text == self.input_menu.text and self.input_change_detect != selected_text:
             self.ids.input_menu.text = selected_text
-            self.ids.output.text = 'Check Result'
+            self.ids.output.text = 'See Result'
             self.input_change_detect = selected_text
 
         # Change Input Spinner Values
@@ -99,7 +99,7 @@ class MainLayout(Widget):
                 self.input_spinner_vals = tuple(self.notes)
         else:
             self.input_spinner_vals = tuple(self.notes)
-        
+
         # To Keep track of Selections
         if self.ids.option_menu.text in self.sub_menu_selected:
             self.sub_menu_selected[self.ids.option_menu.text].append(selected_text)
@@ -107,6 +107,11 @@ class MainLayout(Widget):
             self.sub_menu_selected[self.ids.option_menu.text] = [selected_text]
         
         self.ids.input_menu.values = self.input_spinner_vals
+
+        ## Auto-Show Output in Output-Area on selecting Both Option_Menu and Input_Menu
+        if self.ids.option_menu.text != 'Select':
+            if self.ids.input_menu.text in self.notes or self.ids.input_menu.text in [i+'m' for i in self.notes]:
+            	self.show_result()
 
     def show_result(self): # Result Handle
         if self.option_menu.text != "Select" and self.input_menu.text != "Select":
@@ -177,7 +182,7 @@ class MainLayout(Widget):
                 note = self.input_menu.text
                 music = Music(note)
                 music.note_beep(note)
-                self.output.text = "Check Result"
+                self.output.text = "See Result"
             
             elif self.option_menu.text == self.options_spinner_vals[10]: # "Play Tone in Sequence (Scale / Note Sequence)"
                 self.output.text = "Playing..."
@@ -187,9 +192,9 @@ class MainLayout(Widget):
                     music.note_beep_scale('M', scale)
                 elif self.nb.active:
                     music.note_beep_scale('m', scale)
-                self.output.text = "Check Result"
+                self.output.text = "See Result"
                 pass # Incomplete
-  
+
 class MusicTheoryGuideApp(App):
     def build(self):
         return MainLayout()

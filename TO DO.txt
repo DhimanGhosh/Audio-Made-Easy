@@ -5,10 +5,3 @@ Feature:
 > Note Detection from live-audio / audio-file [Create text - from Instruments] (Speech-To-Text)
 > Play any Musical-Instrument
 > Listen to music and live create sheet-misic in lilypod
-
-GUI Software:
-> On Selecting any value from "input_menu" or "option_menu":
-        if both the menu "Select" is not showing (some-thing is selected);
-        show the output in "output" TextArea
-> Add Functionality to RESET App
-> Dynamically change the "input_menu" wrt value of "option_menu"

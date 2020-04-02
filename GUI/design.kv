@@ -3,6 +3,11 @@
 #:set color_button_pressed (0.659, 0.522, 0.431, 1)  # darker brown
 #:set color_font (0.957, 0.890, 0.843, 1)  # off white
 
+<CenteredTextInput@TextInput>:
+    multiline: False
+    padding_x: (self.width - self.text_width) // 2
+    #on_text: root.update_padding()
+
 <MySpinnerOption@SpinnerOption>:
     color: color_font
 
@@ -76,8 +81,8 @@
         Label:
             text: "Output"
 
-        Button:
+        TextInput:
             id: output
-            text: "Check Result"
-            on_press: root.show_result()
-            # mode: disabled
+            text: "See Result"
+            option_cls: Factory.get("CenteredTextInput")
+            #mode: disabled

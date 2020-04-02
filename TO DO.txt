@@ -5,3 +5,6 @@ Feature:
 > Note Detection from live-audio / audio-file [Create text - from Instruments] (Speech-To-Text)
 > Play any Musical-Instrument
 > Listen to music and live create sheet-misic in lilypod
+
+GUI:
+> Complete all the functionalities for the remaining option_menu

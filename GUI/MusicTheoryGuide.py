@@ -44,13 +44,18 @@ class MainLayout(Widget):
     rel_maj_min_options = ('Relative Major', 'Relative Minor')
     sub_menu_selected = dict()
     option_change_detect = ''
+    input_change_detect = ''
 
     def update_input_spinner_vals(self, selected_text):
         # Detect change in option
-        if selected_text in self.options_spinner_vals and self.option_change_detect != selected_text:
+        if selected_text == self.option_menu.text and self.option_change_detect != selected_text:
             self.ids.input_menu.text = 'Select'
             self.ids.output.text = 'Check Result'
             self.option_change_detect = selected_text
+        elif selected_text == self.input_menu.text and self.input_change_detect != selected_text:
+            self.ids.input_menu.text = selected_text
+            self.ids.output.text = 'Check Result'
+            self.input_change_detect = selected_text
 
         if selected_text == self.options_spinner_vals[7]:
             self.ids.input_menu.text = 'Select'

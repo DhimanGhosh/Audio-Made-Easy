@@ -42,12 +42,12 @@ class MainLayout(Widget):
     input_menu = ObjectProperty(None)
     output = ObjectProperty(None)
     rel_maj_min_options = ('Relative Major', 'Relative Minor')
+    major_minor_options = ('Major', 'Minor')
     guitar_frets_options = tuple([str(i) for i in range(1, 23)]) # For Capo position entry
     sub_menu_selected = dict() # To Keep track of options selected
     output_text = 'See Automated Result\n\n\nPress to Reset App'
     option_change_detect = ''
     input_change_detect = ''
-    relative_selection_detect = ''
 
     def change_val_with_notation(self): # Notation Handle ### Incomplete
         # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
@@ -95,7 +95,7 @@ class MainLayout(Widget):
         if selected_text == self.options_spinner_vals[7]:
             self.ids.input_menu.text = 'Select'
             self.input_spinner_vals = self.rel_maj_min_options
-        elif selected_text in self.rel_maj_min_options:
+        elif selected_text in self.rel_maj_min_options: ##  ************ NOT - WORKING ************
             self.ids.input_menu.text = selected_text + ' >> Select Scale'
             if selected_text == self.rel_maj_min_options[0]:
                 self.input_spinner_vals = tuple([ele + 'm' for ele in self.notes])
@@ -105,21 +105,14 @@ class MainLayout(Widget):
         
         ## ---- Scale shift with capo position (Guitar) ---- ##
         if selected_text == self.options_spinner_vals[3]: # Select M/m
-            print('M/m')
             self.ids.input_menu.text = 'Select Major/Minor'
-            self.input_spinner_vals = ('Major', 'Minor')
-            print(self.sub_menu_selected[self.ids.option_menu.text])
-        elif selected_text in ('Major', 'Minor'): # Select Capo Position
-            print('Capo')
+            self.input_spinner_vals = self.major_minor_options
+        elif selected_text in self.major_minor_options: # Select Capo Position
             self.ids.input_menu.text = selected_text + ' >> Select Capo Position'
             self.input_spinner_vals = self.guitar_frets_options
-            print(self.sub_menu_selected[self.ids.option_menu.text])
         elif selected_text in self.guitar_frets_options: # Select Scale
-            print('Scale')
-            self.relative_selection_detect += selected_text + ' '
-            print(self.sub_menu_selected[self.ids.option_menu.text])
             self.ids.input_menu.text = selected_text + ' >> Select Scale'
-            if 'Minor' in self.sub_menu_selected[self.ids.option_menu.text]:
+            if self.major_minor_options[1] in self.sub_menu_selected[self.ids.option_menu.text]:
                 self.input_spinner_vals = tuple([ele + 'm' for ele in self.notes])
             else:
                 self.input_spinner_vals = tuple(self.notes)
@@ -135,7 +128,6 @@ class MainLayout(Widget):
             self.sub_menu_selected[self.ids.option_menu.text] = [selected_text]
         
         self.ids.input_menu.values = self.input_spinner_vals
-        self.relative_selection_detect = ''
 
         ## Auto-Show Output in Output-Area on selecting Both Option_Menu and Input_Menu
         if self.ids.option_menu.text != 'Select':

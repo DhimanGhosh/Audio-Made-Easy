@@ -59,7 +59,7 @@
             background_color: color_button if self.state == 'normal' else color_button_pressed
             color: color_font
             option_cls: Factory.get("MySpinnerOption")
-            # on_press: root.update_input_spinner_vals
+            on_text: root.update_input_spinner_vals(self.text)
 
         Label:
             text: "Input"
@@ -71,7 +71,7 @@
             background_color: color_button if self.state == 'normal' else color_button_pressed
             color: color_font
             option_cls: Factory.get("MySpinnerOption")
-            # mode: disabled
+            on_text: root.update_input_spinner_vals(self.text)
 
         Label:
             text: "Output"

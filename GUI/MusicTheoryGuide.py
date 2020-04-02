@@ -43,8 +43,15 @@ class MainLayout(Widget):
     output = ObjectProperty(None)
     rel_maj_min_options = ('Relative Major', 'Relative Minor')
     sub_menu_selected = dict()
+    option_change_detect = ''
 
     def update_input_spinner_vals(self, selected_text):
+        # Detect change in option
+        if selected_text in self.options_spinner_vals and self.option_change_detect != selected_text:
+            self.ids.input_menu.text = 'Select'
+            self.ids.output.text = 'Check Result'
+            self.option_change_detect = selected_text
+
         if selected_text == self.options_spinner_vals[7]:
             self.ids.input_menu.text = 'Select'
             self.input_spinner_vals = self.rel_maj_min_options
@@ -134,7 +141,7 @@ class MainLayout(Widget):
                 note = self.input_menu.text
                 music = Music(note)
                 music.note_beep(note)
-                self.output.text = "Click Me"
+                self.output.text = "Check Result"
             
             elif self.option_menu.text == self.options_spinner_vals[10]: # "Play Tone in Sequence (Scale / Note Sequence)"
                 self.output.text = "Playing..."
@@ -144,10 +151,10 @@ class MainLayout(Widget):
                     music.note_beep_scale('M', scale)
                 elif self.nb.active:
                     music.note_beep_scale('m', scale)
-                self.output.text = "Click Me"
+                self.output.text = "Check Result"
                 pass # Incomplete
                 
-    def change_val_with_notation(self):
+    def change_val_with_notation(self): # Incomplete
         # Change the function to dynamically change it's value w.r.t option_menu; set its value as 'self.input_spinner_vals'
         note_pos = 999
         if self.option_menu.text != "Select" or self.input_menu.text != "Select":
@@ -172,9 +179,9 @@ class MainLayout(Widget):
         else:
             self.input_menu.text = "Select"
         
-        if self.output.text != "Click Me":
+        if self.output.text != "Check Result":
             self.show_result()
-        elif self.output.text == "Click Me" and self.option_menu.text == self.options_spinner_vals[10]:
+        elif self.output.text == "Check Result" and self.option_menu.text == self.options_spinner_vals[10]:
             self.show_result()
 
 class MusicTheoryGuideApp(App):

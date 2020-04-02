@@ -1,4 +1,4 @@
-# Music Theory Guide (v-1.0)
+# Music Theory Guide
 > Help you in understanding and creating music
 
 This app lets you:

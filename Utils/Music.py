@@ -311,13 +311,13 @@ class Music:
         note = is_valid_note[0]
         return (note, True)
     
-    def __substr_in_list_of_strs(self, lst1, substr):
+    def substr_in_list_of_strs(self, lst, substr):
         '''
         Objective: Check if a substring is present in a list of strings
 
         Source: https://www.geeksforgeeks.org/python-finding-strings-with-given-substring-in-list/
         '''
-        res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst1))
+        res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst))
         return bool(res_lst_of_strs_with_substr)
 
     def __valid_list(self, note):
@@ -335,7 +335,7 @@ class Music:
             return self.__notesS
         elif note in self.__notesb:
             return self.__notesb
-        elif self.__substr_in_list_of_strs(self.__open_pos_chords, '0_' + note): # Used for 'best_capo_position()'
+        elif self.substr_in_list_of_strs(self.__open_pos_chords, '0_' + note): # Used for 'best_capo_position()'
             return self.__open_pos_chords
 
     def major_scale(self):

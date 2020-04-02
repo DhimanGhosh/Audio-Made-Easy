@@ -87,6 +87,7 @@ class MainLayout(Widget):
             self.ids.output.text = 'Check Result'
             self.input_change_detect = selected_text
 
+        # Change Input Spinner Values
         if selected_text == self.options_spinner_vals[7]:
             self.ids.input_menu.text = 'Select'
             self.input_spinner_vals = self.rel_maj_min_options
@@ -149,7 +150,7 @@ class MainLayout(Widget):
                 self.output.text = '     '.join(result)
             
             elif self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
-                # Create New Spinner Menu for (Relative Major and Relative Minor Option)
+                #BUG #1 Clicking on Output Button make the inner-input menu (self.notes) disable; have to re-select inner-input
                 print(self.sub_menu_selected)
                 rem_lst = ('Select', self.options_spinner_vals[7])
                 sub_val = self.sub_menu_selected[self.options_spinner_vals[7]]

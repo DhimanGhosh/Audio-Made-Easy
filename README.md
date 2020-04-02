@@ -14,7 +14,7 @@ This app lets you:
 	```
 2. Clone this repo:
 
-		$ git clone https://github.com/DhimanGhosh/Music-Theory.git
+		$ git clone https://github.com/DhimanGhosh/Music-Theory-Guide.git
 
 
 3. Open terminal / cmd and go to that cloned path:

@@ -539,7 +539,8 @@ class Music:
         '''
         Objective: Find Relative Major Scale of given Scale
         '''
-        return self.__valid_list(minor_scale)[self.__note_position_in_list(minor_scale) + 3]
+        list1 = self.__valid_list(minor_scale)
+        return list1[(self.__note_position_in_list(minor_scale) + 3) % len(list1)]
 
     def __note_freq_detection(self, note):
         '''

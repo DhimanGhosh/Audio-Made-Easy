@@ -183,7 +183,6 @@ class MainLayout(Widget):
                 output_text = '     '.join(result) + '\n\n\n' + self.output_text.split('\n')[-1]
             
             elif self.option_menu.text == self.options_spinner_vals[7]: # "Relative Major/Minor"
-                #BUG #1 Clicking on Output Button make the inner-input menu (self.notes) disable; have to re-select inner-input
                 print(self.sub_menu_selected)
                 rem_lst = ('Select', self.options_spinner_vals[7])
                 sub_val = self.sub_menu_selected[self.options_spinner_vals[7]]

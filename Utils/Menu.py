@@ -16,13 +16,13 @@ class Menu:
 
             1. Major Scale
             2. Major Chord
-            3. Notes in Major Scale
+            3. Chords in Major Scale
             4. Note in Major Scales
             5. Note shift with capo position (Guitar)
             6. Scale shift with capo position (Guitar)
             7. Minor Scale
             8. Minor Chord
-            9. Notes in Minor Scale
+            9. Chords in Minor Scale
             10. Relative Minor/Major
             11. Play Tone Based on Note
             12. Play Tone in Sequence (Scale / Note Sequence)

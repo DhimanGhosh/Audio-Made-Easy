@@ -45,7 +45,7 @@ def run():
             menu.major_chord(wrg)
 
         elif ch == 3:
-            menu.notes_in_major_scale(wrg)
+            menu.chords_in_major_scale(wrg)
 
         elif ch == 4:
             menu.note_in_major_scales(wrg)
@@ -63,7 +63,7 @@ def run():
             menu.minor_chord(wrg)
 
         elif ch == 9:
-            menu.notes_in_minor_scale(wrg)
+            menu.chords_in_minor_scale(wrg)
         
         elif ch == 10:
             menu.relative_minor_major(wrg)

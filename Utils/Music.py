@@ -422,6 +422,22 @@ class Music:
                 if self.__note == notes_scales[i][j]:
                     scales.append(notes_scales[i][0])
         return scales
+    
+    def __note_in_major_scales(self, note):
+        '''
+        Objective: Return the major scales where the note is present
+        '''
+        valid_list = self.__valid_list(note)
+        notes_scales = []
+        scales = []
+        for i in range(len(valid_list)):
+            notes_scales.append(self.__major_scale(valid_list[i]))
+        
+        for i in range(len(notes_scales)):
+            for j in range(len(notes_scales[0])):
+                if note == notes_scales[i][j]:
+                    scales.append(notes_scales[i][0])
+        return scales
 
     def minor_scale(self):
         '''
@@ -663,7 +679,7 @@ class Music:
         scales = major_scales_with_chord + minor_scales_with_chord
         return scales
     
-    def common_scale(self, chords):
+    def common_scale_from_chords(self, chords):
         '''
         Objective: Find Major / Minor Scale(s) with the given Chords
         '''
@@ -672,6 +688,32 @@ class Music:
             scales_from_chords.append(self.__chord_in_scales(chord))
         list_of_sets = []
         for scale in scales_from_chords:
+            list_of_sets.append(set(scale))
+        result = list_of_sets[0]
+        if len(list_of_sets) > 2:
+            for i in range(1, len(list_of_sets)):
+                result = result.intersection(list_of_sets[i])
+        result = list(result)
+        if len(result) == 2:
+            minor_note_in_result = [item for item in result if 'm' in item][0]
+            minor_note_index = result.index(minor_note_in_result)
+            major_note_index = minor_note_index - 1
+            if self.relative_minor(result[major_note_index]) == result[minor_note_index] and self.relative_major(result[minor_note_index][:-1]) == result[major_note_index]:
+                return (result, 'R')
+            else:
+                return (result, 'NR')
+        else:
+            return (result, '')
+        
+    def common_scale_from_notes(self, notes):
+        '''
+        Objective: Find Major / Minor Scale(s) with the given Notes
+        '''
+        scales_from_notes = []
+        for note in notes:
+            scales_from_notes.append(self.__note_in_major_scales(note))
+        list_of_sets = []
+        for scale in scales_from_notes:
             list_of_sets.append(set(scale))
         result = list_of_sets[0]
         if len(list_of_sets) > 2:

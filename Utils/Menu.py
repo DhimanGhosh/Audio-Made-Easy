@@ -27,8 +27,9 @@ class Menu:
             11. Play Tone Based on Note
             12. Play Tone in Sequence (Scale / Note Sequence)
             13. Scale from Chords
-            14. Best Capo position for easy play (Feature coming soon)
-            15. Quit
+            14. Scale from Notes
+            15. Best Capo position for easy play (Feature coming soon)
+            16. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -256,7 +257,7 @@ class Menu:
         # Find Scale from chords and use in best_capo_position() for up-shifting / down-shifting
         chords = self.__valid_input('Chords: ')
         music = Music()
-        common_scale = music.common_scale(chords.split())
+        common_scale = music.common_scale_from_chords(chords.split())
         result = common_scale[0]
         if common_scale[1] is '' or common_scale[1] == 'NR':
             if len(result) > 0:
@@ -265,6 +266,22 @@ class Menu:
                 print("'{}' Chords does not share common scale... Please Check the chords Once...".format(chords))
         else:
             print("'{}' Chords are present in '{}' Scale or '{}' Scale".format(chords, result[0], result[1]))
+    
+    def scale_from_notes(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Scale from Notes')
+        # Find Scale from notes and use in best_capo_position() for up-shifting / down-shifting
+        notes = self.__valid_input('Notes: ')
+        music = Music()
+        common_scale = music.common_scale_from_notes(notes.split())
+        result = common_scale[0]
+        if common_scale[1] is '' or common_scale[1] == 'NR':
+            if len(result) > 0:
+                print("'{}' Notes are present in '{}' Scale".format(notes, result[0]))
+            else:
+                print("'{}' Notes does not share common scale... Please Check the Notes Once...".format(notes))
+        else:
+            print("'{}' Notes are present in '{}' Scale or '{}' Scale".format(notes, result[0], result[1]))
     
     def best_capo_position(self, wob):
         wob.set_wrong_flag(False)

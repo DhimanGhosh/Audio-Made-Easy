@@ -1,5 +1,6 @@
 import os, sys, platform
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
 
 
 if platform.system() == 'Linux':
@@ -22,16 +23,16 @@ class Ui_Dialog(object):
         Dialog.setObjectName("Dialog")
         self.set_window_resizable(window_obj=Dialog, width=self.window_width, height=self.window_height, flag=False)
 
-        self.notation_label = QtWidgets.QLabel(Dialog)
-        self.notation_S = QtWidgets.QRadioButton(Dialog)
-        self.notation_b = QtWidgets.QRadioButton(Dialog)
-        self.options_label = QtWidgets.QLabel(Dialog)
-        self.option_menu = QtWidgets.QComboBox(Dialog)
-        self.input_label = QtWidgets.QLabel(Dialog)
-        self.input_menu = QtWidgets.QComboBox(Dialog)
-        self.output_label = QtWidgets.QLabel(Dialog)
-        self.output_text = QtWidgets.QLineEdit(Dialog)
-        self.reset_button = QtWidgets.QPushButton(Dialog)
+        self.notation_label = QLabel(Dialog)
+        self.notation_S = QRadioButton(Dialog)
+        self.notation_b = QRadioButton(Dialog)
+        self.options_label = QLabel(Dialog)
+        self.option_menu = QComboBox(Dialog)
+        self.input_label = QLabel(Dialog)
+        self.input_menu = QComboBox(Dialog)
+        self.output_label = QLabel(Dialog)
+        self.output_text = QLineEdit(Dialog)
+        self.reset_button = QPushButton(Dialog)
 
         self.options_menu_vals = tuple()
         with open(features, 'r') as f:
@@ -103,15 +104,11 @@ class Ui_Dialog(object):
 
     def reset(self):
         self.notation_S.setChecked(True)
-        print(len(self.options_menu_vals))
-        for i in range(1, len(self.options_menu_vals)):
-            self.option_menu.removeItem(i)
-        #self.option_menu.addItems(self.options_menu_vals)
 
 if __name__ == "__main__": 
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     
-    MainWindow = QtWidgets.QMainWindow()
+    MainWindow = QMainWindow()
     MainWindow.setWindowIcon(QtGui.QIcon(''))
     ui = Ui_Dialog(MainWindow)
 

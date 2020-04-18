@@ -119,7 +119,7 @@ class Ui_Dialog(object):
             print(self.sub_menu_selected)
             print('Option Menu Change Detected')
             #self.input_menu.clear()
-            self.output_text.clear() # This is working; "input_menu.clear()" not working
+            self.output_text.clear() # This is working; "input_menu.clear()" getting hanged
             self.input_menu.addItem(self.select_data)
             print('Input Menu cleared')
             self.option_change_detect = selected_text
@@ -189,10 +189,12 @@ class Ui_Dialog(object):
                 self.output_text.setText('     '.join(result))
 
         # ----- To Keep track of Selections ----- #
-        if self.option_menu.currentText() in self.sub_menu_selected and self.option_menu.currentText() != self.select_data:
-            self.sub_menu_selected[self.option_menu.currentText()].append(selected_text)
-        else:
-            self.sub_menu_selected[self.option_menu.currentText()] = [selected_text]
+        if self.option_menu.currentText() != self.select_data:
+            if self.option_menu.currentText() in self.sub_menu_selected:
+                self.sub_menu_selected[self.option_menu.currentText()].append(selected_text)
+                self.sub_menu_selected[self.option_menu.currentText()] = list(set(self.sub_menu_selected[self.option_menu.currentText()]))
+            else:
+                self.sub_menu_selected[self.option_menu.currentText()] = list(set([selected_text]))
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

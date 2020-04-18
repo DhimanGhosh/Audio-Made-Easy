@@ -1,12 +1,14 @@
 import datetime
 today = datetime.date.today()
-someday = datetime.date(2020, 3, 31)
-diff = someday - today
+release_date = datetime.date(2020, 4, 18)
+diff = release_date - today
 days_passed = abs(diff.days)
 if days_passed > 1:
     days_passed_str = '{} days back'.format(days_passed)
-else:
+elif days_passed > 1:
     days_passed_str = 'Yesterday'
+else:
+    days_passed_str = 'Today'
 print(
 '''
 _________________________________________________________________________
@@ -15,10 +17,10 @@ _________________________________________________________________________
 | Languages Used        : Python3, Kivy                                 |
 | Executing Interface   : CLI & GUI                                     |
 | Development Date      : Started (26/10/2019) - Till Date              |
-| Last Stable Release   : Version 2.0 (31/03/2020) - {}        |
+| Last Stable Release   : Version 2.1 (18/04/2020) - {}         |
 | Developer             : Dhiman Ghosh                                  |
 _________________________________________________________________________
-'''.format(days_passed_str)
+'''.format(today, days_passed_str)
 )
 
 def run():

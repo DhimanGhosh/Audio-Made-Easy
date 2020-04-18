@@ -1,6 +1,7 @@
 import os, sys, platform
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
+import qdarkgraystyle
 
 utils_dir = assets_dir = ''
 if platform.system() == 'Linux':
@@ -28,6 +29,9 @@ class Ui_Dialog(object):
 
         self.window_width = 400
         self.window_height = 260
+        self.widget_width = self.window_width//10
+        self.widget_height = 22
+        self.drop_down_width = self.window_width//2 + 50
 
         Dialog.setObjectName("Dialog")
         self.set_window_resizable(window_obj=Dialog, width=self.window_width, height=self.window_height, flag=False)
@@ -63,16 +67,16 @@ class Ui_Dialog(object):
         # Notations
         self.notation_label.setGeometry(QtCore.QRect(40, 25, 47, 13))
         self.notation_label.setObjectName("notation_label")
-        self.notation_S.setGeometry(QtCore.QRect(110, 23, 31, 17))
+        self.notation_S.setGeometry(QtCore.QRect(110, 23, self.widget_width, self.widget_height))
         self.notation_S.setObjectName("notation_S")
         self.notation_S.setChecked(True)
-        self.notation_b.setGeometry(QtCore.QRect(300, 23, 31, 17))
+        self.notation_b.setGeometry(QtCore.QRect(300, 23, self.widget_width, self.widget_height))
         self.notation_b.setObjectName("notation_b")
 
         # Option Menu
         self.options_label.setGeometry(QtCore.QRect(40, 70, 47, 13))
         self.options_label.setObjectName("options_label")
-        self.option_menu.setGeometry(QtCore.QRect(110, 68, self.window_width//2 + 50, 22))
+        self.option_menu.setGeometry(QtCore.QRect(110, 68, self.drop_down_width, self.widget_height))
         self.option_menu.setObjectName("option_menu")
 
         self.option_menu.addItem(self.select_data)
@@ -81,21 +85,19 @@ class Ui_Dialog(object):
         #self.option_menu.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
         self.option_menu.setStyleSheet('\
             background-color: lightgreen;\
-            border-radius: 15px;\
-            text-align: center;\
         ')
 
         # Input Menu
         self.input_label.setGeometry(QtCore.QRect(40, 120, 47, 13))
         self.input_label.setObjectName("input_label")
-        self.input_menu.setGeometry(QtCore.QRect(110, 118, self.window_width//2 + 50, 22))
+        self.input_menu.setGeometry(QtCore.QRect(110, 118, self.drop_down_width, self.widget_height))
         self.input_menu.setObjectName("input_menu")
         self.input_menu.setDisabled(True)
 
         # Output
         self.output_label.setGeometry(QtCore.QRect(40, 170, 47, 13))
         self.output_label.setObjectName("output_label")
-        self.output_text.setGeometry(QtCore.QRect(110, 168, 250, 22))
+        self.output_text.setGeometry(QtCore.QRect(110, 168, self.drop_down_width, self.widget_height))
         self.output_text.setObjectName("output_text")
         self.output_text.setDisabled(True)
 
@@ -104,7 +106,7 @@ class Ui_Dialog(object):
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)
         self.reset_button.setIcon(QtGui.QIcon(reset_icon))
-        self.reset_button.setIconSize(QtCore.QSize(22, 22))
+        self.reset_button.setIconSize(QtCore.QSize(self.widget_height, self.widget_height))
         self.reset_button.setStyleSheet('\
             background-color: red;\
             border-radius: 15px;\
@@ -232,7 +234,7 @@ class Ui_Dialog(object):
 
 if __name__ == "__main__": 
     app = QApplication(sys.argv)
-
+    app.setStyleSheet(qdarkgraystyle.load_stylesheet())
     screen = app.primaryScreen()
     #print('Screen: %s' % screen.name())
     size = screen.size()
@@ -247,10 +249,10 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     ui.retranslateUi(MainWindow)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    MainWindow.setStyleSheet("\
+    '''MainWindow.setStyleSheet("\
         margin: 0px; padding: 0px;\
         background-color: rgba(150,0,255,255);\
         color: rgba(0,0,0,255);\
-    ")    
+    ")'''
     MainWindow.show()
     sys.exit(app.exec_())

@@ -8,15 +8,21 @@ if platform.system() == 'Linux':
     sys.path.insert(0, utils_dir)
     from Music import Music
     features = utils_dir + '/Features.txt'
+    assets_dir = os.path.realpath('../assets/')
+    sys.path.insert(0, utils_dir)
+    app_logo = assets_dir + '/app_logo.png'
 else:
     root_dir = os.path.realpath('..')
     sys.path.insert(0, root_dir)
     from Utils.Music import Music
     features = root_dir + '/Utils/Features.txt'
+    app_logo = root_dir + '/assets/app_logo.png'
 
 
 class Ui_Dialog(object):
     def __init__(self, Dialog):
+        super(Ui_Dialog, self).__init__()
+
         self.window_width = 400
         self.window_height = 260
 
@@ -88,6 +94,10 @@ class Ui_Dialog(object):
         self.reset_button.setGeometry(QtCore.QRect(40, 210, 320, 30))
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)  
+        self.reset_button.setStyleSheet('\
+            background-color: red;\
+            border-radius: 15px;\
+        ')
 
 
         self.retranslateUi(Dialog)
@@ -215,12 +225,16 @@ if __name__ == "__main__":
     #print('Available: %d x %d' % (rect.width(), rect.height()))
     
     MainWindow = QMainWindow()
-    MainWindow.setWindowIcon(QtGui.QIcon(''))
+    MainWindow.setWindowIcon(QtGui.QIcon(app_logo))
     ui = Ui_Dialog(MainWindow)
 
     ui.setupUi(MainWindow)
     ui.retranslateUi(MainWindow)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    
+    MainWindow.setStyleSheet("\
+        margin: 0px; padding: 0px;\
+        background-color: rgba(150,0,255,255);\
+        color: rgba(0,0,0,255);\
+    ")    
     MainWindow.show()
     sys.exit(app.exec_())

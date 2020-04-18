@@ -56,6 +56,7 @@ class Ui_Dialog(object):
 
         self.option_menu.addItem('--Select--')
         self.option_menu.addItems(self.options_menu_vals)
+        self.option_menu.currentIndexChanged.connect(self.selectionchange)
 
         # Input Menu
         self.input_label.setGeometry(QtCore.QRect(40, 120, 47, 13))
@@ -79,6 +80,13 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def selectionchange(self, i):
+        #print("Current index",i,"selection changed",self.option_menu.currentText())
+        if self.option_menu.currentText() != '--Select--':
+            self.input_menu.setDisabled(False)
+        else:
+            self.input_menu.setDisabled(True)
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

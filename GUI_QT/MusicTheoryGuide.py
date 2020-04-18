@@ -19,6 +19,8 @@ else:
 features = utils_dir + 'Features.txt'
 app_logo = assets_dir + 'app_logo.png'
 reset_icon = assets_dir + 'reset.png'
+sharp_icon = assets_dir + 'sharp.png'
+flat_icon = assets_dir + 'flat.png'
 
 class Ui_Dialog(object):
     def __init__(self, Dialog):
@@ -76,6 +78,7 @@ class Ui_Dialog(object):
         self.option_menu.addItem(self.select_data)
         self.option_menu.addItems(self.options_menu_vals)
         self.option_menu.currentIndexChanged.connect(self.option_selection_change)
+        #self.option_menu.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
         self.option_menu.setStyleSheet('\
             background-color: lightgreen;\
             border-radius: 15px;\
@@ -200,8 +203,10 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Music Theory Guide"))
         self.notation_label.setText(_translate("Dialog", "Notation"))
-        self.notation_S.setText(_translate("Dialog", "#"))
-        self.notation_b.setText(_translate("Dialog", "b"))
+        self.notation_S.setIcon(QtGui.QIcon(sharp_icon))
+        #self.notation_S.setText(_translate("Dialog", "#"))
+        self.notation_b.setIcon(QtGui.QIcon(flat_icon))
+        #self.notation_b.setText(_translate("Dialog", "b"))
         self.options_label.setText(_translate("Dialog", "Options"))
         self.input_label.setText(_translate("Dialog", "Input"))
         self.output_label.setText(_translate("Dialog", "Output"))

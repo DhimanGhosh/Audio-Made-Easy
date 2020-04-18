@@ -11,12 +11,14 @@ if platform.system() == 'Linux':
     assets_dir = os.path.realpath('../assets/')
     sys.path.insert(0, utils_dir)
     app_logo = assets_dir + '/app_logo.png'
+    reset_icon = assets_dir + '/reset.png'
 else:
     root_dir = os.path.realpath('..')
     sys.path.insert(0, root_dir)
     from Utils.Music import Music
     features = root_dir + '/Utils/Features.txt'
     app_logo = root_dir + '/assets/app_logo.png'
+    reset_icon = root_dir + '/assets/reset.png'
 
 
 class Ui_Dialog(object):
@@ -75,6 +77,11 @@ class Ui_Dialog(object):
         self.option_menu.addItem(self.select_data)
         self.option_menu.addItems(self.options_menu_vals)
         self.option_menu.currentIndexChanged.connect(self.option_selection_change)
+        self.option_menu.setStyleSheet('\
+            background-color: lightgreen;\
+            border-radius: 15px;\
+            text-align: center;\
+        ')
 
         # Input Menu
         self.input_label.setGeometry(QtCore.QRect(40, 120, 47, 13))
@@ -93,7 +100,9 @@ class Ui_Dialog(object):
         # App RESET
         self.reset_button.setGeometry(QtCore.QRect(40, 210, 320, 30))
         self.reset_button.setObjectName("reset_button")
-        self.reset_button.clicked.connect(self.reset)  
+        self.reset_button.clicked.connect(self.reset)
+        self.reset_button.setIcon(QtGui.QIcon(reset_icon))
+        self.reset_button.setIconSize(QtCore.QSize(22, 22))
         self.reset_button.setStyleSheet('\
             background-color: red;\
             border-radius: 15px;\
@@ -111,6 +120,7 @@ class Ui_Dialog(object):
             print(self.sub_menu_selected)
             print('Option Menu Change Detected')
             #self.input_menu.clear()
+            self.output_text.clear() # This is working; "input_menu.clear()" not working
             self.input_menu.addItem(self.select_data)
             print('Input Menu cleared')
             self.option_change_detect = selected_text

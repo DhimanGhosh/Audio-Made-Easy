@@ -161,7 +161,8 @@ class Ui_Dialog(object):
 
     def set_window_resizable(self, window_obj, width, height, flag=False):
         if not flag:
-            window_obj.resize(width, height)
+            window_obj.setGeometry(rect.width()//2-width//2, rect.height()//2-height//2, width, height)
+            #window_obj.resize(width, height)
             window_obj.setMaximumHeight(height)
             window_obj.setMinimumHeight(height)
             window_obj.setMaximumWidth(width)
@@ -171,9 +172,19 @@ class Ui_Dialog(object):
 
     def reset(self):
         self.notation_S.setChecked(True)
+        self.option_menu.setCurrentIndex(0)
+        self.input_menu.clear()
+        self.output_text.setText('')
 
 if __name__ == "__main__": 
     app = QApplication(sys.argv)
+
+    screen = app.primaryScreen()
+    #print('Screen: %s' % screen.name())
+    size = screen.size()
+    #print('Size: %d x %d' % (size.width(), size.height()))
+    rect = screen.availableGeometry()
+    #print('Available: %d x %d' % (rect.width(), rect.height()))
     
     MainWindow = QMainWindow()
     MainWindow.setWindowIcon(QtGui.QIcon(''))

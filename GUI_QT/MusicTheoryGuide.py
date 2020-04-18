@@ -46,6 +46,7 @@ class Ui_Dialog(object):
         self.major_minor_options = ('Major', 'Minor')
         self.guitar_frets_options = tuple([str(i) for i in range(1, 23)]) # For Capo position entry
         self.sub_menu_selected = dict() # To Keep track of options selected
+        self.select_data = '--Select--'
         self.option_change_detect = ''
         self.input_change_detect = ''
         
@@ -65,7 +66,7 @@ class Ui_Dialog(object):
         self.option_menu.setGeometry(QtCore.QRect(110, 68, self.window_width//2 + 50, 22))
         self.option_menu.setObjectName("option_menu")
 
-        self.option_menu.addItem('--Select--')
+        self.option_menu.addItem(self.select_data)
         self.option_menu.addItems(self.options_menu_vals)
         self.option_menu.currentIndexChanged.connect(self.option_selection_change)
 
@@ -99,13 +100,14 @@ class Ui_Dialog(object):
         if self.option_change_detect != selected_text:
             print(self.sub_menu_selected)
             print('Option Menu Change Detected')
-            self.input_menu.clear()
+            #self.input_menu.clear()
+            self.input_menu.addItem(self.select_data)
             print('Input Menu cleared')
             self.option_change_detect = selected_text
             print('New opt change detect set')
         
         # ----- Change Input Menu Values ----- #
-        if selected_text != '--Select--':
+        if selected_text != self.select_data:
             print('Option Item Selected:',selected_text)
             self.input_menu.setDisabled(False)
             if selected_text == self.options_menu_vals[0]: # Major Scale
@@ -130,19 +132,16 @@ class Ui_Dialog(object):
                     self.notes = self.notesb
                 self.input_menu_vals = self.notes
             print('rcvd inp menu vals')
-            self.input_menu.addItem('--Select--')
             self.input_menu.addItems(self.input_menu_vals)
             self.input_menu.currentIndexChanged.connect(self.input_selection_change)
             print('set inp menu vals')
         else:
             self.input_menu.clear()
             self.input_menu.setDisabled(True)
-
+        
         # ----- To Keep track of Selections ----- #
-        if self.option_menu.currentText() in self.sub_menu_selected:
-            self.sub_menu_selected[self.option_menu.currentText()].append(selected_text)
-        else:
-            self.sub_menu_selected[self.option_menu.currentText] = [selected_text]
+        if self.option_menu.currentText() not in self.sub_menu_selected:
+            self.sub_menu_selected[self.option_menu.currentText()] = []
     
     def input_selection_change(self):
         selected_text = self.input_menu.currentText()
@@ -152,7 +151,7 @@ class Ui_Dialog(object):
             self.input_change_detect = selected_text
         
         # ----- Action performed on Input Menu Values ----- #
-        if selected_text != '--Select--':
+        if selected_text != self.select_data:
             option_menu_selected_text = self.option_menu.currentText()
             if option_menu_selected_text == self.options_menu_vals[0]: # Major Scale
                 note = selected_text
@@ -171,10 +170,10 @@ class Ui_Dialog(object):
                 self.output_text.setText('     '.join(result))
 
         # ----- To Keep track of Selections ----- #
-        if self.input_menu.currentText() in self.sub_menu_selected:
-            self.sub_menu_selected[self.input_menu.currentText()].append(selected_text)
+        if self.option_menu.currentText() in self.sub_menu_selected:
+            self.sub_menu_selected[self.option_menu.currentText()].append(selected_text)
         else:
-            self.sub_menu_selected[self.input_menu.currentText] = [selected_text]
+            self.sub_menu_selected[self.option_menu.currentText()] = [selected_text]
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

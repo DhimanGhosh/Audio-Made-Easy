@@ -4,10 +4,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QCo
 
 utils_dir = assets_dir = ''
 if platform.system() == 'Linux':
-    utils_dir = os.path.realpath('../Utils/')
+    utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
     from Music import Music
-    assets_dir = os.path.realpath('../assets/')
+    assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
 else:
     root_dir = os.path.realpath('..')
@@ -159,7 +159,7 @@ class Ui_Dialog(object):
             self.input_menu.setDisabled(True)
         
         # ----- To Keep track of Selections ----- #
-        if self.option_menu.currentText() not in self.sub_menu_selected:
+        if self.option_menu.currentText() not in self.sub_menu_selected and self.option_menu.currentText() != self.select_data:
             self.sub_menu_selected[self.option_menu.currentText()] = []
     
     def input_selection_change(self):
@@ -189,7 +189,7 @@ class Ui_Dialog(object):
                 self.output_text.setText('     '.join(result))
 
         # ----- To Keep track of Selections ----- #
-        if self.option_menu.currentText() in self.sub_menu_selected:
+        if self.option_menu.currentText() in self.sub_menu_selected and self.option_menu.currentText() != self.select_data:
             self.sub_menu_selected[self.option_menu.currentText()].append(selected_text)
         else:
             self.sub_menu_selected[self.option_menu.currentText()] = [selected_text]

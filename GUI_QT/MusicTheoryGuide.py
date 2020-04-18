@@ -28,10 +28,10 @@ class Ui_Dialog(object):
         super(Ui_Dialog, self).__init__()
         # To make this to work in Fullscreen; set 'self.window_width' and 'self.window_height' to 'size.width()' and 'size.height()'
         # To make this to work in Fullscreen-Windowed; set 'self.window_width' and 'self.window_height' to 'rect.width()' and 'rect.height()'
-        #self.window_width = 500
-        #self.window_height = 800
-        self.window_width = size.width()
-        self.window_height = size.height()
+        self.window_width = 500
+        self.window_height = 800
+        #self.window_width = size.width()    # Fullscreen
+        #self.window_height = size.height()  # Fullscreen
         self.drop_down_width = self.window_width//2 + 50
         self.notation_width = self.drop_down_width//2
         self.widget_height = self.window_height//20
@@ -266,5 +266,6 @@ if __name__ == "__main__":
         background-color: rgba(150,0,255,255);\
         color: rgba(0,0,0,255);\
     ")'''
+    #MainWindow.showFullScreen()    # Fullscreen
     MainWindow.show()
     sys.exit(app.exec_())

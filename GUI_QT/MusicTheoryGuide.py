@@ -27,8 +27,8 @@ class Ui_Dialog(object):
     def __init__(self, Dialog):
         super(Ui_Dialog, self).__init__()
 
-        self.window_width = 400
-        self.window_height = 500
+        self.window_width = 500
+        self.window_height = 800
         self.drop_down_width = self.window_width//2 + 50
         self.notation_width = self.drop_down_width//2
         self.widget_height = self.window_height//20

@@ -1,7 +1,6 @@
-import os, sys, platform
+import os, sys, platform, qdarkgraystyle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
-import qdarkgraystyle
 
 utils_dir = assets_dir = ''
 if platform.system() == 'Linux':
@@ -28,10 +27,15 @@ class Ui_Dialog(object):
         super(Ui_Dialog, self).__init__()
 
         self.window_width = 400
-        self.window_height = 260
-        self.widget_width = self.window_width//10
-        self.widget_height = 22
+        self.window_height = 500
         self.drop_down_width = self.window_width//2 + 50
+        self.notation_width = self.drop_down_width//2
+        self.widget_height = 22
+        self.label_width = self.window_width//4
+        self.label_padding_left = self.window_width//20
+        self.content_padding_left = self.label_padding_left + self.label_width
+        self.padding_top = self.window_height//10
+        self.v_space_between_widgets = self.window_height//5
 
         Dialog.setObjectName("Dialog")
         self.set_window_resizable(window_obj=Dialog, width=self.window_width, height=self.window_height, flag=False)
@@ -65,44 +69,48 @@ class Ui_Dialog(object):
         
     def setupUi(self, Dialog):
         # Notations
-        self.notation_label.setGeometry(QtCore.QRect(40, 25, 47, 13))
+        self.notation_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.notation_label.setObjectName("notation_label")
-        self.notation_S.setGeometry(QtCore.QRect(110, 23, self.widget_width, self.widget_height))
+        self.notation_S.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.notation_width, self.widget_height))
         self.notation_S.setObjectName("notation_S")
         self.notation_S.setChecked(True)
-        self.notation_b.setGeometry(QtCore.QRect(300, 23, self.widget_width, self.widget_height))
+        self.notation_b.setGeometry(QtCore.QRect(self.content_padding_left + self.notation_width, self.padding_top-2, self.notation_width, self.widget_height))
         self.notation_b.setObjectName("notation_b")
-
+        
+        self.padding_top += self.v_space_between_widgets
         # Option Menu
-        self.options_label.setGeometry(QtCore.QRect(40, 70, 47, 13))
+        self.options_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.options_label.setObjectName("options_label")
-        self.option_menu.setGeometry(QtCore.QRect(110, 68, self.drop_down_width, self.widget_height))
+        self.option_menu.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.option_menu.setObjectName("option_menu")
 
         self.option_menu.addItem(self.select_data)
         self.option_menu.addItems(self.options_menu_vals)
         self.option_menu.currentIndexChanged.connect(self.option_selection_change)
         #self.option_menu.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-        self.option_menu.setStyleSheet('\
+        '''self.option_menu.setStyleSheet('\
             background-color: lightgreen;\
-        ')
+        ')'''
 
+        self.padding_top += self.v_space_between_widgets
         # Input Menu
-        self.input_label.setGeometry(QtCore.QRect(40, 120, 47, 13))
+        self.input_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.input_label.setObjectName("input_label")
-        self.input_menu.setGeometry(QtCore.QRect(110, 118, self.drop_down_width, self.widget_height))
+        self.input_menu.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.input_menu.setObjectName("input_menu")
         self.input_menu.setDisabled(True)
 
+        self.padding_top += self.v_space_between_widgets
         # Output
-        self.output_label.setGeometry(QtCore.QRect(40, 170, 47, 13))
+        self.output_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.output_label.setObjectName("output_label")
-        self.output_text.setGeometry(QtCore.QRect(110, 168, self.drop_down_width, self.widget_height))
+        self.output_text.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.output_text.setObjectName("output_text")
         self.output_text.setDisabled(True)
 
+        self.padding_top += self.v_space_between_widgets
         # App RESET
-        self.reset_button.setGeometry(QtCore.QRect(40, 210, 320, 30))
+        self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, 30))
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)
         self.reset_button.setIcon(QtGui.QIcon(reset_icon))

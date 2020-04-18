@@ -275,13 +275,13 @@ class Menu:
         music = Music()
         common_scale = music.common_scale_from_notes(notes.split())
         result = common_scale[0]
-        if common_scale[1] is '' or common_scale[1] == 'NR':
-            if len(result) > 0:
-                print("'{}' Notes are present in '{}' Scale".format(notes, result[0]))
-            else:
-                print("'{}' Notes does not share common scale... Please Check the Notes Once...".format(notes))
+        if len(result) > 0:
+            if common_scale[1] is '' or common_scale[1] == 'NR':
+                print("'{}' Notes are present in '{}' & '{}' Scales".format(notes, result[0], result[1]))
+            elif common_scale[1] == 'R':
+                print("'{}' Notes are present in '{}' Scale or '{}' Scale".format(notes, result[0], result[1]))
         else:
-            print("'{}' Notes are present in '{}' Scale or '{}' Scale".format(notes, result[0], result[1]))
+            print("'{}' Notes does not share common scale... Please Check the Notes Once...".format(notes))
     
     def best_capo_position(self, wob):
         wob.set_wrong_flag(False)

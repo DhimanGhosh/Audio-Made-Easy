@@ -721,12 +721,14 @@ class Music:
                 result = result.intersection(list_of_sets[i])
         result = list(result)
         if len(result) == 2:
-            minor_note_in_result = [item for item in result if 'm' in item][0]
-            minor_note_index = result.index(minor_note_in_result)
-            major_note_index = minor_note_index - 1
-            if self.relative_minor(result[major_note_index]) == result[minor_note_index] and self.relative_major(result[minor_note_index][:-1]) == result[major_note_index]:
-                return (result, 'R')
-            else:
-                return (result, 'NR')
-        else:
-            return (result, '')
+            print(result)
+            minor_note_in_result = [item for item in result if 'm' in item]
+            if minor_note_in_result:
+                minor_note_in_result = minor_note_in_result[0]
+                minor_note_index = result.index(minor_note_in_result)
+                major_note_index = minor_note_index - 1
+                if self.relative_minor(result[major_note_index]) == result[minor_note_index] and self.relative_major(result[minor_note_index][:-1]) == result[major_note_index]:
+                    return (result, 'R')
+                else:
+                    return (result, 'NR')
+        return (result, '')

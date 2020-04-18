@@ -2,24 +2,23 @@ import os, sys, platform
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
 
-
+utils_dir = assets_dir = ''
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils/')
     sys.path.insert(0, utils_dir)
     from Music import Music
-    features = utils_dir + '/Features.txt'
     assets_dir = os.path.realpath('../assets/')
-    sys.path.insert(0, utils_dir)
-    app_logo = assets_dir + '/app_logo.png'
-    reset_icon = assets_dir + '/reset.png'
+    sys.path.insert(0, assets_dir)
 else:
     root_dir = os.path.realpath('..')
     sys.path.insert(0, root_dir)
     from Utils.Music import Music
-    features = root_dir + '/Utils/Features.txt'
-    app_logo = root_dir + '/assets/app_logo.png'
-    reset_icon = root_dir + '/assets/reset.png'
+    utils_dir = root_dir + '/Utils/'
+    assets_dir = root_dir + '/assets/'
 
+features = utils_dir + 'Features.txt'
+app_logo = assets_dir + 'app_logo.png'
+reset_icon = assets_dir + 'reset.png'
 
 class Ui_Dialog(object):
     def __init__(self, Dialog):

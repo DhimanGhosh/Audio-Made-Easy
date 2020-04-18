@@ -33,11 +33,22 @@ class Ui_Dialog(object):
         self.output_label = QLabel(Dialog)
         self.output_text = QLineEdit(Dialog)
         self.reset_button = QPushButton(Dialog)
-
+        
+        music = Music()
+        self.notesS = music.notesS
+        self.notesb = music.notesb
+        self.notes = self.notesS
         self.options_menu_vals = tuple()
         with open(features, 'r') as f:
             self.options_menu_vals = tuple([x.strip() for x in f.readlines()])
-
+        self.input_menu_vals = tuple()
+        self.rel_maj_min_options = ('Relative Major', 'Relative Minor')
+        self.major_minor_options = ('Major', 'Minor')
+        self.guitar_frets_options = tuple([str(i) for i in range(1, 23)]) # For Capo position entry
+        self.sub_menu_selected = dict() # To Keep track of options selected
+        self.option_change_detect = ''
+        self.input_change_detect = ''
+        
     def setupUi(self, Dialog):
         # Notations
         self.notation_label.setGeometry(QtCore.QRect(40, 25, 47, 13))
@@ -56,7 +67,7 @@ class Ui_Dialog(object):
 
         self.option_menu.addItem('--Select--')
         self.option_menu.addItems(self.options_menu_vals)
-        self.option_menu.currentIndexChanged.connect(self.selectionchange)
+        self.option_menu.currentIndexChanged.connect(self.option_selection_change)
 
         # Input Menu
         self.input_label.setGeometry(QtCore.QRect(40, 120, 47, 13))
@@ -81,12 +92,60 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
-    def selectionchange(self, i):
-        #print("Current index",i,"selection changed",self.option_menu.currentText())
-        if self.option_menu.currentText() != '--Select--':
+    def option_selection_change(self):
+        selected_text = self.option_menu.currentText()
+        # ----- Detect change in menu selection ----- #
+        '''if selected_text == self.option_menu.currentText() and self.option_change_detect != selected_text:
+            self.option_change_detect = selected_text
+        elif selected_text == self.input_menu.currentText() and self.input_change_detect != selected_text:
+            self.input_change_detect = selected_text'''
+        
+        # ----- Change Input Menu Values ----- #
+        if selected_text != '--Select--':
             self.input_menu.setDisabled(False)
+            if selected_text == self.options_menu_vals[0]: # Major Scale
+                if self.notation_S.isChecked():
+                    self.notes = self.notesS
+                elif self.notation_b.isChecked():
+                    self.notes = self.notesb
+                self.input_menu_vals = self.notes
+            elif selected_text == self.options_menu_vals[1]: # Major Chord
+                if self.notation_S.isChecked():
+                    self.notes = self.notesS
+                elif self.notation_b.isChecked():
+                    self.notes = self.notesb
+                self.input_menu_vals = self.notes
+            elif selected_text == self.options_menu_vals[2]: # Chords in Major Scale
+                if self.notation_S.isChecked():
+                    self.notes = self.notesS
+                elif self.notation_b.isChecked():
+                    self.notes = self.notesb
+                self.input_menu_vals = self.notes
+            
+            self.input_menu.addItem('--Select--')
+            self.input_menu.addItems(self.input_menu_vals)
+            self.input_menu.currentIndexChanged.connect(self.input_selection_change)
         else:
             self.input_menu.setDisabled(True)
+    
+    def input_selection_change(self):
+        if self.input_menu.currentText() != '--Select--':
+            option_menu_selected_text = self.option_menu.currentText()
+            if option_menu_selected_text == self.options_menu_vals[0]: # Major Scale
+                note = self.input_menu.currentText()
+                music = Music(note)
+                result = music.major_scale()
+                self.output_text.setText('     '.join(result))
+            elif option_menu_selected_text == self.options_menu_vals[1]: # Major Chord
+                note = self.input_menu.currentText()
+                music = Music(note)
+                result = music.major_chord()
+                self.output_text.setText('     '.join(result))
+            elif option_menu_selected_text == self.options_menu_vals[2]: # Chords in Major Scale
+                note = self.input_menu.currentText()
+                music = Music(note)
+                result = music.chords_in_major_scale()
+                self.output_text.setText('     '.join(result))
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate

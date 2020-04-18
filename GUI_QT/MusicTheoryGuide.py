@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
 
 utils_dir = assets_dir = ''
+# ----- Access Other Directories on Particular Platform ----- #
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
@@ -30,7 +31,7 @@ class Ui_Dialog(object):
         self.window_height = 500
         self.drop_down_width = self.window_width//2 + 50
         self.notation_width = self.drop_down_width//2
-        self.widget_height = 22
+        self.widget_height = self.window_height//20
         self.label_width = self.window_width//4
         self.label_padding_left = self.window_width//20
         self.content_padding_left = self.label_padding_left + self.label_width
@@ -110,7 +111,7 @@ class Ui_Dialog(object):
 
         self.padding_top += self.v_space_between_widgets
         # App RESET
-        self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, 30))
+        self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, self.widget_height + 10))
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)
         self.reset_button.setIcon(QtGui.QIcon(reset_icon))

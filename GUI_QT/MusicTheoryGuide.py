@@ -54,7 +54,8 @@ class Ui_Dialog(object):
         self.output_text_style = 'color: rgba(255, 255, 255, 150);'
         self.reset_button_style = '\
             background-color: red;\
-            border-radius: 15px;'
+            border-radius: 15px;\
+            color: rgb(0, 0, 0);'
 
         # ----- App Window Settings ----- #
         Dialog.setObjectName("Dialog")

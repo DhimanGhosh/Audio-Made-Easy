@@ -27,6 +27,7 @@ flat_icon = assets_dir + 'flat.png'
 class Ui_Dialog(object):
     def __init__(self, Dialog):
         super(Ui_Dialog, self).__init__()
+        
         # ----- App Design ----- #
         # To make this to work in Fullscreen; set 'self.window_width' and 'self.window_height' to 'size.width()' and 'size.height()'
         # To make this to work in Fullscreen-Windowed; set 'self.window_width' and 'self.window_height' to 'rect.width()' and 'rect.height()'
@@ -291,11 +292,7 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     ui.retranslateUi(MainWindow)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    '''MainWindow.setStyleSheet("\
-        margin: 0px; padding: 0px;\
-        background-color: rgba(150,0,255,255);\
-        color: rgba(0,0,0,255);\
-    ")'''
+    
     #MainWindow.showFullScreen()    # Fullscreen
     MainWindow.show()
     sys.exit(app.exec_())

@@ -1,6 +1,7 @@
 import os, sys, platform, qdarkgraystyle
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QRadioButton, QComboBox, QLineEdit, QPushButton
+from PyQt5.QtGui import QFont
 
 utils_dir = assets_dir = ''
 # ----- Access Other Directories on Particular Platform ----- #
@@ -26,6 +27,7 @@ flat_icon = assets_dir + 'flat.png'
 class Ui_Dialog(object):
     def __init__(self, Dialog):
         super(Ui_Dialog, self).__init__()
+        # ----- App Design ----- #
         # To make this to work in Fullscreen; set 'self.window_width' and 'self.window_height' to 'size.width()' and 'size.height()'
         # To make this to work in Fullscreen-Windowed; set 'self.window_width' and 'self.window_height' to 'rect.width()' and 'rect.height()'
         self.window_width = 500
@@ -41,13 +43,28 @@ class Ui_Dialog(object):
         self.padding_top = self.window_height//10
         self.v_space_between_widgets = self.window_height//5
 
+        self.app_font =  QFont()
+        self.output_text_font = QFont()
+        self.app_font.setPointSize((self.window_width + self.window_height)//100)
+        self.output_text_font.setPointSize((self.window_width + self.window_height)//120)
+
+        self.label_style = 'color: rgb(176, 85, 87);'
+        self.option_menu_style = 'color: rgb(158, 212, 124);'
+        self.input_menu_style = 'color: rgb(15, 99, 189);'
+        self.output_text_style = 'color: rgba(255, 255, 255, 150);'
+        self.reset_button_style = '\
+            background-color: red;\
+            border-radius: 15px;'
+
+        # ----- App Window Settings ----- #
         Dialog.setObjectName("Dialog")
         self.set_window_resizable(window_obj=Dialog, width=self.window_width, height=self.window_height, flag=False)
 
+        # ----- Widgets ----- #
         self.notation_label = QLabel(Dialog)
         self.notation_S = QRadioButton(Dialog)
         self.notation_b = QRadioButton(Dialog)
-        self.options_label = QLabel(Dialog)
+        self.option_label = QLabel(Dialog)
         self.option_menu = QComboBox(Dialog)
         self.input_label = QLabel(Dialog)
         self.input_menu = QComboBox(Dialog)
@@ -55,6 +72,7 @@ class Ui_Dialog(object):
         self.output_text = QLineEdit(Dialog)
         self.reset_button = QPushButton(Dialog)
         
+        # ----- Music Logic ----- #
         music = Music()
         self.notesS = music.notesS
         self.notesb = music.notesb
@@ -73,18 +91,25 @@ class Ui_Dialog(object):
         
     def setupUi(self, Dialog):
         # Notations
+        self.notation_label.setFont(self.app_font)
         self.notation_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.notation_label.setObjectName("notation_label")
-        self.notation_S.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.notation_width, self.widget_height))
+        self.notation_label.setStyleSheet(self.label_style)
+        self.notation_S.setFont(self.app_font)
+        self.notation_S.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top, self.notation_width, self.widget_height))
         self.notation_S.setObjectName("notation_S")
         self.notation_S.setChecked(True)
-        self.notation_b.setGeometry(QtCore.QRect(self.content_padding_left + self.notation_width, self.padding_top-2, self.notation_width, self.widget_height))
+        self.notation_b.setFont(self.app_font)
+        self.notation_b.setGeometry(QtCore.QRect(self.content_padding_left + self.notation_width, self.padding_top, self.notation_width, self.widget_height))
         self.notation_b.setObjectName("notation_b")
         
         self.padding_top += self.v_space_between_widgets
         # Option Menu
-        self.options_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
-        self.options_label.setObjectName("options_label")
+        self.option_label.setFont(self.app_font)
+        self.option_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
+        self.option_label.setObjectName("options_label")
+        self.option_label.setStyleSheet(self.label_style)
+        self.option_menu.setFont(self.app_font)
         self.option_menu.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.option_menu.setObjectName("option_menu")
 
@@ -92,37 +117,41 @@ class Ui_Dialog(object):
         self.option_menu.addItems(self.options_menu_vals)
         self.option_menu.currentIndexChanged.connect(self.option_selection_change)
         #self.option_menu.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
-        '''self.option_menu.setStyleSheet('\
-            background-color: lightgreen;\
-        ')'''
+        self.option_menu.setStyleSheet(self.option_menu_style)
 
         self.padding_top += self.v_space_between_widgets
         # Input Menu
+        self.input_label.setFont(self.app_font)
         self.input_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.input_label.setObjectName("input_label")
+        self.input_label.setStyleSheet(self.label_style)
+        self.input_menu.setFont(self.app_font)
         self.input_menu.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.input_menu.setObjectName("input_menu")
         self.input_menu.setDisabled(True)
+        self.input_menu.setStyleSheet(self.input_menu_style)
 
         self.padding_top += self.v_space_between_widgets
         # Output
+        self.output_label.setFont(self.app_font)
         self.output_label.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width, self.widget_height))
         self.output_label.setObjectName("output_label")
+        self.output_label.setStyleSheet(self.label_style)
+        self.output_text.setFont(self.output_text_font)
         self.output_text.setGeometry(QtCore.QRect(self.content_padding_left, self.padding_top-2, self.drop_down_width, self.widget_height))
         self.output_text.setObjectName("output_text")
         self.output_text.setDisabled(True)
+        self.output_text.setStyleSheet(self.output_text_style)
 
         self.padding_top += self.v_space_between_widgets
         # App RESET
+        self.reset_button.setFont(self.app_font)
         self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, self.widget_height + 10))
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)
         self.reset_button.setIcon(QtGui.QIcon(reset_icon))
         self.reset_button.setIconSize(QtCore.QSize(self.widget_height, self.widget_height))
-        self.reset_button.setStyleSheet('\
-            background-color: red;\
-            border-radius: 15px;\
-        ')
+        self.reset_button.setStyleSheet(self.reset_button_style)
 
 
         self.retranslateUi(Dialog)
@@ -221,7 +250,7 @@ class Ui_Dialog(object):
         #self.notation_S.setText(_translate("Dialog", "#"))
         self.notation_b.setIcon(QtGui.QIcon(flat_icon))
         #self.notation_b.setText(_translate("Dialog", "b"))
-        self.options_label.setText(_translate("Dialog", "Options"))
+        self.option_label.setText(_translate("Dialog", "Options"))
         self.input_label.setText(_translate("Dialog", "Input"))
         self.output_label.setText(_translate("Dialog", "Output"))
         self.output_text.setText(_translate("Dialog", ""))

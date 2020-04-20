@@ -1,5 +1,5 @@
 # Music Theory Guide
-> Help you in understanding and creating music
+> Help you in Composing Music && guiding the theory of Music
 
 This app lets you:
 - Ease your work while looking for any notes, scales, chords, etc.

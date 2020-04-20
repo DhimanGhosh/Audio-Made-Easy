@@ -20,7 +20,7 @@ _________________________________________________________________________
 | Last Stable Release   : Version 2.1 (18/04/2020) - {}         |
 | Developer             : Dhiman Ghosh                                  |
 _________________________________________________________________________
-'''.format(today, days_passed_str)
+'''.format(days_passed_str)
 )
 
 def run():

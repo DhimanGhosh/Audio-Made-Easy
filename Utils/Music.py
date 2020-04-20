@@ -62,7 +62,7 @@ class _Mingus_Helper:
 
 
 class Music:
-    def __init__(self, note='C'):
+    def __init__(self, note='C', audio_file=''):
         '''
         Objective: Contructor for Music Class
 
@@ -94,6 +94,9 @@ class Music:
         self.__min_scale_formula = [self.__tone,self.__semi_tone,self.__tone,self.__tone,self.__semi_tone,self.__tone,self.__tone]
         self.__chord_prog_in_min_scale_formula = [self.__minor,self.__minor,self.__major,self.__major+'/'+self.__minor,self.__major+'/'+self.__minor,self.__major,self.__major]
         
+        self.__audio_file = audio_file
+        self.__ap = Audio_Process(self.__audio_file)
+
         self.__tone = Note_Tone()
         self.__octave4 = self.__tone.notes(4)
         self.__octave5 = self.__tone.notes(5)
@@ -580,6 +583,16 @@ class Music:
         return (result, '')
 
     def audio_note_detect(self, audio_file):
-        ap = Audio_Process(audio_file)
-        notes_from_audio = ap.detect_notes_from_audio()
+        if audio_file:
+            self.__audio_file = audio_file
+        notes_from_audio = self.__ap.detect_notes_from_audio()
         return notes_from_audio
+
+    def play_audio_file(self, audio_file):
+        if audio_file:
+            self.__audio_file = audio_file
+        self.__ap.play_audio(audio_file=self.__audio_file)
+    
+    def live_record_and_playback(self, duration=3):
+        my_recording = self.__ap.record(duration=duration)
+        self.__ap.play_audio(my_recording)

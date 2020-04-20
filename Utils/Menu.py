@@ -2,6 +2,8 @@
 
 # Logic for each choice of menu
 import platform
+from time import sleep
+
 if platform.system() == 'Linux':
     from Music import Music
 else:
@@ -28,9 +30,11 @@ class Menu:
             12. Play Tone in Sequence (Scale / Note Sequence)
             13. Scale from Chords
             14. Scale from Notes
-            15. Detect Notes in a Audio(wav) file
-            16. Best Capo position for easy play (Feature coming soon)
-            17. Quit
+            15. Detect Notes in a Audio (wav) file
+            16. Play Audio from a file (wav)
+            17. Record and Playback
+            18. Best Capo position for easy play (Feature coming soon)
+            19. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -309,4 +313,24 @@ class Menu:
         audio_file = input('Enter the path for audio file: ')
         music = Music()
         print('Notes in your audio file: {}'.format(music.audio_note_detect(audio_file)))
-   
+    
+    def play_audio(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Detect Notes in a Audio file')
+        audio_file = input('Enter the path for audio file: ')
+        music = Music()
+        print('Playing Audio...')
+        music.play_audio_file(audio_file)
+    
+    def record_play(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Detect Notes in a Audio file')
+        music = Music()
+        duration = int(input('Enter the duration of recording (in sec): '))
+        print('Record your audio after this beep...')
+        sleep(2)
+        music.freq_beep(1047)
+        sleep(.3)
+        print('Listening...')
+        music.live_record_and_playback(duration=duration)
+        print('Playing Audio...')

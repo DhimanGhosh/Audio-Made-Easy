@@ -1,4 +1,7 @@
 import numpy as np, wave, struct, platform
+from scipy.io import wavfile
+from scipy.io.wavfile import read as read_wav
+import pyaudio
 
 if platform.system() == 'Linux':
     from Note_Tone import Note_Tone
@@ -99,3 +102,28 @@ class Audio_Process():
 			#print(idx)
 			self.Identified_Notes.append(self.notes[idx])
 		return self.Identified_Notes
+
+	def __get_fs_array_from_audio(self, audio_file):
+		sampling_rate, data=read_wav(audio_file)
+		return (sampling_rate, data)
+
+	def play_audio(self, array=np.zeros(0), fs=8000, audio_file=''):
+		if audio_file: # Play Audio direct from file; else from Recording
+			fs, array = self.__get_fs_array_from_audio(audio_file)
+		p = pyaudio.PyAudio()
+		stream = p.open(format=pyaudio.paInt16, channels=len(array.shape), rate=fs, output=True)
+		stream.write(array.tobytes())
+		stream.stop_stream()
+		stream.close()
+		p.terminate()
+
+	def record(self, duration=3, fs=8000):
+		nsamples = duration*fs
+		p = pyaudio.PyAudio()
+		stream = p.open(format=pyaudio.paInt16, channels=1, rate=fs, input=True, frames_per_buffer=nsamples)
+		buffer = stream.read(nsamples)
+		array = np.frombuffer(buffer, dtype='int16')
+		stream.stop_stream()
+		stream.close()
+		p.terminate()
+		return array

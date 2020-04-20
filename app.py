@@ -27,7 +27,7 @@ def run():
     wrg = Wrong()
     ch = 0
     count = 0
-    while ch != 17:
+    while ch != 19:
         menu = Menu()
         try:
             ch = int(input("Choice: "))
@@ -86,10 +86,16 @@ def run():
             menu.notes_in_audio(wrg)
 
         elif ch == 16:
+            menu.play_audio(wrg)
+
+        elif ch == 17:
+            menu.record_play(wrg)
+
+        elif ch == 18:
             menu.best_capo_position(wrg)
             count -= 1
             
-        elif ch < 1 or ch > 17:
+        elif ch < 1 or ch > 19:
             menu.wrong_entry(wrg)
             count -= 1
             

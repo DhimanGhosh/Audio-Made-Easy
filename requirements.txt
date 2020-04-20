@@ -3,3 +3,6 @@ pylint
 qdarkgraystyle
 pyqt5
 pyqt5-tools
+numpy
+scipy
+pyaudio

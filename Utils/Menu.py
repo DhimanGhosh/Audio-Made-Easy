@@ -5,7 +5,7 @@ import platform
 if platform.system() == 'Linux':
     from Music import Music
 else:
-    from .Music import Music
+    from Utils.Music import Music
 
 class Menu:
     def __init__(self):

@@ -28,8 +28,9 @@ class Menu:
             12. Play Tone in Sequence (Scale / Note Sequence)
             13. Scale from Chords
             14. Scale from Notes
-            15. Best Capo position for easy play (Feature coming soon)
-            16. Quit
+            15. Detect Notes in a Audio(wav) file
+            16. Best Capo position for easy play (Feature coming soon)
+            17. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -301,3 +302,11 @@ class Menu:
     def Study_Music(self):
         self.__talk('Invalid Music Notation!')
         print('Invalid Music Notation!\nI am not here to teach you MUSIC but Guide!')
+ 
+    def notes_in_audio(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Detect Notes in a Audio file')
+        audio_file = input('Enter the path for audio file: ')
+        music = Music()
+        print('Notes in your audio file: {}'.format(music.audio_note_detect(audio_file)))
+   

@@ -585,7 +585,7 @@ class Music:
     def audio_note_detect(self, audio_file):
         if audio_file:
             self.__audio_file = audio_file
-        notes_from_audio = self.__ap.detect_notes_from_audio()
+        notes_from_audio = self.__ap.detect_notes_from_audio(self.__audio_file)
         return notes_from_audio
 
     def play_audio_file(self, audio_file):

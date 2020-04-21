@@ -1,7 +1,7 @@
 import numpy as np, wave, struct, platform
 from scipy.io import wavfile
 from scipy.io.wavfile import read as read_wav
-import pyaudio
+import pyaudio, pdb
 from pydub import AudioSegment
 
 if platform.system() == 'Linux':
@@ -43,37 +43,39 @@ class Audio_Process():
 		return lst[idx]
 	
 	def __read_audio_file(self, audio_file):
+		#pdb.set_trace()
 		print ('\nReading Audio File...')
+		print('Audio File is: {}'.format(audio_file))
 
 		sound_file = wave.open(audio_file, 'r')
 		file_length = sound_file.getnframes()
 
-		sound = np.zeros(file_length)
+		self.sound = np.zeros(file_length)
 		self.sound_square = np.zeros(file_length)
 		for i in range(file_length):
 			data = sound_file.readframes(1)
 			data = struct.unpack("<h", data)
-			sound[i] = int(data[0])
+			self.sound[i] = int(data[0])
 			
-		self.sound = np.divide(sound, float(2**15))	# Normalize data in range -1 to 1
+		self.sound = np.divide(self.sound, float(2**15))	# Normalize data in range -1 to 1
 	
-	def detect_notes_from_audio(self):
-		self.__read_audio_file(self.audio_file)
+	def detect_notes_from_audio(self, audio_file):
+		self.__read_audio_file(audio_file)
 
 		######################### DETECTING SILENCE ##################################
 
-		sound_square = np.square(self.sound)
+		self.sound_square = np.square(self.sound)
 		frequency = []
 		dft = []
 		i = 0
 		j = 0
 		k = 0    
 		# traversing sound_square array with a fixed window_size
-		while(i<=len(sound_square)-self.window_size):
+		while(i<=len(self.sound_square)-self.window_size):
 			s = 0.0
 			j = 0
 			while(j<=self.window_size):
-				s = s + sound_square[i+j]
+				s = s + self.sound_square[i+j]
 				j = j + 1	
 			# detecting the silence waves
 			if s < self.threshold:

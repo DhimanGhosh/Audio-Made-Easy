@@ -113,7 +113,7 @@ class Audio_Process():
 
 	def play_audio(self, array=np.zeros(0), audio_file=''):
 		if audio_file: # Play Audio direct from file; else from Recording
-			fs, array = self.__get_fs_array_from_audio(audio_file)
+			_, array = self.__get_fs_array_from_audio(audio_file)
 		p = pyaudio.PyAudio()
 		stream = p.open(format=pyaudio.paInt16, channels=len(array.shape), rate=self.RATE, output=True)
 		stream.write(array.tobytes())

@@ -33,8 +33,9 @@ class Menu:
             15. Detect Notes in a Audio (wav) file
             16. Play Audio from a file (wav)
             17. Record and Playback
-            18. Best Capo position for easy play (Feature coming soon)
-            19. Quit
+            18. Record and Save
+            19. Best Capo position for easy play (Feature coming soon)
+            20. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -332,5 +333,20 @@ class Menu:
         music.freq_beep(1047)
         sleep(.3)
         print('Listening...')
-        music.live_record_and_playback(duration=duration)
+        music.record_and_playback(duration=duration)
         print('Playing Audio...')
+    
+    def record_save(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Detect Notes in a Audio file')
+        music = Music()
+        duration = int(input('Enter the duration of recording (in sec): '))
+        output_file = input('Enter Output File Name: ') # recordedFile
+        output_file = 'assets\\' + output_file + '.wav'
+        print('Record your audio after this beep...')
+        sleep(2)
+        music.freq_beep(1047)
+        sleep(.3)
+        print('Listening...')
+        music.record_and_save(duration=duration, output_file=output_file)
+        print('{} file saved successfully...'.format(output_file))

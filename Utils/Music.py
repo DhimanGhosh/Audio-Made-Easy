@@ -593,6 +593,9 @@ class Music:
             self.__audio_file = audio_file
         self.__ap.play_audio(audio_file=self.__audio_file)
     
-    def live_record_and_playback(self, duration=3):
+    def record_and_playback(self, duration=3):
         my_recording = self.__ap.record(duration=duration)
-        self.__ap.play_audio(my_recording)
+        self.__ap.play_audio(my_recording[0])
+    
+    def record_and_save(self, duration=3, output_file=''):
+        self.__ap.record_and_save_to_file(duration, output_file)

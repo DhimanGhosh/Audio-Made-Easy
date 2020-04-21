@@ -27,7 +27,7 @@ def run():
     wrg = Wrong()
     ch = 0
     count = 0
-    while ch != 19:
+    while ch != 20:
         menu = Menu()
         try:
             ch = int(input("Choice: "))
@@ -92,10 +92,13 @@ def run():
             menu.record_play(wrg)
 
         elif ch == 18:
+            menu.record_save(wrg)
+
+        elif ch == 19:
             menu.best_capo_position(wrg)
             count -= 1
             
-        elif ch < 1 or ch > 19:
+        elif ch < 1 or ch > 20:
             menu.wrong_entry(wrg)
             count -= 1
             

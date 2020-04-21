@@ -2,10 +2,11 @@ import numpy as np, wave, struct, platform
 from scipy.io import wavfile
 from scipy.io.wavfile import read as read_wav
 import pyaudio
+from pydub import AudioSegment
 
 if platform.system() == 'Linux':
     from Note_Tone import Note_Tone
-else:
+elif platform.system() == 'Windows':
     from Utils.Note_Tone import Note_Tone
 
 
@@ -20,6 +21,7 @@ class Audio_Process():
 		self.max_notes = 100    # Maximum number of notes in file, for efficiency
 		self.sampling_freq = 44100	# Sampling frequency of audio signal
 		self.threshold = 600
+		self.RATE = 441000
 
 		self.Identified_Notes = []
 		self.sound = self.sound_square = np.zeros(0)
@@ -58,7 +60,7 @@ class Audio_Process():
 	def detect_notes_from_audio(self):
 		self.__read_audio_file(self.audio_file)
 
-		######################### DETECTING SCILENCE ##################################
+		######################### DETECTING SILENCE ##################################
 
 		sound_square = np.square(self.sound)
 		frequency = []
@@ -107,23 +109,56 @@ class Audio_Process():
 		sampling_rate, data=read_wav(audio_file)
 		return (sampling_rate, data)
 
-	def play_audio(self, array=np.zeros(0), fs=8000, audio_file=''):
+	def play_audio(self, array=np.zeros(0), audio_file=''):
 		if audio_file: # Play Audio direct from file; else from Recording
-			fs, array = self.__get_fs_array_from_audio(audio_file)
+			self.RATE, array = self.__get_fs_array_from_audio(audio_file)
 		p = pyaudio.PyAudio()
-		stream = p.open(format=pyaudio.paInt16, channels=len(array.shape), rate=fs, output=True)
+		stream = p.open(format=pyaudio.paInt16, channels=len(array.shape), rate=self.RATE, output=True)
 		stream.write(array.tobytes())
 		stream.stop_stream()
 		stream.close()
 		p.terminate()
 
-	def record(self, duration=3, fs=8000):
-		nsamples = duration*fs
+	def record(self, duration=3):
+		sampling_rate = 8000
+		nsamples = duration * sampling_rate
 		p = pyaudio.PyAudio()
-		stream = p.open(format=pyaudio.paInt16, channels=1, rate=fs, input=True, frames_per_buffer=nsamples)
+		stream = p.open(format=pyaudio.paInt16, channels=1, rate=sampling_rate, input=True, frames_per_buffer=nsamples)
 		buffer = stream.read(nsamples)
 		array = np.frombuffer(buffer, dtype='int16')
 		stream.stop_stream()
 		stream.close()
 		p.terminate()
 		return array
+	
+	def record_and_save_to_file(self, duration, output_file=''):
+		FORMAT = pyaudio.paInt16
+		RATE = 44100
+		duration = 5
+		CHUNK = duration * RATE
+
+		#print('Record Start')
+		audio = pyaudio.PyAudio()
+		duration = duration
+		stream = audio.open(format=pyaudio.paInt16, channels=1, rate=RATE, input=True, frames_per_buffer=CHUNK)
+		Recordframes = []
+		for _ in range(0, int(RATE / CHUNK * duration)):
+			data = stream.read(CHUNK)
+			Recordframes.append(data)
+		#print('Record Stop')
+
+		stream.stop_stream()
+		stream.close()
+		audio.terminate()
+
+		waveFile = wave.open(output_file, 'wb')
+		waveFile.setnchannels(1)
+		waveFile.setsampwidth(audio.get_sample_size(FORMAT))
+		waveFile.setframerate(RATE)
+		waveFile.writeframes(b''.join(Recordframes))
+		waveFile.close()
+
+	def play_mp3(self, audio_file):
+		song = AudioSegment.from_mp3(audio_file)
+		song.export('conv.wav', format="wav")
+		self.play_audio('conv.wav')

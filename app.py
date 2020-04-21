@@ -27,7 +27,7 @@ def run():
     wrg = Wrong()
     ch = 0
     count = 0
-    menu_length = 21
+    menu_length = 22
     while ch != menu_length:
         menu = Menu()
         try:
@@ -99,6 +99,10 @@ def run():
             menu.play_mp3(wrg)
 
         elif ch == 20:
+            if not menu.va(wrg):
+                continue
+
+        elif ch == 21:
             menu.best_capo_position(wrg)
             count -= 1
             

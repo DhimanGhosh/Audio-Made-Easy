@@ -35,8 +35,9 @@ class Menu:
             17. Record and Playback
             18. Record and Save
             19. Play MP3 Audio
-            20. Best Capo position for easy play (Feature coming soon)
-            21. Quit
+            20. AI Voice Assistant (J.A.R.V.I.S)
+            21. Best Capo position for easy play (Feature coming soon)
+            22. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -360,3 +361,9 @@ class Menu:
         music = Music()
         print('Playing Audio...')
         music.play_mp3(audio_dir, mp3_audio_file)
+
+    def va(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose AI Voice Assistant')
+        music = Music()
+        return music.voice_assist()

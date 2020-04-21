@@ -36,10 +36,12 @@ if platform.system() == 'Linux':
     import os
     from Note_Tone import Note_Tone
     from Audio_Processing import Audio_Process 
+    from Jarvis_AI import Voice_Assistant
 elif platform.system() == 'Windows':
     import winsound
     from Utils.Note_Tone import Note_Tone
     from Utils.Audio_Processing import Audio_Process
+    from Utils.Jarvis_AI import Voice_Assistant
 
 
 class _Mingus_Helper:
@@ -96,6 +98,8 @@ class Music:
         
         self.__audio_file = audio_file
         self.__ap = Audio_Process(self.__audio_file)
+
+        self.__voice_assist = Voice_Assistant()
 
         self.__tone = Note_Tone()
         self.__octave4 = self.__tone.notes(4)
@@ -604,3 +608,7 @@ class Music:
         if mp3_audio_file:
             self.__audio_file = mp3_audio_file
         self.__ap.play_mp3(music_dir, self.__audio_file)
+
+    def voice_assist(self):
+        print(self.__voice_assist.search_terms)
+        return self.__voice_assist.start_AI_engine()

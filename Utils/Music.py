@@ -595,7 +595,7 @@ class Music:
     
     def record_and_playback(self, duration=3):
         my_recording = self.__ap.record(duration=duration)
-        self.__ap.play_audio(my_recording[0])
+        self.__ap.play_audio(my_recording)
     
     def record_and_save(self, duration=3, output_file=''):
         self.__ap.record_and_save_to_file(duration, output_file)

@@ -21,7 +21,7 @@ class Audio_Process():
 		self.max_notes = 100    # Maximum number of notes in file, for efficiency
 		self.sampling_freq = 44100	# Sampling frequency of audio signal
 		self.threshold = 600
-		self.RATE = 441000
+		self.RATE = 8000
 
 		self.Identified_Notes = []
 		self.sound = self.sound_square = np.zeros(0)
@@ -113,7 +113,7 @@ class Audio_Process():
 
 	def play_audio(self, array=np.zeros(0), audio_file=''):
 		if audio_file: # Play Audio direct from file; else from Recording
-			self.RATE, array = self.__get_fs_array_from_audio(audio_file)
+			fs, array = self.__get_fs_array_from_audio(audio_file)
 		p = pyaudio.PyAudio()
 		stream = p.open(format=pyaudio.paInt16, channels=len(array.shape), rate=self.RATE, output=True)
 		stream.write(array.tobytes())
@@ -122,7 +122,7 @@ class Audio_Process():
 		p.terminate()
 
 	def record(self, duration=3):
-		sampling_rate = 8000
+		sampling_rate = self.RATE
 		nsamples = duration * sampling_rate
 		p = pyaudio.PyAudio()
 		stream = p.open(format=pyaudio.paInt16, channels=1, rate=sampling_rate, input=True, frames_per_buffer=nsamples)

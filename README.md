@@ -21,5 +21,5 @@ This app lets you:
 
 		$ install_dependencies.sh
 		$ python app.py (For CLI Execution)
-		$ cd ./GUI/
+		$ cd ./GUI_QT/
 		$ python MusicTheoryGuide.py (For Interactive GUI)

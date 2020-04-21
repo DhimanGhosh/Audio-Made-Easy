@@ -34,8 +34,9 @@ class Menu:
             16. Play Audio from a file (wav)
             17. Record and Playback
             18. Record and Save
-            19. Best Capo position for easy play (Feature coming soon)
-            20. Quit
+            19. Play MP3 Audio
+            20. Best Capo position for easy play (Feature coming soon)
+            21. Quit
         ''')
         self.__talk('Welcome to Music Theory Guide')
     
@@ -317,7 +318,7 @@ class Menu:
     
     def play_audio(self, wob):
         wob.set_wrong_flag(False)
-        self.__talk('You chose Detect Notes in a Audio file')
+        self.__talk('You chose Play Audio from a file')
         audio_file = input('Enter the path for audio file: ')
         music = Music()
         print('Playing Audio...')
@@ -325,7 +326,7 @@ class Menu:
     
     def record_play(self, wob):
         wob.set_wrong_flag(False)
-        self.__talk('You chose Detect Notes in a Audio file')
+        self.__talk('You chose Record and Playback')
         music = Music()
         duration = int(input('Enter the duration of recording (in sec): '))
         print('Record your audio after this beep...')
@@ -338,7 +339,7 @@ class Menu:
     
     def record_save(self, wob):
         wob.set_wrong_flag(False)
-        self.__talk('You chose Detect Notes in a Audio file')
+        self.__talk('You chose Record and Save')
         music = Music()
         duration = int(input('Enter the duration of recording (in sec): '))
         output_file = input('Enter Output File Name: ') # recordedFile
@@ -350,3 +351,11 @@ class Menu:
         print('Listening...')
         music.record_and_save(duration=duration, output_file=output_file)
         print('{} file saved successfully...'.format(output_file))
+
+    def play_mp3(self, wob):
+        wob.set_wrong_flag(False)
+        self.__talk('You chose Play MP3 Audio')
+        mp3_audio_file = input('Enter the path for mp3 audio file: ')
+        music = Music()
+        print('Playing Audio...')
+        music.play_mp3(mp3_audio_file)

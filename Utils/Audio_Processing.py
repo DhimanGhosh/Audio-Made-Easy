@@ -1,7 +1,6 @@
-import numpy as np, wave, struct, platform
+import numpy as np, wave, struct, platform, pyaudio, pdb, playsound
 from scipy.io import wavfile
 from scipy.io.wavfile import read as read_wav
-import pyaudio, pdb
 from pydub import AudioSegment
 
 if platform.system() == 'Linux':
@@ -160,7 +159,10 @@ class Audio_Process():
 		waveFile.writeframes(b''.join(Recordframes))
 		waveFile.close()
 
-	def play_mp3(self, audio_file):
-		song = AudioSegment.from_mp3(audio_file)
-		song.export('conv.wav', format="wav")
-		self.play_audio('conv.wav')
+	def play_mp3(self, mp3_audio_file):
+		#pdb.set_trace()
+		playsound.playsound(mp3_audio_file, True)
+		'''print(mp3_audio_file)
+		song = AudioSegment.from_mp3(mp3_audio_file)
+		song.export('conv.wav', format='wav')
+		self.play_audio(audio_file='conv.wav')'''

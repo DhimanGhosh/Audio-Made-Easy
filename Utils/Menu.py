@@ -355,7 +355,8 @@ class Menu:
     def play_mp3(self, wob):
         wob.set_wrong_flag(False)
         self.__talk('You chose Play MP3 Audio')
-        mp3_audio_file = input('Enter the path for mp3 audio file: ')
+        audio_dir = input('Enter the path for mp3 audio file: ') + '\\'
+        mp3_audio_file = input('Enter the name of mp3 audio file: ') + '.mp3'
         music = Music()
         print('Playing Audio...')
-        music.play_mp3(mp3_audio_file)
+        music.play_mp3(audio_dir, mp3_audio_file)

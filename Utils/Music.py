@@ -600,7 +600,7 @@ class Music:
     def record_and_save(self, duration=3, output_file=''):
         self.__ap.record_and_save_to_file(duration, output_file)
 
-    def play_mp3(self, mp3_audio_file):
+    def play_mp3(self, music_dir, mp3_audio_file):
         if mp3_audio_file:
             self.__audio_file = mp3_audio_file
-        self.__ap.play_mp3(self.__audio_file)
+        self.__ap.play_mp3(music_dir, self.__audio_file)

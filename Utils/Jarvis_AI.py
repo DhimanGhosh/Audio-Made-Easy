@@ -60,7 +60,8 @@ class Youtube_mp3:
                     os.remove(file_name_in_dir[0])
                     self.song_created = ''
                 except PermissionError: # say 'STOP' will be implemented after creating 'class Media_Player'
-                    print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
+                    print('Silently quiting app!')
+                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
 
     def url_search(self, search_string, max_search):
         textToSearch = search_string

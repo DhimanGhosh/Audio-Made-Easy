@@ -610,5 +610,4 @@ class Music:
         self.__ap.play_mp3(music_dir, self.__audio_file)
 
     def voice_assist(self):
-        print(self.__voice_assist.search_terms)
         return self.__voice_assist.start_AI_engine()

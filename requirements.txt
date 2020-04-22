@@ -6,3 +6,10 @@ pyqt5-tools
 numpy
 scipy
 pyaudio
+pyttsx3
+speechRecognition
+wikipedia
+pafy
+pyglet
+pygame
+bs4

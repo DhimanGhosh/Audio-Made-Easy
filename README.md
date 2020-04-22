@@ -1,5 +1,5 @@
-# Music Theory Guide
-> Help you in Composing Music && guiding the theory of Music
+# Audio Made Easy
+> Think of what you can do with your voice....
 
 This app lets you:
 - Ease your work while looking for any notes, scales, chords, etc.

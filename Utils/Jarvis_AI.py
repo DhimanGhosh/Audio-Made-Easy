@@ -110,7 +110,6 @@ class Youtube_mp3:
     def play_media(self, num):
         global song_created
         song_title = self.dict[int(num)]
-        print(f'song title: {song_title}')
         info = pafy.new(song_title)
         #audio = info.getbestaudio(preftype="m4a")
         #audio.download('song.m4a', quiet=True)
@@ -118,7 +117,8 @@ class Youtube_mp3:
         self.flush_media_file_created()
         song_created = 'song.' + audio.extension
         audio.download(song_created, quiet=True)
-        sleep(2)
+        print('Loading... Please Wait!')
+        sleep(.1)
         #playsound(song_created)
         os.startfile(song_created)
 
@@ -263,16 +263,19 @@ class Voice_Assistant:
                             try_new_song(new=False)
                         break
                 if not main_list and not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                    #print(f'search_title: {search_titles[1][int(song_number.strip().split()[-1])]}')
-                    if 'number' in song_number and 'user' in search_titles[1][int(song_number.strip().split()[-1])]: # chk if search result is a valid song or not
+                    if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # chk if search result is a valid song or not
                         self.__speak('This is a channel name, not a song! Try again...')
                         ### implement this issue in 'Youtube_mp3.get_search_items()'
                     elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
                         self.__speak('Was expecting a number! Retry...')
                         try_new_song(new=False)
-                    else:
+                    elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
+                        print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
                         self.ytb.play_media(song_number.strip().split()[-1])
-                        main_list = True # So that '__try_new_song()' will not execute after song successfully start playing
+                        main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
+                    else: ## 'number <non-digit>' is not handled properly
+                        print('Say that again please...')
+                        try_new_song(new=False)
             else: # for No Search results
                 main_list = False
                 self.__speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list

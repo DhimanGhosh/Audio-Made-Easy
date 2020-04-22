@@ -175,28 +175,28 @@ class Youtube_mp3:
         self.playlist.append(url)
 
 class Voice_Assistant:
-    ytb = Youtube_mp3()
+    search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
 
     def __init__(self):
-        self.search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
         self.engine = pyttsx3.init('sapi5')
         self.voices = self.engine.getProperty('voices')
         self.engine.setProperty('voice', self.voices[0].id)
+        self.ytb = Youtube_mp3()
 
-    def __speak(self, audio):
+    def _speak(self, audio):
         self.engine.say(audio)
         self.engine.runAndWait()
 
     def __wish_me(self):
         hour = int(datetime.now().hour)
         if 0 <= hour < 12:
-            self.__speak('Good Morning!')
+            self._speak('Good Morning!')
         elif 12 <= hour < 18:
-            self.__speak('Good Afternoon!')
+            self._speak('Good Afternoon!')
         else:
-            self.__speak('Good Evening!')
+            self._speak('Good Evening!')
         
-        self.__speak('Hello Sir or Madam. I am yout Jarvis. How may I help you?')
+        self._speak('Hello Sir or Madam. I am yout Jarvis. How may I help you?')
     
     def __take_command(self):
         r = sr.Recognizer()
@@ -230,7 +230,7 @@ class Voice_Assistant:
 
         def try_new_song(new=True):
             if new:
-                self.__speak('What song to search for?')
+                self._speak('What song to search for?')
                 while True:
                     search_term = self.__take_command()
                     if search_term != 'None':
@@ -246,7 +246,7 @@ class Voice_Assistant:
             skip_song_search_queries = ['skip', 'abort']
             retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different'] ## not able to handle wrong entry correctly; re-executing searched result
             if search_titles[1]:
-                self.__speak('Which Number Song? (SAY for example, Number 1)')
+                self._speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
                     song_number = self.__take_command()
                     if self.__substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
@@ -259,15 +259,15 @@ class Voice_Assistant:
                         not self.__substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
                         not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                         if 'number' not in song_number:
-                            self.__speak('Was expecting a number! Retry...')
+                            self._speak('Was expecting a number! Retry...')
                             try_new_song(new=False)
                         break
                 if not main_list and not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                     if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # chk if search result is a valid song or not
-                        self.__speak('This is a channel name, not a song! Try again...')
+                        self._speak('This is a channel name, not a song! Try again...')
                         ### implement this issue in 'Youtube_mp3.get_search_items()'
                     elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
-                        self.__speak('Was expecting a number! Retry...')
+                        self._speak('Was expecting a number! Retry...')
                         try_new_song(new=False)
                     elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
                         print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
@@ -278,7 +278,7 @@ class Voice_Assistant:
                         try_new_song(new=False)
             else: # for No Search results
                 main_list = False
-                self.__speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
+                self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
             if not main_list:
                 try_new_song()
         else: # play song from last wikipedia valid song search
@@ -290,48 +290,64 @@ class Voice_Assistant:
                     break
             self.ytb.play_media(number)
 
-    class Abilities(object):
+    class Abilities:
+        my_abilities = [
+            'Search for information on wikipedia',
+            'Open Youtube for you',
+            'Open Google for you',
+            'Open stackoverflow for you',
+            'Stream Song from youtube directly',
+            'Tell you the current time now',
+            'Open VS Code for you',
+            'Or bid Goodbye'
+        ]
         def __init__(self):
-            Voice_Assistant.__speak('Abilities')
+            self.__va = Voice_Assistant()
+            #self.__va._speak('This is my Abilities')
 
-        def what_can_you_do(self):
-            pass
+        def what_can_you_do(self): # Return a random abilities from 'self.my_abilities' and last one 'Or bid Goodbye'
+            self.__va._speak('I can ' + self.my_abilities[randint(0, len(self.my_abilities) - 1)])
+            self.__va._speak(self.my_abilities[-1])
 
     def start_AI_engine(self): # Create 'functions' for each search queries for re-use
+        self.__abilities = self.Abilities()
         self.__wish_me()
         queries_made = []
         while True:
             #print(queries_made)
             query = self.__take_command().lower()
             # Logic for executing tasks based on query
-            if 'wikipedia' in query:
+            #if self.__substr_in_list_of_strs('can do perform'.split(), query)[0]:
+            if 'what can you do' in query:
+                self.__abilities.what_can_you_do()
+            elif 'wikipedia' in query:
                 queries_made.append(query)
-                self.__speak('Searching Wikipedia...')
+                self._speak('Searching Wikipedia...')
                 query = query.replace('wikipedia', '')
                 try:
                     results = wikipedia.summary(query, sentences=2)
-                    self.__speak('According to Wikipedia')
+                    self._speak('According to Wikipedia')
                     print(results)
-                    self.__speak(results)
+                    self._speak(results)
                 except wikipedia.exceptions.PageError:
-                    self.__speak('Sorry! Page Not Found!')
+                    self._speak('Sorry! Page Not Found!')
                 except wikipedia.exceptions.DisambiguationError as e: # "Bengali Movie Wikipedia"
                     queries = e.options
                     sub_queries = {}
-                    self.__speak('Following are the options found, matching your query')
+                    self._speak('Following are the options found, matching your query')
                     for num, option in enumerate(queries):
                         print('{0}. {1}'.format(num + 1, option))
                         sub_queries[num] = option
-                    self.__speak('Which Number Page? (SAY for example, Number 1)')
+                    self._speak('Which Number Page? (SAY for example, Number 1)')
                     while True:
                         page_num = self.__take_command()
                         if page_num != 'None':
                             break
                     new_query = sub_queries[int(page_num.strip().split()[-1]) - 1]
                     results = wikipedia.summary(new_query, sentences=2)
-                    self.__speak('According to Wikipedia')
+                    self._speak('According to Wikipedia')
                     print(results)
-                    self.__speak(results)
+                    self._speak(results)
 
             
             elif 'play the song' in query or 'play it' in query or 'play this song' in query or 'want to hear' in query:
@@ -345,7 +361,7 @@ class Voice_Assistant:
                             if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
                                 self.__stream_online(song_name, '1')
                         else:
-                            self.__speak('No song searched in wikipedia!')
+                            self._speak('No song searched in wikipedia!')
                     else:
                         query = search_sub[1][-1]
                         song_name = query.replace('wikipedia', '').strip()
@@ -353,12 +369,12 @@ class Voice_Assistant:
                         if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
                             self.__stream_online(song_name, 1)
                         else:
-                            self.__speak('No song searched in wikipedia!')
+                            self._speak('No song searched in wikipedia!')
                 else:
-                    self.__speak('No song found in search queries! Instead ask to play song...')
+                    self._speak('No song found in search queries! Instead ask to play song...')
             
             elif 'open youtube' in query:
-                self.__speak('What to search for?')
+                self._speak('What to search for?')
                 while True:
                     search_term = self.__take_command()
                     if search_term != 'None':
@@ -366,7 +382,7 @@ class Voice_Assistant:
                 webbrowser.open_new_tab(f"https://www.youtube.com/search?q={search_term}")
             
             elif 'open google' in query:
-                self.__speak('What to search for?')
+                self._speak('What to search for?')
                 while True:
                     search_term = self.__take_command()
                     if search_term != 'None':
@@ -377,7 +393,7 @@ class Voice_Assistant:
                 webbrowser.open('stackoverflow.com')
             
             elif 'play song' in query:
-                self.__speak('What to search for?')
+                self._speak('What to search for?')
                 while True:
                     search_term = self.__take_command()
                     if search_term != 'None':
@@ -389,21 +405,21 @@ class Voice_Assistant:
             
             elif 'time' in query:
                 str_time = datetime.now().strftime("%H:%M:%S")
-                self.__speak(f'Sir or Madam, The Time is {str_time}')
+                self._speak(f'Sir or Madam, The Time is {str_time}')
             
-            elif 'open code' in query:
+            elif 'open vs code' in query:
                 code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
                 os.startfile(code_path)
             
             elif 'bye' in query or 'quit' in query or 'stop' in query or 'exit' in query:
                 hour = int(datetime.now().hour)
                 if 0 <= hour <=18:
-                    self.__speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
+                    self._speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
                 else:
                     if 'good night' in query:
-                        self.__speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
+                        self._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
                     else:
-                        self.__speak('Good Bye Sir or Madam, Thanks for your time!')
+                        self._speak('Good Bye Sir or Madam, Thanks for your time!')
                 self.ytb.flush_media_file_created()
                 return False
         return True

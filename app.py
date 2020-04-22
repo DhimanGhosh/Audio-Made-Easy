@@ -1,6 +1,6 @@
 import datetime
 today = datetime.date.today()
-release_date = datetime.date(2020, 4, 18)
+release_date = datetime.date(2020, 4, 21)
 diff = release_date - today
 days_passed = abs(diff.days)
 if days_passed > 1:
@@ -17,7 +17,7 @@ _________________________________________________________________________
 | Languages Used        : Python3, Kivy                                 |
 | Executing Interface   : CLI & GUI                                     |
 | Development Date      : Started (26/10/2019) - Till Date              |
-| Last Stable Release   : Version 2.1 (18/04/2020) - {}         |
+| Last Stable Release   : Version 3.0 (21/04/2020) - {}         |
 | Developer             : Dhiman Ghosh                                  |
 _________________________________________________________________________
 '''.format(days_passed_str)

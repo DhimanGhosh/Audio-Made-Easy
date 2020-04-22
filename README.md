@@ -1,4 +1,4 @@
-# Music Theory Guide
+# Audio Made Easy
 > Think of what you can do with your voice....
 
 This app lets you:

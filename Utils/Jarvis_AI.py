@@ -42,7 +42,6 @@ class Media_Player:
             else:
                 continue
 
-
 class Youtube_mp3:
     def __init__(self):
         self.lst = []

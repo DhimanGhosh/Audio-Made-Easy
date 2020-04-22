@@ -10,7 +10,7 @@ from random import randint
 from datetime import datetime
 from glob import glob
 from time import sleep
-import pdb
+from pdb import set_trace as debug
 
 class Media_Player:
     def __init__(self, audio_file):
@@ -64,6 +64,8 @@ class Youtube_mp3:
                     #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
 
     def url_search(self, search_string, max_search):
+        self.dict = {} # Flushing the buffer for new song request
+        self.dict_names = {}
         textToSearch = search_string
         query = urllib.parse.quote(textToSearch)
         url = "https://www.youtube.com/results?search_query=" + query
@@ -99,7 +101,6 @@ class Youtube_mp3:
     def play_media(self, num):
         global song_created
         song_title = self.dict[int(num)]
-        self.dict = {} # Flushing the buffer for new song request
         print(f'song title: {song_title}')
         info = pafy.new(song_title)
         #audio = info.getbestaudio(preftype="m4a")
@@ -165,10 +166,11 @@ class Youtube_mp3:
         self.playlist.append(url)
 
 class Voice_Assistant:
-    search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
+    what_can_you_do = []
     ytb = Youtube_mp3()
 
     def __init__(self):
+        self.search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
         self.engine = pyttsx3.init('sapi5')
         self.voices = self.engine.getProperty('voices')
         self.engine.setProperty('voice', self.voices[0].id)
@@ -186,7 +188,7 @@ class Voice_Assistant:
         else:
             self.__speak('Good Evening!')
         
-        self.__speak('Hello Sir/Madam. I am yout Jarvis. How may I help you?')
+        self.__speak('Hello Sir or Madam. I am yout Jarvis. How may I help you?')
     
     def __take_command(self):
         r = sr.Recognizer()
@@ -205,23 +207,23 @@ class Voice_Assistant:
             return 'None'
         return query
     
-    def __try_new_song(self, song_name='', new=True): # no need to write this function after creating the MAIN list individual queries as individual functions
-        # call self.play_song(); after creating it
-        if new:
-            self.__speak('What song to search for?')
-            while True:
-                search_term = self.__take_command()
-                if search_term != 'None':
-                    break
-        else:
-            search_term = song_name
-        self.__stream_online(search_term)
-
     def __stream_online(self, song_name, number=0):
         max_search = 5
         main_list = False
 
-        if number == 0:
+        def try_new_song(new=True): # no need to write this function after creating the MAIN list individual queries as individual functions
+            # call self.play_song(); after creating it
+            if new:
+                self.__speak('What song to search for?')
+                while True:
+                    search_term = self.__take_command()
+                    if search_term != 'None':
+                        break
+            else:
+                search_term = song_name
+            self.__stream_online(search_term)
+            
+        if number == 0: # direct playing song
             self.ytb.url_search(song_name, max_search)
             search_titles = self.ytb.get_search_items(number)
             skip_song_search_queries = ['skip', 'abort']
@@ -241,22 +243,22 @@ class Voice_Assistant:
                         not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                         if 'number' not in song_number:
                             self.__speak('Was expecting a number! Retry...')
-                            self.__try_new_song(song_name=song_name, new=False)
+                            try_new_song(new=False)
                         break
                 if not main_list and not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                    print(f'search_title: {search_titles[1][int(song_number.strip().split()[-1])]}')
+                    #print(f'search_title: {search_titles[1][int(song_number.strip().split()[-1])]}')
                     if 'user' in search_titles[1][int(song_number.strip().split()[-1])]:
                         self.__speak('This is a channel name, not a song! Try again...')
                         # implement this issue in 'Youtube_mp3.get_search_items()'
                     else:
                         self.ytb.play_media(song_number.strip().split()[-1])
-                        main_list = True # So that 'self.__try_new_song()' will not execute after song successfully start playing
+                        main_list = True # So that '__try_new_song()' will not execute after song successfully start playing
             else: # for No Search results
                 main_list = False
                 self.__speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
             if not main_list:
-                self.__try_new_song(song_name=song_name)
-        else: # play song from last wikipedia search
+                try_new_song()
+        else: # play song from last wikipedia valid song search
             self.ytb.url_search(song_name + 'lyric', max_search)
             search_titles = self.ytb.get_search_items(number)
             for num in search_titles[0]:
@@ -366,7 +368,7 @@ class Voice_Assistant:
             
             elif 'time' in query:
                 str_time = datetime.now().strftime("%H:%M:%S")
-                self.__speak(f'Sir/Madam, The Time is {str_time}')
+                self.__speak(f'Sir or Madam, The Time is {str_time}')
             
             elif 'open code' in query:
                 code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
@@ -375,10 +377,10 @@ class Voice_Assistant:
             elif 'bye' in query or 'quit' in query or 'stop' in query or 'exit' in query:
                 hour = int(datetime.now().hour)
                 if 0 <= hour <=18:
-                    self.__speak('Good Bye Sir/Madam, Thanks for your time! Have a nice day')
+                    self.__speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
                 else:
                     if 'good night' in query:
-                        self.__speak('Good Bye Sir/Madam, Thanks for your time! Good Night!')
+                        self.__speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
                     else:
                         self.__speak('Good Bye Sir or Madam, Thanks for your time!')
                 self.ytb.flush_media_file_created()

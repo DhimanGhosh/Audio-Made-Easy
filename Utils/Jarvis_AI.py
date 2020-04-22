@@ -12,6 +12,8 @@ from glob import glob
 from time import sleep
 from pdb import set_trace as debug
 
+# Currently Mainly 'voice enabled music streamer'
+
 class Media_Player:
     def __init__(self, audio_file):
         self.__audio_file = audio_file
@@ -98,17 +100,10 @@ class Youtube_mp3:
                 pass
 
             except OSError:
-                print('This video is unavailable') # Bheege Hont Tere
-                i=1
-                for url in self.dict.values():
-                    info = pafy.new(url)
-                    #self.dict_names[i] = info.title
-                    self.dict_names[i] = (info.title, url)
-                    if num == 0:
-                        print("{0}. {1}".format(i, info.title))
-                    if i < len(self.dict.values()):
-                        break
-                    i += 1
+                print('This video is unavailable') # Bheege Hont Tere; Dostana Hindi movie; desi boyz
+                # Truncate last key from 'self.dict'
+                del self.dict[list(self.dict.keys())[-1]]
+                self.get_search_items(num)
             
             return (self.dict_names, self.dict)
 
@@ -180,7 +175,6 @@ class Youtube_mp3:
         self.playlist.append(url)
 
 class Voice_Assistant:
-    what_can_you_do = [] ### create a function for this
     ytb = Youtube_mp3()
 
     def __init__(self):
@@ -208,7 +202,7 @@ class Voice_Assistant:
         r = sr.Recognizer()
 
         with sr.Microphone() as source:
-            print('Listening...')
+            print('Listening...') # execute in seperate threads; if one gets hanged (overloaded) kill that; start new
             r.pause_threshold = 1
             audio = r.listen(source)
         
@@ -250,8 +244,8 @@ class Voice_Assistant:
             self.ytb.url_search(song_name, max_search)
             search_titles = self.ytb.get_search_items(number)
             skip_song_search_queries = ['skip', 'abort']
-            retry_song_search_queries = ['retry', 'search again', 'other', 'new'] ## not able to handle wrong entry correctly; re-executing searched result
-            if search_titles:
+            retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different'] ## not able to handle wrong entry correctly; re-executing searched result
+            if search_titles[1]:
                 self.__speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
                     song_number = self.__take_command()
@@ -273,7 +267,7 @@ class Voice_Assistant:
                     if 'number' in song_number and 'user' in search_titles[1][int(song_number.strip().split()[-1])]: # chk if search result is a valid song or not
                         self.__speak('This is a channel name, not a song! Try again...')
                         ### implement this issue in 'Youtube_mp3.get_search_items()'
-                    elif 'number' not in song_number:
+                    elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
                         self.__speak('Was expecting a number! Retry...')
                         try_new_song(new=False)
                     else:
@@ -292,6 +286,13 @@ class Voice_Assistant:
                     number = num
                     break
             self.ytb.play_media(number)
+
+    class Abilities(object):
+        def __init__(self):
+            Voice_Assistant.__speak('Abilities')
+
+        def what_can_you_do(self):
+            pass
 
     def start_AI_engine(self): # Create 'functions' for each search queries for re-use
         self.__wish_me()

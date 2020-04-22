@@ -82,11 +82,11 @@ class Youtube_mp3:
         return url
 
     def get_search_items(self, num):
-        # 'user' found in url; grab onther search result from self.url_search(string_search, num_of_user_found) and replace those in self.dict
+        ### 'user' found in url; grab onther search result from self.url_search(string_search, num_of_user_found) and replace those in self.dict
         if self.dict != {}:
             i = 1
-            for url in self.dict.values():
-                try:
+            try:
+                for url in self.dict.values():
                     info = pafy.new(url)
                     #self.dict_names[i] = info.title
                     self.dict_names[i] = (info.title, url)
@@ -94,8 +94,22 @@ class Youtube_mp3:
                         print("{0}. {1}".format(i, info.title))
                     i += 1
 
-                except ValueError:
-                    pass
+            except ValueError:
+                pass
+
+            except OSError:
+                print('This video is unavailable') # Bheege Hont Tere
+                i=1
+                for url in self.dict.values():
+                    info = pafy.new(url)
+                    #self.dict_names[i] = info.title
+                    self.dict_names[i] = (info.title, url)
+                    if num == 0:
+                        print("{0}. {1}".format(i, info.title))
+                    if i < len(self.dict.values()):
+                        break
+                    i += 1
+            
             return (self.dict_names, self.dict)
 
     def play_media(self, num):
@@ -166,7 +180,7 @@ class Youtube_mp3:
         self.playlist.append(url)
 
 class Voice_Assistant:
-    what_can_you_do = []
+    what_can_you_do = [] ### create a function for this
     ytb = Youtube_mp3()
 
     def __init__(self):
@@ -207,12 +221,20 @@ class Voice_Assistant:
             return 'None'
         return query
     
+    def __substr_in_list_of_strs(self, lst, substr):
+        '''
+        Objective: Check if a substring is present in a list of strings
+
+        Source: https://www.geeksforgeeks.org/python-finding-strings-with-given-substring-in-list/
+        '''
+        res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst))
+        return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
+    
     def __stream_online(self, song_name, number=0):
         max_search = 5
         main_list = False
 
-        def try_new_song(new=True): # no need to write this function after creating the MAIN list individual queries as individual functions
-            # call self.play_song(); after creating it
+        def try_new_song(new=True):
             if new:
                 self.__speak('What song to search for?')
                 while True:
@@ -224,10 +246,11 @@ class Voice_Assistant:
             self.__stream_online(search_term)
             
         if number == 0: # direct playing song
+            ### Add support for 'search more'; (increase max_search value by let's say=5; show result from 6-10) [say 'refresh', 'more']
             self.ytb.url_search(song_name, max_search)
             search_titles = self.ytb.get_search_items(number)
             skip_song_search_queries = ['skip', 'abort']
-            retry_song_search_queries = ['retry', 'search again', 'other']
+            retry_song_search_queries = ['retry', 'search again', 'other', 'new'] ## not able to handle wrong entry correctly; re-executing searched result
             if search_titles:
                 self.__speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
@@ -247,9 +270,12 @@ class Voice_Assistant:
                         break
                 if not main_list and not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                     #print(f'search_title: {search_titles[1][int(song_number.strip().split()[-1])]}')
-                    if 'user' in search_titles[1][int(song_number.strip().split()[-1])]:
+                    if 'number' in song_number and 'user' in search_titles[1][int(song_number.strip().split()[-1])]: # chk if search result is a valid song or not
                         self.__speak('This is a channel name, not a song! Try again...')
-                        # implement this issue in 'Youtube_mp3.get_search_items()'
+                        ### implement this issue in 'Youtube_mp3.get_search_items()'
+                    elif 'number' not in song_number:
+                        self.__speak('Was expecting a number! Retry...')
+                        try_new_song(new=False)
                     else:
                         self.ytb.play_media(song_number.strip().split()[-1])
                         main_list = True # So that '__try_new_song()' will not execute after song successfully start playing
@@ -266,15 +292,6 @@ class Voice_Assistant:
                     number = num
                     break
             self.ytb.play_media(number)
-    
-    def __substr_in_list_of_strs(self, lst, substr):
-        '''
-        Objective: Check if a substring is present in a list of strings
-
-        Source: https://www.geeksforgeeks.org/python-finding-strings-with-given-substring-in-list/
-        '''
-        res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst))
-        return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
 
     def start_AI_engine(self): # Create 'functions' for each search queries for re-use
         self.__wish_me()
@@ -313,7 +330,7 @@ class Voice_Assistant:
                     self.__speak(results)
 
             
-            elif 'play the song' in query or 'play it' in query or 'play the song' in query or 'want to hear' in query:
+            elif 'play the song' in query or 'play it' in query or 'play this song' in query or 'want to hear' in query:
                 search_sub = self.__substr_in_list_of_strs(queries_made, 'wikipedia')
                 if search_sub[0]: # if wikipedia searched
                     if len(search_sub[1]) > 1:

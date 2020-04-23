@@ -14,7 +14,7 @@ print(
 _________________________________________________________________________
 | Application           : Music Theory Guide                            |
 | Objective             : Help you in understanding and creating music  |
-| Languages Used        : Python3, Kivy                                 |
+| Languages Used        : Python3, PyQt5                                 |
 | Executing Interface   : CLI & GUI                                     |
 | Development Date      : Started (26/10/2019) - Till Date              |
 | Last Stable Release   : Version 3.0 (21/04/2020) - {}         |

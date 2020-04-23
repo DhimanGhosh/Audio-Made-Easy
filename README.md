@@ -1,5 +1,5 @@
 # Audio Made Easy
-> Think of what you can do with your voice....
+> Think of what you can do with your voice.... Thinking of a Voice Assistant?
 
 This app lets you:
 - Ease your work while looking for any notes, scales, chords, etc.

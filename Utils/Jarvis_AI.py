@@ -264,7 +264,7 @@ class Voice_Assistant:
             self.ytb.url_search(song_name, max_search)
             search_titles = self.ytb.get_search_items(number)
             skip_song_search_queries = ['skip', 'abort']
-            retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different', 'none of these', 'not these', 'not this'] ## not able to handle wrong entry correctly; re-executing searched result
+            retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different', 'none of these', 'not these', 'not this'] ## NOTE: not able to handle wrong entry correctly; re-executing searched result
             if search_titles[1]:
                 self._speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
@@ -293,7 +293,7 @@ class Voice_Assistant:
                         print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
                         self.ytb.play_media(song_number.strip().split()[-1])
                         main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
-                    else: ## 'number <non-digit>' is not handled properly
+                    else: ## NOTE: 'number <non-digit>' is not handled properly
                         print('Say that again please...')
                         try_new_song(new=False)
             else: # for No Search results
@@ -366,7 +366,39 @@ class Voice_Assistant:
                 self.__va._speak("Anyway I will learn this in future")
 
         def wikipedia(self, query):
-            pass
+            self.__va._speak('Searching Wikipedia...')
+            query = query.replace('wikipedia', '') ## NOTE: If 'query' is only 'wikipedia' then this line will throw 'wikipedia.exceptions.WikipediaException'; deal with it
+            try:
+                results = wikipedia.summary(query, sentences=2)
+                self.__va._speak('According to Wikipedia')
+                print(results)
+                self.__va._speak(results)
+            except wikipedia.exceptions.PageError:
+                self.__va._speak('Sorry! Page Not Found!')
+            except wikipedia.exceptions.DisambiguationError as e: # "Bengali Movie Wikipedia"; "SK Wikipedia"
+                queries = e.options
+                sub_queries = {}
+                self.__va._speak('Following are the options found, matching your query')
+                for num, option in enumerate(queries):
+                    print('{0}. {1}'.format(num + 1, option))
+                    sub_queries[num] = option
+                self.__va._speak('Which Number Page? (SAY for example, Number 1)')
+                while True:
+                    page_num = self.__va._take_command()
+                    if page_num != 'None':
+                        break
+                new_query = sub_queries[int(page_num.strip().split()[-1]) - 1]
+            except wikipedia.exceptions.WikipediaException: ## NOTE: Incomplete...
+                print('Say that again please...')
+                self.__va._speak('search wikipedia')
+                while True:
+                    new_query = self.__va._take_command()
+                    if new_query != 'None':
+                        break
+                results = wikipedia.summary(new_query, sentences=2)
+                self.__va._speak('According to Wikipedia')
+                print(results)
+                self.__va._speak(results)
 
     def start_AI_engine(self):
         self.__abilities = self.Abilities()
@@ -384,32 +416,7 @@ class Voice_Assistant:
             
             elif 'wikipedia' in query:
                 self.queries_made.append(query)
-                self._speak('Searching Wikipedia...')
-                query = query.replace('wikipedia', '')
-                try:
-                    results = wikipedia.summary(query, sentences=2)
-                    self._speak('According to Wikipedia')
-                    print(results)
-                    self._speak(results)
-                except wikipedia.exceptions.PageError:
-                    self._speak('Sorry! Page Not Found!')
-                except wikipedia.exceptions.DisambiguationError as e: # "Bengali Movie Wikipedia"
-                    queries = e.options
-                    sub_queries = {}
-                    self._speak('Following are the options found, matching your query')
-                    for num, option in enumerate(queries):
-                        print('{0}. {1}'.format(num + 1, option))
-                        sub_queries[num] = option
-                    self._speak('Which Number Page? (SAY for example, Number 1)')
-                    while True:
-                        page_num = self._take_command()
-                        if page_num != 'None':
-                            break
-                    new_query = sub_queries[int(page_num.strip().split()[-1]) - 1]
-                    results = wikipedia.summary(new_query, sentences=2)
-                    self._speak('According to Wikipedia')
-                    print(results)
-                    self._speak(results)
+                self.__abilities.wikipedia(query)
             
             elif 'play the song' in query or 'play it' in query or 'play this song' in query or 'want to hear' in query:
                 search_sub = self._substr_in_list_of_strs(self.queries_made, 'wikipedia')
@@ -422,7 +429,7 @@ class Voice_Assistant:
                             if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
                                 self._stream_online(song_name, '1')
                         else:
-                            self._speak('No song searched in wikipedia!')
+                            self.__va._speak('No song searched in wikipedia!')
                     else:
                         query = search_sub[1][-1]
                         song_name = query.replace('wikipedia', '').strip()
@@ -430,12 +437,12 @@ class Voice_Assistant:
                         if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
                             self._stream_online(song_name, 1)
                         else:
-                            self._speak('No song searched in wikipedia!')
+                            self.__va._speak('No song searched in wikipedia!')
                 else:
-                    self._speak('No song found in search queries! Instead ask to play song...')
+                    self.__va._speak('No song found in search queries! Instead ask to play song...')
 
             elif 'open youtube' in query:
-                self._speak('What to search for?')
+                self.__va._speak('What to search for?')
                 while True:
                     search_term = self._take_command()
                     if search_term != 'None':
@@ -443,7 +450,7 @@ class Voice_Assistant:
                 webbrowser.open_new_tab(f"https://www.youtube.com/search?q={search_term}")
 
             elif 'open google' in query:
-                self._speak('What to search for?')
+                self.__va._speak('What to search for?')
                 while True:
                     search_term = self._take_command()
                     if search_term != 'None':
@@ -454,7 +461,7 @@ class Voice_Assistant:
                 webbrowser.open('stackoverflow.com')
 
             elif 'play song' in query or 'play music' in query or 'play a song' in query:
-                self._speak('What to search for?')
+                self.__va._speak('What to search for?')
                 while True:
                     search_term = self._take_command()
                     if search_term != 'None':
@@ -466,7 +473,7 @@ class Voice_Assistant:
 
             elif 'time' in query:
                 str_time = datetime.now().strftime("%H:%M:%S")
-                self._speak(f'Sir or Madam, The Time is {str_time}')
+                self.__va._speak(f'Sir or Madam, The Time is {str_time}')
 
             elif 'open vs code' in query:
                 code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
@@ -475,12 +482,12 @@ class Voice_Assistant:
             elif 'bye' in query or 'quit' in query or 'stop' in query or 'exit' in query:
                 hour = int(datetime.now().hour)
                 if 0 <= hour <=18:
-                    self._speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
+                    self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
                 else:
                     if 'good night' in query:
-                        self._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
+                        self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
                     else:
-                        self._speak('Good Bye Sir or Madam, Thanks for your time!')
+                        self.__va._speak('Good Bye Sir or Madam, Thanks for your time!')
                 self.ytb.flush_media_file_created()
                 return False
         return True

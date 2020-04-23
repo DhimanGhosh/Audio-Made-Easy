@@ -14,9 +14,13 @@ from time import sleep
 from pdb import set_trace as debug
 
 # Currently Mainly 'voice enabled music streamer'
+# TODO: Guide music through voice commands; control device tasks; etc.
 
 class Media_Player:
     def __init__(self, audio_file):
+        '''
+        Play, Pause, Stop, Replay, Rewind, Forward, etc...
+        '''
         self.__audio_file = audio_file
         pygame.init()
         pygame.mixer.init()
@@ -49,6 +53,13 @@ class Youtube_mp3:
     song_created = ''
 
     def __init__(self):
+        '''
+        Overview:
+            Throw me a song query... I will play it for you!
+
+        Description:
+            That also with the help of YouTube. Now guess my library size. LOL!
+        '''
         self.lst = []
         self.dict = {}
         self.dict_names = {}
@@ -176,6 +187,14 @@ class Youtube_mp3:
         self.playlist.append(url)
 
 class Voice_Assistant:
+    '''
+    Overview:
+        Perform any task just with your voice.
+    
+    Description:
+        This Voice Assistant has a lots of Abilities (mentioned inside sub-class 'Abilities'). Basically when we ask 'AI' engine for any task. Then it asks its own
+        'Abilities' to perform some task based on input query. Then it takes the output and return it to us.
+    '''
     search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
 
     def __init__(self):
@@ -199,7 +218,7 @@ class Voice_Assistant:
         
         self._speak('Hello Sir or Madam. I am yout Jarvis. How may I help you?')
     
-    def __take_command(self):
+    def _take_command(self):
         r = sr.Recognizer()
 
         with sr.Microphone() as source:
@@ -225,7 +244,7 @@ class Voice_Assistant:
         res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst))
         return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
     
-    def __stream_online(self, song_name, number=0):
+    def _stream_online(self, song_name, number=0):
         max_search = 5
         main_list = False
 
@@ -233,12 +252,12 @@ class Voice_Assistant:
             if new:
                 self._speak('What song to search for?')
                 while True:
-                    search_term = self.__take_command()
+                    search_term = self._take_command()
                     if search_term != 'None':
                         break
             else:
                 search_term = song_name
-            self.__stream_online(search_term)
+            self._stream_online(search_term)
             
         if number == 0: # direct playing song
             ### Add support for 'search more'; (increase max_search value by let's say=5; show result from 6-10) [say 'refresh', 'more']
@@ -249,7 +268,7 @@ class Voice_Assistant:
             if search_titles[1]:
                 self._speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
-                    song_number = self.__take_command()
+                    song_number = self._take_command()
                     if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
                         main_list = True
                         break
@@ -292,6 +311,15 @@ class Voice_Assistant:
             self.ytb.play_media(number)
 
     class Abilities:
+        '''
+        Overview:
+            The 'Abilities' that I have to perform various tasks.
+
+        Myself:
+            My 'Abilities' are very limited.
+
+        NOTE: A task for you... "Please train me with new 'Abilities' so that I can stand in the real world"
+        '''
         __my_abilities_with_keywords = {
             'Search for information on wikipedia': ['info', 'information', 'wiki', 'wikipedia'],
             'Open Youtube for you': ['youtube'],
@@ -340,12 +368,12 @@ class Voice_Assistant:
         def wikipedia(self, query):
             pass
 
-    def start_AI_engine(self): # Create 'functions' for each search queries for re-use
+    def start_AI_engine(self):
         self.__abilities = self.Abilities()
         self.__wish_me()
         self.queries_made = []
         while True:
-            query = self.__take_command().lower()
+            query = self._take_command().lower()
             # Logic for executing tasks based on query
             #if self._substr_in_list_of_strs('can do perform'.split(), query)[0]:
             if 'what can you do' in query or 'how can you help' in query:
@@ -374,7 +402,7 @@ class Voice_Assistant:
                         sub_queries[num] = option
                     self._speak('Which Number Page? (SAY for example, Number 1)')
                     while True:
-                        page_num = self.__take_command()
+                        page_num = self._take_command()
                         if page_num != 'None':
                             break
                     new_query = sub_queries[int(page_num.strip().split()[-1]) - 1]
@@ -392,7 +420,7 @@ class Voice_Assistant:
                             song_name = query.replace('wikipedia', '').strip()
                             wiki_res = wikipedia.summary(song_name, sentences=10) # check id query is a valid song or not
                             if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
-                                self.__stream_online(song_name, '1')
+                                self._stream_online(song_name, '1')
                         else:
                             self._speak('No song searched in wikipedia!')
                     else:
@@ -400,7 +428,7 @@ class Voice_Assistant:
                         song_name = query.replace('wikipedia', '').strip()
                         wiki_res = wikipedia.summary(song_name, sentences=10) # check id query is a valid song or not
                         if 'music' in wiki_res or 'song' in wiki_res or 'film' in wiki_res:
-                            self.__stream_online(song_name, 1)
+                            self._stream_online(song_name, 1)
                         else:
                             self._speak('No song searched in wikipedia!')
                 else:
@@ -409,7 +437,7 @@ class Voice_Assistant:
             elif 'open youtube' in query:
                 self._speak('What to search for?')
                 while True:
-                    search_term = self.__take_command()
+                    search_term = self._take_command()
                     if search_term != 'None':
                         break
                 webbrowser.open_new_tab(f"https://www.youtube.com/search?q={search_term}")
@@ -417,7 +445,7 @@ class Voice_Assistant:
             elif 'open google' in query:
                 self._speak('What to search for?')
                 while True:
-                    search_term = self.__take_command()
+                    search_term = self._take_command()
                     if search_term != 'None':
                         break
                 webbrowser.open_new_tab(f"https://www.google.com/search?q={search_term}")
@@ -428,10 +456,10 @@ class Voice_Assistant:
             elif 'play song' in query or 'play music' in query or 'play a song' in query:
                 self._speak('What to search for?')
                 while True:
-                    search_term = self.__take_command()
+                    search_term = self._take_command()
                     if search_term != 'None':
                         break
-                self.__stream_online(search_term)
+                self._stream_online(search_term)
                 # music_dir = 'D:\\SONGS\\'
                 # songs = os.listdir(music_dir)
                 # os.startfile(os.path.join(music_dir, songs[randint(0, len(songs))]))

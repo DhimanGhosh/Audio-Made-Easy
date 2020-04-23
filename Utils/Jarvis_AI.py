@@ -1,3 +1,4 @@
+import numpy as np
 import pyttsx3
 import speech_recognition as sr
 import wikipedia
@@ -215,7 +216,7 @@ class Voice_Assistant:
             return 'None'
         return query
     
-    def __substr_in_list_of_strs(self, lst, substr):
+    def _substr_in_list_of_strs(self, lst, substr):
         '''
         Objective: Check if a substring is present in a list of strings
 
@@ -244,25 +245,25 @@ class Voice_Assistant:
             self.ytb.url_search(song_name, max_search)
             search_titles = self.ytb.get_search_items(number)
             skip_song_search_queries = ['skip', 'abort']
-            retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different'] ## not able to handle wrong entry correctly; re-executing searched result
+            retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different', 'none of these', 'not these', 'not this'] ## not able to handle wrong entry correctly; re-executing searched result
             if search_titles[1]:
                 self._speak('Which Number Song? (SAY for example, Number 1)')
                 while True:
                     song_number = self.__take_command()
-                    if self.__substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
+                    if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
                         main_list = True
                         break
-                    elif self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                    elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                         main_list = False # try again for another song; not main list
                         break
                     elif song_number != 'None' and \
-                        not self.__substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
-                        not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                        not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
+                        not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                         if 'number' not in song_number:
                             self._speak('Was expecting a number! Retry...')
                             try_new_song(new=False)
                         break
-                if not main_list and not self.__substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                     if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # chk if search result is a valid song or not
                         self._speak('This is a channel name, not a song! Try again...')
                         ### implement this issue in 'Youtube_mp3.get_search_items()'
@@ -291,37 +292,70 @@ class Voice_Assistant:
             self.ytb.play_media(number)
 
     class Abilities:
-        my_abilities = [
-            'Search for information on wikipedia',
-            'Open Youtube for you',
-            'Open Google for you',
-            'Open stackoverflow for you',
-            'Stream Song from youtube directly',
-            'Tell you the current time now',
-            'Open VS Code for you',
-            'Or bid Goodbye'
-        ]
+        __my_abilities_with_keywords = {
+            'Search for information on wikipedia': ['info', 'information', 'wiki', 'wikipedia'],
+            'Open Youtube for you': ['youtube'],
+            'Open Google for you': ['google'],
+            'Open stackoverflow for you': ['stackoverflow'],
+            'Stream Song from youtube directly': ['Stream', 'Song'],
+            'Tell you the current time': ['time', 'tell'],
+            'Open VS Code for you': ['VS', 'Code'],
+            'saying Goodbye': ['Goodbye']
+        } # {'Ability to speak out' : 'keyword/s'}
+        __my_abilities_with_index = list(zip(list(range(0, len(__my_abilities_with_keywords))), __my_abilities_with_keywords.keys())) # zip ('index numbers', my_abilities)
+        
         def __init__(self):
             self.__va = Voice_Assistant()
-            #self.__va._speak('This is my Abilities')
+            self.__unknown_abilities = []
+            self.random_2_numbers = list(np.random.permutation(np.arange(0, len(self.__my_abilities_with_keywords) - 1))[:2])
 
-        def what_can_you_do(self): # Return a random abilities from 'self.my_abilities' and last one 'Or bid Goodbye'
-            self.__va._speak('I can ' + self.my_abilities[randint(0, len(self.my_abilities) - 1)])
-            self.__va._speak(self.my_abilities[-1])
+        def what_can_you_do(self): # Return 2 random abilities from 'self.my_abilities'[0:-1] and last one 'Or bid Goodbye'
+            first = self.__my_abilities_with_index[self.random_2_numbers[0]][1]
+            second = self.__my_abilities_with_index[self.random_2_numbers[1]][1]
+            last = self.__my_abilities_with_index[-1][1]
+            i_can_do = 'Out of many; I can ' + first + '; or even ' + second + '. Then you can quit this application by ' + last
+            self.__va._speak(i_can_do)
+            ### Handle any type of 'can you <>'
+        
+        def how_can_you(self, query): # Handles any type of 'How can you <>'
+            what_to_ask = ''
+            new_query = query.split()[3:]
+            c = 0
+            for v in self.__my_abilities_with_keywords.values():
+                common_keyword = list(set(new_query) & set(v))
+                if common_keyword:
+                    if self.__va._substr_in_list_of_strs(v, common_keyword[0])[0]:
+                        what_to_ask = self.__va.search_terms[c] #list(self.my_abilities_with_keywords.keys())[list(self.my_abilities_with_keywords.values()).index(common_keyword[0])]
+                    break
+                else:
+                    c += 1
+
+            if what_to_ask:
+                self.__va._speak('Just say; ' + what_to_ask)
+            else:
+                self.__va._speak("I have never told that I can do this!")
+                self.__unknown_abilities.append(' '.join(query.split()[3:]))
+                self.__va._speak("Anyway I will learn this in future")
+
+        def wikipedia(self, query):
+            pass
 
     def start_AI_engine(self): # Create 'functions' for each search queries for re-use
         self.__abilities = self.Abilities()
         self.__wish_me()
-        queries_made = []
+        self.queries_made = []
         while True:
-            #print(queries_made)
             query = self.__take_command().lower()
             # Logic for executing tasks based on query
-            #if self.__substr_in_list_of_strs('can do perform'.split(), query)[0]:
-            if 'what can you do' in query:
+            #if self._substr_in_list_of_strs('can do perform'.split(), query)[0]:
+            if 'what can you do' in query or 'how can you help' in query:
                 self.__abilities.what_can_you_do()
+            
+            elif 'how can you' in query:
+                self.__abilities.how_can_you(query)
+            
             elif 'wikipedia' in query:
-                queries_made.append(query)
+                self.queries_made.append(query)
                 self._speak('Searching Wikipedia...')
                 query = query.replace('wikipedia', '')
                 try:
@@ -348,10 +382,9 @@ class Voice_Assistant:
                     self._speak('According to Wikipedia')
                     print(results)
                     self._speak(results)
-
             
             elif 'play the song' in query or 'play it' in query or 'play this song' in query or 'want to hear' in query:
-                search_sub = self.__substr_in_list_of_strs(queries_made, 'wikipedia')
+                search_sub = self._substr_in_list_of_strs(self.queries_made, 'wikipedia')
                 if search_sub[0]: # if wikipedia searched
                     if len(search_sub[1]) > 1:
                         for query in search_sub[1][::-1]:
@@ -372,7 +405,7 @@ class Voice_Assistant:
                             self._speak('No song searched in wikipedia!')
                 else:
                     self._speak('No song found in search queries! Instead ask to play song...')
-            
+
             elif 'open youtube' in query:
                 self._speak('What to search for?')
                 while True:
@@ -380,7 +413,7 @@ class Voice_Assistant:
                     if search_term != 'None':
                         break
                 webbrowser.open_new_tab(f"https://www.youtube.com/search?q={search_term}")
-            
+
             elif 'open google' in query:
                 self._speak('What to search for?')
                 while True:
@@ -388,11 +421,11 @@ class Voice_Assistant:
                     if search_term != 'None':
                         break
                 webbrowser.open_new_tab(f"https://www.google.com/search?q={search_term}")
-            
+
             elif 'open stackoverflow' in query:
                 webbrowser.open('stackoverflow.com')
-            
-            elif 'play song' in query:
+
+            elif 'play song' in query or 'play music' in query or 'play a song' in query:
                 self._speak('What to search for?')
                 while True:
                     search_term = self.__take_command()
@@ -402,11 +435,11 @@ class Voice_Assistant:
                 # music_dir = 'D:\\SONGS\\'
                 # songs = os.listdir(music_dir)
                 # os.startfile(os.path.join(music_dir, songs[randint(0, len(songs))]))
-            
+
             elif 'time' in query:
                 str_time = datetime.now().strftime("%H:%M:%S")
                 self._speak(f'Sir or Madam, The Time is {str_time}')
-            
+
             elif 'open vs code' in query:
                 code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
                 os.startfile(code_path)

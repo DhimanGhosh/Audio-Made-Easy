@@ -483,7 +483,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             url = "https://www.google.com/search?q=" + query
             webbrowser.open_new_tab(url)
 
-        def play_song_from_last_search(self, website):
+        def play_song_from_last_search(self, website): ## NOTE: Incomplete
             if website == 'wikipedia':
                 search_sub = self.__va._substr_in_list_of_strs(self.__queries_made, 'wikipedia')
                 if search_sub[0]: # if wikipedia searched
@@ -528,6 +528,35 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             # songs = os.listdir(music_dir)
             # os.startfile(os.path.join(music_dir, songs[randint(0, len(songs))]))
 
+        def stackoverflow(self, query):
+            self.__va._speak('What to search for?')
+            while True:
+                search_term = self.__va._take_command()
+                if search_term != 'None':
+                    break
+            query = urllib.parse.quote(search_term)
+            url = "https://stackoverflow.com/search?q=" + query
+            webbrowser.open_new_tab(url)
+
+        def current_time(self, query):
+            str_time = datetime.now().strftime("%H:%M:%S")
+            self.__va._speak(f'Sir or Madam, The Time is {str_time}')
+
+        def open_app(self, query):
+            code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
+            os.startfile(code_path)
+
+        def quit_VA(self, query):
+            hour = int(datetime.now().hour)
+            if 0 <= hour <=18:
+                self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
+            else:
+                if 'good night' in query:
+                    self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
+                else:
+                    self.__va._speak('Good Bye Sir or Madam, Thanks for your time!')
+            self.__va.ytb.flush_media_file_created()
+
     def start_AI_engine(self): ### TODO: If valid query => calls respective functions in 'Abilities'; Else => calls 'Abilities.what_can_you_do()'
         self.__wish_me()
         self.__if_any_query_made = False
@@ -536,8 +565,8 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         self.__available_webpages = {
             'w' : 'wikipedia',
             'y' : 'youtube',
-            'g' : 'google'
-        }
+            'g' : 'google'}
+        
         while True:
             self.__abilities = self.Abilities()
             query = self._take_command().lower()
@@ -585,31 +614,20 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
 
             elif 'open stackoverflow' in query:
                 self.__if_any_query_made = True
-                webbrowser.open('stackoverflow.com')
+                self.__abilities.stackoverflow(query)
 
             elif 'time' in query:
                 self.__if_any_query_made = True
-                str_time = datetime.now().strftime("%H:%M:%S")
-                self.__va._speak(f'Sir or Madam, The Time is {str_time}')
+                self.__abilities.current_time(query)
 
             elif 'open vs code' in query: ## NOTE: don't use absolute path; instead search for its exe file and then execute
                 self.__if_any_query_made = True
-                code_path = 'C:\\Users\\dgkii\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'
-                os.startfile(code_path)
-            
+                self.__abilities.open_app(query)
+
             elif 'bye' in query or 'quit' in query or 'stop' in query or 'exit' in query:
                 self.__if_any_query_made = True
-                hour = int(datetime.now().hour)
-                if 0 <= hour <=18:
-                    self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Have a nice day')
-                else:
-                    if 'good night' in query:
-                        self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
-                    else:
-                        self.__va._speak('Good Bye Sir or Madam, Thanks for your time!')
-                self.ytb.flush_media_file_created()
+                self.__abilities.quit_VA(query)
                 return False
-
 
             elif query == 'none' and not self.__if_any_query_made: # Stop executing when not asked anything
                 self.__abilities.what_can_you_do(query)

@@ -8,7 +8,8 @@ import os
 import sys
 import platform
 import pafy
-import pyglet
+import subprocess
+import re
 import pygame
 import time
 import urllib.request
@@ -19,7 +20,7 @@ from datetime import datetime
 from glob import glob
 from time import sleep
 from Levenshtein import ratio
-from ast import literal_eval
+from mutagen.mp3 import MP3
 
 from pdb import set_trace as debug
 
@@ -48,19 +49,63 @@ else:
 features = utils_dir + 'Features.txt'
 brain = datasets_dir + 'brain.csv'
 
-class Media_Player:
-    def __init__(self, audio_file):
+class Media_Player: # Supports only mp3
+    def __init__(self, audio_file=''):
         '''
-        Play, Pause, Stop, Replay, Rewind, Forward, etc...
+        Play, Pause, Stop, Replay (stop + play), resume
+
+        next, prev -- for playlist playing (for single audio ----- SAY: "That was the last song" <resume_playing>)
         '''
         self.__audio_file = audio_file
-        pygame.init()
+        self.__audio = MP3(audio_file)
+        self.__audio_sample_rate = self.__audio.info.sample_rate
+        self.__audio_channels = self.__audio.info.channels
+        self.__audio_length = self.__audio.info.length
+        self.__audio_sample_rate = self.__audio.info.sample_rate
+        self.__song_name = audio_file.split()[0]
+
+        self.__songtracks = os.listdir()
+        self.__playlist = []
+        for track in self.__songtracks:
+            self.__playlist.append(track)
+    
+    def play(self):
+        if pygame.mixer.get_init():
+            pygame.mixer.quit() # quit it, to make sure it is reinitialized
+        pygame.mixer.pre_init(frequency=self.__audio_sample_rate, size=-16, channels=self.__audio_channels, buffer=4096)
         pygame.mixer.init()
-        #file loading
         pygame.mixer.music.load(self.__audio_file)
-        print("Playing:",self.__audio_file)
         pygame.mixer.music.play()
-        #play and pause
+        print(self.__song_name + " ---- Playing")
+
+    def pause(self):
+        if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
+            pygame.mixer.music.pause()
+        print("Playback Paused")
+
+    def resume(self):
+        if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
+            pygame.mixer.music.unpause()
+        print(self.__song_name + " ---- Resumed")
+
+    def stop(self):
+        if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
+            pygame.mixer.music.stop()
+        print("Stopped")
+    
+    def replay(self):
+        self.stop()
+        self.play()
+        print(self.__song_name + " ---- Replaying")
+    
+    def current_time(self):
+        timer = 0
+        if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
+            timer = pygame.mixer.music.get_pos()
+            timer = int(timer//1000)
+        return timer
+
+    def __music(self):
         while pygame.mixer.music.get_busy():
             timer = pygame.mixer.music.get_pos()
             time.sleep(1)
@@ -96,14 +141,30 @@ class Youtube_mp3:
         self.dict = {}
         self.dict_names = {}
         self.playlist = []
-        #self.flush_media_file_created() ## Declaring here doesn't download the song
     
-    def flush_media_file_created(self):
-        if glob('song.*'):
-            file_name_in_dir = glob('song.*')
-            if file_name_in_dir:
+    def flush_media_files_created(self):
+        if glob('song*') or glob('*mp3') or glob('*webm'):
+            self.song_created = ''
+            video_in_dir = glob('song.*')
+            audio_in_dir = glob('*mp3')
+            temp_in_dir = glob('*webm')
+            if video_in_dir:
                 try:
-                    os.remove(file_name_in_dir[0])
+                    os.remove(video_in_dir[0])
+                    self.song_created = ''
+                except PermissionError: # say 'STOP' will be implemented after creating 'class Media_Player'
+                    print('Silently quiting app!')
+                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
+            if audio_in_dir:
+                try:
+                    os.remove(audio_in_dir[0])
+                    self.song_created = ''
+                except PermissionError: # say 'STOP' will be implemented after creating 'class Media_Player'
+                    print('Silently quiting app!')
+                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
+            if temp_in_dir:
+                try:
+                    os.remove(temp_in_dir[0])
                     self.song_created = ''
                 except PermissionError: # say 'STOP' will be implemented after creating 'class Media_Player'
                     print('Silently quiting app!')
@@ -129,7 +190,8 @@ class Youtube_mp3:
 
     def get_search_items(self, num):
         ### 'user' found in url; grab onther search result from self.url_search(string_search, num_of_user_found) and replace those in self.dict
-        if self.dict != {}:
+        #if self.dict != {}:
+        if self.dict:
             i = 1
             try:
                 for url in self.dict.values():
@@ -150,42 +212,33 @@ class Youtube_mp3:
                 self.get_search_items(num)
             
             return (self.dict_names, self.dict)
+        return None
 
-    def play_media(self, num):
+    def play_media(self, num): # Returns 'Media_Player' object with loaded song
         global song_created
-        song_title = self.dict[int(num)]
-        info = pafy.new(song_title)
-        #audio = info.getbestaudio(preftype="m4a")
-        #audio.download('song.m4a', quiet=True)
-        audio = info.getbestaudio()
-        self.flush_media_file_created()
-        song_created = 'song.' + audio.extension
-        audio.download(song_created, quiet=True)
+        url = self.dict[int(num)]
+        video = pafy.new(url)
+        video_title = video.title
+        video_title = re.sub(r'\W+', '', video_title)
+        print(f'video_title: {video_title}\n')
+        song_title = video_title + '.mp3'
+        bestaudio = video.getbestaudio()
+        self.flush_media_files_created()
+        song_created = video_title + bestaudio.extension
         print('Loading... Please Wait!')
         sleep(2)
-        #playsound(song_created)
-        os.startfile(song_created)
+        bestaudio.download(song_created, quiet=True)
+        sleep(2)
 
-        # pyglet media player error
-        '''song = pyglet.media.load('song.m4a')
-        player = pyglet.media.Player()
-        player.queue(song)
-        print("Playing: {0}.".format(self.dict_names[int(num)]))
-        player.play()
-        stop = ''
-        while True:
-            stop = input('Type "s" to stop; "p" to pause; "" to play; : ')
-            if stop == 's':
-                player.pause() # Remove the downloaded 'song.m4a' file
-                break
-            elif stop == 'p':
-                player.pause()
-            elif stop == '':
-                player.play()
-            elif stop == 'r':
-                #player.queue(song)
-                #player.play()
-                print('Replaying: {0}'.format(self.dict_names[int(num)]))'''
+        # Convert to '.mp3' format using 'ffmpeg'
+        command = "ffmpeg -i " + str(song_created) + " -vn -ab 128k -ar 44100 -y " + str(song_title)
+        subprocess.call(command, shell=True)
+
+        # os.startfile(song_created) # for playing in device default media-player (VLC for me)
+
+        self.player = Media_Player(audio_file=song_title)
+        #self.player = Media_Player(audio_file='assets\\JG.mp3') # used for Cache testing purpose
+        return self.player
                 
     def download_media(self, num):
         url = self.dict[int(num)]
@@ -234,6 +287,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         self.engine.setProperty('voice', self.voices[0].id)
         self.ytb = Youtube_mp3()
         self._brain = brain
+        self._song_name = ''
 
     def _speak(self, audio):
         self.engine.say(audio)
@@ -250,7 +304,15 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         
         self._speak('Hello Sir or Madam. I am your Jarvis. How may I help you?')
     
-    def _take_command(self): ## NOTE: Execution Stopped
+    def _take_command(self): ## NOTE: Execution Stopped (hanged)
+        '''
+        NOTE: <To Solve HANG issue>
+        Create 2 threads: for handling the mic voice commands
+        1. if retries exceed a THRESHOLD_VALUE=5 ======= kill it
+        2. it waits for thread 1 to be killed ======= then it will start
+        <Cycle interchangely REPEATS>
+        '''
+        ## NOTE: Create 2 threads (one for handling the mic voice commands) && (amother will wait for its expire)
         r = sr.Recognizer()
 
         with sr.Microphone() as source:
@@ -281,8 +343,13 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
     
     def _stream_online(self, song_name, number=0): # number = song_number to play in the list of search results
+        '''
+        It calls 'play_media()' of 'Youtube_mp3';; which returns 'Media_Player' object with loaded song.
+        Then, 'Abilities' will control the media-player options with voice
+        '''
         max_search = 5
         main_list = False
+        self._song_name = song_name
 
         def try_new_song(new=True):
             if new:
@@ -298,48 +365,52 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         if number == 0: # direct playing song
             ### Add support for 'search more'; (increase max_search value by let's say=5; show result from 6-10) [say 'refresh', 'more']
             self.ytb.url_search(song_name, max_search)
-            search_titles = self.ytb.get_search_items(number)
+            search_titles = self.ytb.get_search_items(number) ## NOTE: Don't display the list again when 'retry_song_search_queries[]' called
             skip_song_search_queries = ['skip', 'abort']
             retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different', 'none of these', 'not these', 'not this'] ## NOTE: not able to handle wrong entry correctly; re-executing searched result
-            if search_titles[1]:
-                self._speak('Which Number Song? (SAY for example, Number 1)')
-                while True:
-                    song_number = self._take_command()
-                    if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
-                        main_list = True
-                        break
-                    elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                        main_list = False # try again for another song; not main list
-                        break
-                    elif song_number != 'None' and \
-                        not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
-                        not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                        if 'number' not in song_number:
+            if search_titles:
+                if search_titles[1]:
+                    self._speak('Which Number Song? (SAY for example, Number 1)')
+                    while True:
+                        song_number = self._take_command()
+                        if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
+                            main_list = True
+                            break
+                        elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                            main_list = False # try again for another song; not main list
+                            break
+                        elif song_number != 'None' and \
+                            not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
+                            not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                            if 'number' not in song_number:
+                                self._speak('Was expecting a number! Retry...')
+                                try_new_song(new=False)
+                            break
+                    if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                        if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]:
+                            self._speak('This is a channel name, not a song! Try again...')
+                            ### implement this issue in 'Youtube_mp3.get_search_items()'
+                        elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
                             self._speak('Was expecting a number! Retry...')
                             try_new_song(new=False)
-                        break
-                if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                    if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # chk if search result is a valid song or not
-                        self._speak('This is a channel name, not a song! Try again...')
-                        ### implement this issue in 'Youtube_mp3.get_search_items()'
-                    elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
-                        self._speak('Was expecting a number! Retry...')
-                        try_new_song(new=False)
-                    elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
-                        print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
-                        self.ytb.play_media(song_number.strip().split()[-1])
-                        main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
-                    else: ## NOTE: 'number <non-digit>' is not handled properly
-                        print('Say that again please...')
-                        try_new_song(new=False)
-            else: # for No Search results
+                        elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
+                            print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
+                            self.player = self.ytb.play_media(song_number.strip().split()[-1])
+                            main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
+                        else: ## NOTE: 'number <non-digit>' is not handled properly
+                            print('Say that again please...')
+                            try_new_song(new=False)
+                else: # for No Search results
+                    main_list = False
+                    self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
+            else:
                 main_list = False
                 self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
             
             if not main_list:
                 try_new_song()
         
-        else: # play song from last wikipedia valid song search
+        else: # play song from last 'webpage' valid song search
             ## NOTE: First search the song_name along with ('lyric', 'full', 'audio', 'official', '|'); if no result => display the list (allow more/refresh_list...)
             song_search_query = [song_name + ' ' + key for key in ('lyric', 'full', 'audio', 'official', '|')]
             print(f'song_search_query: {song_search_query}')
@@ -356,7 +427,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 if results_found:
                     break
             if results_found:
-                self.ytb.play_media(number)
+                self.player = self.ytb.play_media(number)
             else:
                 self.ytb.url_search(song_name, max_search)
                 search_titles = self.ytb.get_search_items(number)
@@ -386,7 +457,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                             try_new_song(new=False)
                         elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
                             print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
-                            self.ytb.play_media(song_number.strip().split()[-1])
+                            self.player = self.ytb.play_media(song_number.strip().split()[-1])
                             main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
                         else: ## NOTE: 'number <non-digit>' is not handled properly
                             print('Say that again please...')
@@ -397,6 +468,8 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 
                 if not main_list:
                     try_new_song()
+        
+        return self.player
 
     class Abilities: ## NOTE: Handle any type of 'can you <>';; direct perform action rather than telling what to ask
         '''
@@ -426,6 +499,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         def __init__(self):
             self.__va = Voice_Assistant()
             self.__random_2_numbers = list(np.random.permutation(np.arange(0, len(self.__my_abilities_with_keywords) - 1))[:2])
+            self.__retries = 1
 
         def what_can_you_do(self, query): # Return 2 random abilities from 'self.my_abilities'[0:-1] and 'Bid Goodbye'
             if 'how can you help in ' in query or 'how can you help me ' in query:
@@ -560,10 +634,36 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 search_term = self.__va._take_command()
                 if search_term != 'None':
                     break
-            self.__va._stream_online(search_term)
-            # music_dir = 'D:\\SONGS\\'
-            # songs = os.listdir(music_dir)
-            # os.startfile(os.path.join(music_dir, songs[randint(0, len(songs))]))
+            
+            music_player = self.__va._stream_online(search_term)
+            if music_player:
+                music_player.play()
+
+                while True:
+                    call_jarvis = self.__va._take_command()
+                    if 'Jarvis' in call_jarvis:
+                        music_player.pause()
+                        control = self.__va._take_command()
+                        if 'play' in control:  # start from beginning
+                            music_player.play()
+                        elif 'pause' in control: # pause
+                            music_player.pause()
+                        elif 'replay' in control: # start from beginning
+                            ## NOTE: Make this functionality so that the song replays after it finishes
+                            music_player.replay()
+                        elif 'resume' in control: # start after pause
+                            music_player.resume()
+                        elif 'stop' in control: # stop the song && closes the 'Media_Player' instance
+                            music_player.stop()
+                            print(f'Current Position: {music_player.current_time()}\n')
+                            break
+                        else:
+                            music_player.resume()
+            else:
+                for _ in range(self.__retries):
+                    self.__va._speak(f'Sorry! unable to find {self.__va._song_name}...')
+                    self.__va._speak('Trying again! Plaise Wait...')
+                    self.__va._stream_online(self.__va._song_name)
 
         def stackoverflow(self, query):
             self.__va._speak('What to search for?')
@@ -723,4 +823,5 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             elif query == 'none' and not self.__if_any_query_made: # Stop executing when not asked anything
                 self.__abilities.what_can_you_do(query)
                 sleep(self.__time_out_between_failed_queries)
+        
         return True

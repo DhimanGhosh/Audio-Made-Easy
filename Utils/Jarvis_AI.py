@@ -416,7 +416,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             'Stream Song from youtube directly': ['Stream', 'Song'],
             'Tell you the current time': ['time', 'tell'],
             'Open VS Code for you': ['VS', 'Code'],
-            'have general conversation with you': ['conversation', 'talk']
+            'have general conversation with you': ['conversation', 'talk'],
             'saying Goodbye': ['Goodbye']
         } # {'Ability to speak out' : 'keyword/s'}
         __my_abilities_with_index = list(zip(list(range(0, len(__my_abilities_with_keywords))), __my_abilities_with_keywords.keys())) # zip ('index numbers', my_abilities)

@@ -285,6 +285,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         self.engine = pyttsx3.init('sapi5')
         self.voices = self.engine.getProperty('voices')
         self.engine.setProperty('voice', self.voices[0].id)
+        self.VA_NAME = 'Dhiman'
         self.ytb = Youtube_mp3()
         self._brain = brain
         self._song_name = ''
@@ -302,7 +303,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         else:
             self._speak('Good Evening!')
         
-        self._speak('Hello Sir or Madam. I am your Jarvis. How may I help you?')
+        self._speak(f'Hello Sir or Madam. I am your {self.VA_NAME}. How may I help you?')
     
     def _take_command(self): ## NOTE: Execution Stopped (hanged)
         '''
@@ -640,8 +641,8 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 music_player.play()
 
                 while True:
-                    call_jarvis = self.__va._take_command()
-                    if 'Jarvis' in call_jarvis:
+                    call_VA = self.__va._take_command()
+                    if self.__va.VA_NAME in call_VA:
                         music_player.pause()
                         control = self.__va._take_command()
                         if 'play' in control:  # start from beginning

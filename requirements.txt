@@ -4,12 +4,14 @@ qdarkgraystyle
 pyqt5
 pyqt5-tools
 numpy
+pandas
 scipy
 pyaudio
 pyttsx3
 speechRecognition
 wikipedia
 pafy
-pyglet
 pygame
 bs4
+python-levenshtein
+mutagen

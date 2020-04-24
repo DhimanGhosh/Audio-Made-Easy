@@ -1,9 +1,16 @@
 import numpy as np
+import pandas as pd
 import pyttsx3
 import speech_recognition as sr
 import wikipedia
 import webbrowser
-import os, pafy, pyglet, pygame, time
+import os
+import sys
+import platform
+import pafy
+import pyglet
+import pygame
+import time
 import urllib.request
 from urllib.parse import *
 from bs4 import BeautifulSoup
@@ -11,10 +18,35 @@ from random import randint
 from datetime import datetime
 from glob import glob
 from time import sleep
+from Levenshtein import ratio
+from ast import literal_eval
+
 from pdb import set_trace as debug
 
 # Currently Mainly 'voice enabled music streamer'
 # TODO: Guide music through voice commands; control device tasks; etc.
+
+
+utils_dir = assets_dir = datasets_dir = ''
+# ----- Access Other Directories on Particular Platform ----- #
+if platform.system() == 'Linux':
+    utils_dir = os.path.realpath('../Utils') + '/'
+    sys.path.insert(0, utils_dir)
+    from Music import Music
+    assets_dir = os.path.realpath('../assets') + '/'
+    sys.path.insert(0, assets_dir)
+    datasets_dir = os.path.realpath('../assets/datasets') + '/'
+    sys.path.insert(0, datasets_dir)
+else:
+    root_dir = os.path.realpath('..\\Audio-Made-Easy')
+    sys.path.insert(0, root_dir)
+    #from Utils.Music import Music
+    utils_dir = root_dir + '\\Utils\\'
+    assets_dir = root_dir + '\\assets\\'
+    datasets_dir = assets_dir + 'datasets\\'
+
+features = utils_dir + 'Features.txt'
+brain = datasets_dir + 'brain.csv'
 
 class Media_Player:
     def __init__(self, audio_file):
@@ -192,8 +224,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         Perform any task just with your voice.
     
     Description:
-        This Voice Assistant has a lots of Abilities (mentioned inside sub-class 'Abilities'). Basically when we ask 'AI' engine for any task. Then it asks its own
-        'Abilities' to perform some task based on input query. Then it takes the output and return it to us.
+        This Voice Assistant has a lots of Abilities (mentioned inside sub-class 'Abilities'). Basically when we ask 'AI' engine for any task. Then it asks its own 'Abilities' to perform some task based on input query. Then it takes the output and return it to us.
     '''
     search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
 
@@ -202,6 +233,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         self.voices = self.engine.getProperty('voices')
         self.engine.setProperty('voice', self.voices[0].id)
         self.ytb = Youtube_mp3()
+        self._brain = brain
 
     def _speak(self, audio):
         self.engine.say(audio)
@@ -216,12 +248,16 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         else:
             self._speak('Good Evening!')
         
-        self._speak('Hello Sir or Madam. I am yout Jarvis. How may I help you?')
+        self._speak('Hello Sir or Madam. I am your Jarvis. How may I help you?')
     
     def _take_command(self): ## NOTE: Execution Stopped
         r = sr.Recognizer()
 
         with sr.Microphone() as source:
+            # r.adjust_for_ambient_noise(source) # Ambient Noise Cancellation; use only when in a noisy background
+            '''
+            Intended to calibrate the energy threshold with the ambient energy level. Should be used on periods of audio without speech - will stop early if any speech is detected.
+            '''
             print('Listening...') # execute in seperate threads; if one gets hanged (overloaded) kill that; start new
             r.pause_threshold = 1
             audio = r.listen(source)
@@ -380,6 +416,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             'Stream Song from youtube directly': ['Stream', 'Song'],
             'Tell you the current time': ['time', 'tell'],
             'Open VS Code for you': ['VS', 'Code'],
+            'have general conversation with you': ['conversation', 'talk']
             'saying Goodbye': ['Goodbye']
         } # {'Ability to speak out' : 'keyword/s'}
         __my_abilities_with_index = list(zip(list(range(0, len(__my_abilities_with_keywords))), __my_abilities_with_keywords.keys())) # zip ('index numbers', my_abilities)
@@ -400,7 +437,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 i_can_do = 'Out of many; I can ' + first + '; or even ' + second + ' for you. Or you can quit this application by ' + last
                 self.__va._speak(i_can_do)
         
-        def how_can_you(self, query): # Handles any type of 'How can you <>'
+        def how_can_you(self, query): # Handles any type of 'How can you <task>'
             what_to_ask = ''
             print(f'query: {query}')
             if 'how can you help in' in query or 'how can you help me' in query:
@@ -557,6 +594,55 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                     self.__va._speak('Good Bye Sir or Madam, Thanks for your time!')
             self.__va.ytb.flush_media_file_created()
 
+        def conversation(self): # This the brain of my VA. Read 'datasets/brain.csv'; create and train model to have conversation with user
+            brain = pd.read_csv(self.__va._brain)
+            self.stop = False
+
+            ## Approximating QA system
+            # Approximate string matching
+            def getApproximateAnswer(q):
+                max_score = 0
+                answer = ""
+                prediction = ""
+                for _, row in brain.iterrows():
+                    score = ratio(row["Question"], q)
+                    if score >= 0.9: # I'm sure, stop here
+                        return row["Answer"], score, row["Question"]
+                    elif score > max_score: # I'm unsure, continue
+                        max_score = score
+                        answer = row["Answer"]
+                        prediction = row["Question"]
+
+                if max_score > 0.8:
+                    return answer, max_score, prediction
+                return "Sorry, I didn't get you.", max_score, prediction
+
+            while not self.stop:
+                def ask():
+                    print('Waiting for you!')
+                    while True:
+                        question = self.__va._take_command()
+                        if question != 'None':
+                            break
+                    reply(question)
+
+                def reply(question):
+                    answer, _, _ = getApproximateAnswer(question)
+                    self.__va._speak(answer)
+
+                    if 'bye' in answer:
+                        if 'as you wish' in answer:
+                            self.stop = True
+                        else:
+                            self.quit_VA(question)
+                            self.stop = True
+                
+                ask()
+            
+            if self.stop:
+                return False
+            return True
+
     def start_AI_engine(self): ### TODO: If valid query => calls respective functions in 'Abilities'; Else => calls 'Abilities.what_can_you_do()'
         self.__wish_me()
         self.__if_any_query_made = False
@@ -566,7 +652,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             'w' : 'wikipedia',
             'y' : 'youtube',
             'g' : 'google'}
-        
+
         while True:
             self.__abilities = self.Abilities()
             query = self._take_command().lower()
@@ -620,7 +706,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 self.__if_any_query_made = True
                 self.__abilities.current_time(query)
 
-            elif 'open vs code' in query: ## NOTE: don't use absolute path; instead search for its exe file and then execute
+            elif 'open vs code' in query: ## NOTE: don't use absolute path; instead search for its executable (.exe) file and then execute
                 self.__if_any_query_made = True
                 self.__abilities.open_app(query)
 
@@ -628,6 +714,11 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                 self.__if_any_query_made = True
                 self.__abilities.quit_VA(query)
                 return False
+
+            elif 'conversation' in query or 'talk' in query:
+                self.__if_any_query_made = True
+                self._speak('Sure Sir!')
+                return(self.__abilities.conversation())
 
             elif query == 'none' and not self.__if_any_query_made: # Stop executing when not asked anything
                 self.__abilities.what_can_you_do(query)

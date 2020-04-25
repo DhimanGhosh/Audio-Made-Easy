@@ -643,6 +643,12 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 return False
 
         def play_song(self, query):
+            def any_keyword_match_with_DataBase(keyword, list_to_search_in):
+                for key in list_to_search_in:
+                    if keyword.lower() in key.lower():
+                        return True
+                return False
+
             self.__va._speak('What to search for?')
             while True:
                 search_term = self.__va._take_command()
@@ -667,7 +673,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                             music_player.replay()
                         elif 'resume' in control: # start after pause
                             music_player.resume()
-                        elif 'end' in control or any(self.__va._DataBase.SYNONYMS['END']) in control: # stop the song && closes the 'Media_Player' instance
+                        elif 'end' in control or any_keyword_match_with_DataBase(control, self.__va._DataBase.SYNONYMS['END']): # stop the song && closes the 'Media_Player' instance
                             music_player.stop()
                             print(f'Current Position: {music_player.current_time()}\n')
                             self.__va.ytb.flush_media_files_created()

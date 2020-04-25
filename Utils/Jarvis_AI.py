@@ -288,7 +288,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
     Description:
         This Voice Assistant has a lots of Abilities (mentioned inside sub-class 'Abilities'). Basically when we ask 'AI' engine for any task. Then it asks its own 'Abilities' to perform some task based on input query. Then it takes the output and return it to us.
     '''
-    search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit']
+    search_terms = ['wikipedia', 'open youtube', 'open google', 'open stackoverflow', 'play song', 'time', 'open code', 'quit', 'news']
 
     def __init__(self):
         self.engine = pyttsx3.init('sapi5')
@@ -498,11 +498,13 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             'Open Youtube and search for you': ['youtube', 'searching youtube', 'youtube search', 'open youtube', 'youtube opening', 'viewing youtube', 'youtube viewing', 'watching youtube', 'youtube watching'],
             'Open Google and search for you': ['google'],
             'Open stackoverflow and search for you': ['stackoverflow'],
-            'Stream Song from youtube directly': ['Stream', 'Song'],
+            'Stream Song from youtube directly for you': ['Stream', 'Song'],
             'Tell you the current time': ['time', 'tell'],
             'Open VS Code for you': ['VS', 'Code'],
             'have general conversation with you': ['conversation', 'talk'],
-            'saying Goodbye': ['Goodbye']
+            'Read out live news for you': ['news', 'break', 'hot']
+
+            'saying Goodbye': ['Goodbye'],
         } # {'Ability to speak out' : 'keyword/s'}
         __my_abilities_with_index = list(zip(list(range(0, len(__my_abilities_with_keywords))), __my_abilities_with_keywords.keys())) # zip ('index numbers', my_abilities)
         __queries_made = []
@@ -520,7 +522,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 first = self.__my_abilities_with_index[self.__random_2_numbers[0]][1]
                 second = self.__my_abilities_with_index[self.__random_2_numbers[1]][1]
                 last = self.__my_abilities_with_index[-1][1]
-                i_can_do = 'Out of many; I can ' + first + '; or even ' + second + ' for you. Or you can quit this application by ' + last
+                i_can_do = 'Out of many; I can ' + first + '; or even ' + second + ' . Or you can quit this application by ' + last
                 self.__va._speak(i_can_do)
         
         def how_can_you(self, query): # Handles any type of 'How can you <task>'

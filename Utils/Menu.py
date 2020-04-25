@@ -48,6 +48,9 @@ class Menu:
         if platform.system() == 'Linux':
             music = Music()
             music.linux_speech(text)
+        else:
+            va = Voice_Assistant()
+            va._speak(text)
 
     def __valid_input(self, input_text): # Control empty user input
         while True:
@@ -367,6 +370,5 @@ class Menu:
 
     def va(self, wob):
         wob.set_wrong_flag(False)
-        self.__talk('You chose AI Voice Assistant')
         music = Music()
         return music.voice_assist()

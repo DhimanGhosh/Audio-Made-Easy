@@ -45,7 +45,6 @@ if platform.system() == 'Linux':
 else:
     root_dir = os.path.realpath('..\\Audio-Made-Easy')
     sys.path.insert(0, root_dir)
-    from . import Music
     utils_dir = root_dir + '\\Utils\\'
     assets_dir = root_dir + '\\assets\\'
     datasets_dir = assets_dir + 'datasets\\'
@@ -221,6 +220,7 @@ class _Youtube_mp3:
 
     def play_media(self, num): # Returns '_Media_Player' object with loaded song
         ## NOTE: 'Pafy()' sometimes cause 'downloading issue';; Use some other 'mp3 downloading API'
+        # Or use any sort of web-scrapping technology to get to the source of mp3 to download them 'may be use webmusic.live'
         '''global song_created
         url = self.dict[int(num)]
         video = pafy.new(url)

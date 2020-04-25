@@ -23,6 +23,7 @@ app_logo = assets_dir + 'app_logo.png'
 reset_icon = assets_dir + 'reset.png'
 sharp_icon = assets_dir + 'sharp.png'
 flat_icon = assets_dir + 'flat.png'
+audio_file = assets_dir + 'Audio.wav'
 
 class Ui_Dialog(object):
     def __init__(self, Dialog):

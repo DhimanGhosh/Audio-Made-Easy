@@ -502,7 +502,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             'Tell you the current time': ['time', 'tell'],
             'Open VS Code for you': ['VS', 'Code'],
             'have general conversation with you': ['conversation', 'talk'],
-            'Read out live news for you': ['news', 'break', 'hot']
+            'Read out live news for you': ['news', 'break', 'hot'],
 
             'saying Goodbye': ['Goodbye'],
         } # {'Ability to speak out' : 'keyword/s'}

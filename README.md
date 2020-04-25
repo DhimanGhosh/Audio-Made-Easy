@@ -23,4 +23,4 @@ This app lets you:
 		$ python app.py (For CLI Execution)
 		$ cd ./GUI_QT/
 		$ python MusicTheoryGuide.py (For Interactive GUI)
-Sukanta
+

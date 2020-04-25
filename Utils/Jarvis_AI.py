@@ -4,6 +4,8 @@ import pyttsx3
 import speech_recognition as sr
 import wikipedia
 import webbrowser
+import requests
+import json
 import os
 import sys
 import platform
@@ -13,7 +15,7 @@ import re
 import pygame
 import time
 import urllib.request
-from urllib.parse import *
+#from urllib.parse import * ## avoid using (*) ---- use only what is required; else software will slow-down
 from bs4 import BeautifulSoup
 from random import randint
 from datetime import datetime
@@ -21,6 +23,7 @@ from glob import glob
 from time import sleep
 from Levenshtein import ratio
 from mutagen.mp3 import MP3
+from winsound import Beep
 
 from pdb import set_trace as debug
 
@@ -91,6 +94,7 @@ class Media_Player: # Supports only mp3
     def stop(self):
         if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
             pygame.mixer.music.stop()
+            pygame.mixer.quit()
         print("Stopped")
     
     def replay(self):
@@ -271,7 +275,12 @@ class Youtube_mp3:
         url = self.url_search(search_query, max_search=1)
         self.playlist.append(url)
 
-class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
+class _DataBase:
+    SYNONYMS = {
+        'END' : ['end', 'close', 'finish', 'stop', 'terminate', 'windup']
+    }
+
+class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
     '''
     Overview:
         Perform any task just with your voice.
@@ -285,8 +294,9 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         self.engine = pyttsx3.init('sapi5')
         self.voices = self.engine.getProperty('voices')
         self.engine.setProperty('voice', self.voices[0].id)
-        self.VA_NAME = 'Dhiman'
+        self.VA_NAME = 'Google'
         self.ytb = Youtube_mp3()
+        self._DataBase = _DataBase()
         self._brain = brain
         self._song_name = ''
 
@@ -303,7 +313,8 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
         else:
             self._speak('Good Evening!')
         
-        self._speak(f'Hello Sir or Madam. I am your {self.VA_NAME}. How may I help you?')
+        self._speak(f'Hello Sir or Madam. I am {self.VA_NAME} - Your personal voice assistant!')
+        self._speak('How may I help You?')
     
     def _take_command(self): ## NOTE: Execution Stopped (hanged)
         '''
@@ -654,9 +665,10 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                             music_player.replay()
                         elif 'resume' in control: # start after pause
                             music_player.resume()
-                        elif 'stop' in control: # stop the song && closes the 'Media_Player' instance
+                        elif 'end' in control or any(self.__va._DataBase.SYNONYMS['END']) in control: # stop the song && closes the 'Media_Player' instance
                             music_player.stop()
                             print(f'Current Position: {music_player.current_time()}\n')
+                            self.__va.ytb.flush_media_files_created()
                             break
                         else:
                             music_player.resume()
@@ -693,7 +705,7 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
                     self.__va._speak('Good Bye Sir or Madam, Thanks for your time! Good Night!')
                 else:
                     self.__va._speak('Good Bye Sir or Madam, Thanks for your time!')
-            self.__va.ytb.flush_media_file_created()
+            self.__va.ytb.flush_media_files_created()
 
         def conversation(self): # This the brain of my VA. Read 'datasets/brain.csv'; create and train model to have conversation with user
             brain = pd.read_csv(self.__va._brain)
@@ -743,6 +755,30 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             if self.stop:
                 return False
             return True
+
+        def read_out_news(self, query): # query: NEWS Category (region / topic / etc...)
+            url = 'https://opensourcepyapi.herokuapp.com:443/news'
+            r = requests.get(url)
+            data = r.json()
+            y = json.loads(data)
+            sleep(1)
+            c = 1
+
+            NEWS_Headlines = list(y['Title'].values())
+            random_10_numbers = list(np.random.permutation(np.arange(0, len(NEWS_Headlines) - 1))[:10])
+            random_10_news_headlines = [NEWS_Headlines[i] for i in random_10_numbers]
+
+            self.__va._speak('TOP 10 Headlines Today...')
+            for news in random_10_news_headlines:
+                print(f'Number {c}: {news}')
+                self.__va._speak(f'Number {c}')
+                self.__va._speak(news)
+                Beep(1047, 300)
+                sleep(1)
+                c += 1
+                if c > 10:
+                    break
+            self.__va._speak('Thank You!')
 
     def start_AI_engine(self): ### TODO: If valid query => calls respective functions in 'Abilities'; Else => calls 'Abilities.what_can_you_do()'
         self.__wish_me()
@@ -824,5 +860,9 @@ class Voice_Assistant: ## NOTE: Play a beep sub-queries are searched
             elif query == 'none' and not self.__if_any_query_made: # Stop executing when not asked anything
                 self.__abilities.what_can_you_do(query)
                 sleep(self.__time_out_between_failed_queries)
-        
+
+            elif 'news' in query:
+                self.__if_any_query_made = True
+                self.__abilities.read_out_news(query)
+
         return True

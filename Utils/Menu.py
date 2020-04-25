@@ -6,12 +6,15 @@ from time import sleep
 
 if platform.system() == 'Linux':
     from Music import Music
+    from Jarvis_AI import Voice_Assistant
 else:
     from Utils.Music import Music
+    from Utils.Jarvis_AI import Voice_Assistant
 
 class Menu:
     def __init__(self):
-        print('''
+        self.__va = Voice_Assistant()
+        print(f'''
         ###########################################
         ###    Welcome to Music Theory Guide    ###
         ###########################################
@@ -35,7 +38,7 @@ class Menu:
             17. Record and Playback
             18. Record and Save
             19. Play MP3 Audio
-            20. AI Voice Assistant (J.A.R.V.I.S)
+            20. AI Voice Assistant '{self.__va.VA_NAME}'
             21. Best Capo position for easy play (Feature coming soon)
             22. Quit
         ''')

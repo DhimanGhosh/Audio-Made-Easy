@@ -28,10 +28,6 @@ from winsound import Beep
 
 from pdb import set_trace as debug
 
-# Currently Mainly 'voice enabled music streamer'
-# TODO: Guide music through voice commands; control device tasks; etc.
-
-
 utils_dir = assets_dir = datasets_dir = ''
 # ----- Access Other Directories on Particular Platform ----- #
 if platform.system() == 'Linux':

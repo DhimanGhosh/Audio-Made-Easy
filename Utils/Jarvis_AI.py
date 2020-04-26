@@ -126,6 +126,24 @@ class _Media_Player: # Supports only mp3
         pygame.mixer.music.rewind() # restart music
         pygame.mixer.music.queue # queue a sound file to follow the current
 
+class _Song_Search_and_Download:
+    '''
+    Using bs4: (Web scraping)
+
+    >>>> ---- For example ---- <<<<
+    ---SEARCHING---
+    1. query: 'mithe alo'
+    2. go to https://www.google.com/search?q=mithe+alo
+    3. grep for 'Movie / Album' : <Cockpit>
+    4. open the link to get its information; lets say 'wikipedia'
+    5. grep for 'mithe alo' in the page using 'wikipedia' API -OR- there itself (will help to get the length of this song)
+    6. get the length from there
+    
+    ---DOWNLOADING---
+    1. 
+    '''
+    pass
+
 class _Youtube_mp3:
     song_created = ''
 
@@ -239,7 +257,8 @@ class _Youtube_mp3:
         # os.startfile(song_created) # for playing in device default media-player (VLC for me)
 
         self.player = _Media_Player(audio_file=song_title)'''
-        self.player = _Media_Player(audio_file='assets\\RM.mp3') # used for Cache testing purpose
+        song_title = assets_dir + 'KKHBH.mp3'
+        self.player = _Media_Player(audio_file=song_title) # used for Cache testing purpose
         return self.player
                 
     def download_media(self, num):
@@ -276,11 +295,11 @@ class _Youtube_mp3:
 class _Vocabulary: # Reads data from datasets; Store personalised data
     ## ---- SYNONYMS ---- ##
     SYNONYMS = {
-        'PLAY'  : ['play', 'start', 'begin'],
+        'PLAY'  : ['play', 'start', 'begin'], # This will act as 'Replay' (when called while playing a song)
         'PAUSE' : ['pause', 'hold', 'break', 'suspend', 'interrupt'],
         'RESUME': ['resume'],
-        'REPLAY': ['replay', 'repeat'],
-        'RESTART':['restart'],
+        'REPLAY': ['replay', 'repeat', 'reply'], # 'reply' is added since 'speech_recognition' sometimes hear 'reply' when I say 'replay'... LOL!
+        'RESTART':['restart', 'from beginning'],
         'STOP'  : ['stop', 'close', 'finish', 'end', 'terminate', 'wind up', 'windup'],
     }
 
@@ -291,6 +310,9 @@ class _Vocabulary: # Reads data from datasets; Store personalised data
     JOKES = {
         'joke' : str(joke[random_joke_id[0]])
     }
+
+    ## ---- Conversation ---- ##
+    BRAIN = pd.read_csv(brain)
 
 class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
     '''
@@ -317,7 +339,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         self.VA_NAME = 'Google'
         self.ytb = _Youtube_mp3()
         self._Vocabulary = _Vocabulary()
-        self._brain = brain
         self._song_name = ''
 
     def _speak(self, audio):
@@ -336,7 +357,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         self._speak(f'Hello Sir or Madam. I am {self.VA_NAME} - Your personal voice assistant!')
         self._speak('How may I help You?')
     
-    def _take_command(self): ## NOTE: Execution Stopped (hanged)
+    def _take_command(self, waiting_for_query=''): ## NOTE: Execution Stopped (hanged)
         '''
         NOTE: <To Solve HANG issue>
         Create 2 threads: for handling the mic voice commands
@@ -352,7 +373,8 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             '''
             Intended to calibrate the energy threshold with the ambient energy level. Should be used on periods of audio without speech - will stop early if any speech is detected.
             '''
-            print('Listening...') # execute in seperate threads; if one gets hanged (overloaded) kill that; start new
+            ## NOTE: Add what the mic is waiting to hear from you
+            print(f'Waiting for: {waiting_for_query}\nListening...') # execute in seperate threads; if one gets hanged (overloaded) kill that; start new ['DEBUGGING' purpose only] <--> comment it when 'using'
             r.pause_threshold = 1
             audio = r.listen(source)
         
@@ -363,7 +385,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         except Exception:
             print('Say that again please...')
             return 'None'
-        return query
+        return query.lower()
     
     def _substr_in_list_of_strs(self, lst, substr):
         '''
@@ -387,12 +409,14 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             if new:
                 self._speak('What do you want me to play?')
                 while True:
-                    search_term = self._take_command()
+                    search_term = self._take_command('Whice Song to play?')
                     if search_term != 'None':
                         break
             else:
-                search_term = song_name
-            self._stream_online(search_term)
+                search_term = 'continue'
+                #search_term = song_name # don't make a call to 'self._stream_online()' after this; just ask for which number to play
+            #self._stream_online(search_term)
+            return search_term
             
         if number == 0: # direct playing song
             ### Add support for 'search more'; (increase max_search value by let's say=5; show result from 6-10) [say 'refresh', 'more']
@@ -404,34 +428,49 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 if search_titles[1]:
                     self._speak('Which Number Song? (SAY for example, Number 1)')
                     while True:
-                        song_number = self._take_command()
-                        if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
-                            main_list = True
-                            break
-                        elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                            main_list = False # try again for another song; not main list
-                            break
-                        elif song_number != 'None' and \
-                            not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
-                            not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                            if 'number' not in song_number:
-                                self._speak('Was expecting a number! Retry...')
-                                try_new_song(new=False)
-                            break
+                        song_number = self._take_command('Which Number Song? (SAY for example, Number 1)')
+                        if song_number.strip().split()[-1].isdigit() and int(song_number.strip().split()[-1]) in range(1, len(search_titles[0]) + 1):
+                            if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
+                                main_list = True
+                                break
+                            elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                                main_list = False # try again for another song; not main list
+                                break
+                            elif song_number != 'None' and \
+                                not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
+                                not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
+                                if 'number' not in song_number:
+                                    self._speak('Was expecting a number! Retry...')
+                                    search_term = try_new_song(new=False)
+                                    if search_term == 'continue':
+                                        continue # self._stream_online(song_name)
+                                    else:
+                                        self._stream_online(search_term) # Recursive call
+                                break
+                        else:
+                            self._speak(f'Sorry Sir! I found only {len(search_titles[0])} results')
                     if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
                         if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # If option is not a valid song
                             self._speak('This is a channel name, not a song! Try again...')
                             ## NOTE: implement this issue in '_Youtube_mp3.get_search_items()'
                         elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1: # If input doesn't contain 'number'
                             self._speak('Was expecting a number! Retry...')
-                            try_new_song(new=False)
+                            search_term = try_new_song(new=False)
+                            if search_term == 'continue':
+                                self._stream_online(song_name)
+                            else:
+                                self._stream_online(search_term) # Recursive call
                         elif 'number' in song_number and song_number.strip().split()[-1].isdigit(): # Valid Input
                             print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
                             self.player = self.ytb.play_media(song_number.strip().split()[-1])
                             main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
                         else: ## NOTE: 'number <non-digit>' is not handled properly
                             print('Say that again please...')
-                            try_new_song(new=False)
+                            search_term = try_new_song(new=False)
+                            if search_term == 'continue':
+                                self._stream_online(song_name)
+                            else:
+                                self._stream_online(search_term) # Recursive call
                 else: # for No Search results
                     main_list = False
                     self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
@@ -440,7 +479,11 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
             
             if not main_list:
-                try_new_song()
+                search_term = try_new_song(new=True)
+                if search_term == 'continue':
+                    self._stream_online(song_name)
+                else:
+                    self._stream_online(search_term) # Recursive call
         
         else: # play song from last 'webpage' valid song search
             ## NOTE: First search the song_name along with ('lyric', 'full', 'audio', 'official', '|'); if no result => display the list (allow more/refresh_list...)
@@ -459,47 +502,10 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 if results_found:
                     break
             if results_found:
+                print(f'\n\nsong in wiki search ---- results_found:\n{results_found}\n\n')
                 self.player = self.ytb.play_media(number)
-            else:
-                self.ytb.url_search(song_name, max_search)
-                search_titles = self.ytb.get_search_items(number)
-                if search_titles[1]:
-                    self._speak('Which Number Song? (SAY for example, Number 1)')
-                    while True:
-                        song_number = self._take_command()
-                        if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
-                            main_list = True
-                            break
-                        elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                            main_list = False # try again for another song; not main list
-                            break
-                        elif song_number != 'None' and \
-                            not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
-                            not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                            if 'number' not in song_number:
-                                self._speak('Was expecting a number! Retry...')
-                                try_new_song(new=False)
-                            break
-                    if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                        if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # chk if search result is a valid song or not
-                            self._speak('This is a channel name, not a song! Try again...')
-                            ### implement this issue in '_Youtube_mp3.get_search_items()'
-                        elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1:
-                            self._speak('Was expecting a number! Retry...')
-                            try_new_song(new=False)
-                        elif 'number' in song_number and song_number.strip().split()[-1].isdigit():
-                            print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
-                            self.player = self.ytb.play_media(song_number.strip().split()[-1])
-                            main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
-                        else: ## NOTE: 'number <non-digit>' is not handled properly
-                            print('Say that again please...')
-                            try_new_song(new=False)
-                else: # for No Search results
-                    main_list = False
-                    self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
-                
-                if not main_list:
-                    try_new_song()
+            else: # If direct song play did not work for 'play_song_from_last_search()' then call 'self._stream_online(song_name, number=0); since here 'number=1'
+                self._stream_online(song_name, number=0)
         
         return self.player
 
@@ -603,7 +609,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     sub_queries[num] = option
                 self.__va._speak('Which Number Page? (SAY for example, Number 1)') ## NOTE: Incomplete...
                 while True:
-                    page_num = self.__va._take_command()
+                    page_num = self.__va._take_command('Which Number Wikipedia Page? (SAY for example, Number 1)')
                     if page_num != 'None':
                         break
                 new_query = sub_queries[int(page_num.strip().split()[-1]) - 1]
@@ -611,7 +617,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 print('Say that again please...')
                 self.__va._speak('search wikipedia')
                 while True:
-                    new_query = self.__va._take_command()
+                    new_query = self.__va._take_command('what to search in wikipedia')
                     if new_query != 'None':
                         break
                 results = wikipedia.summary(new_query, sentences=2)
@@ -623,7 +629,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             self.__queries_made.append(query)
             self.__va._speak('What to search for?')
             while True:
-                search_term = self.__va._take_command()
+                search_term = self.__va._take_command('What to search in youtube?')
                 if search_term != 'None':
                     break
             query = quote(search_term)
@@ -634,7 +640,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             self.__queries_made.append(query)
             self.__va._speak('What to search for?')
             while True:
-                search_term = self.__va._take_command()
+                search_term = self.__va._take_command('What to search in google?')
                 if search_term != 'None':
                     break
             query = quote(search_term)
@@ -678,7 +684,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         def play_song(self, query):
             def any_keyword_match_with_Vocabulary(keyword, list_to_search_in):
                 for key in list_to_search_in:
-                    if keyword.lower() in key.lower():
+                    if keyword.lower() in key.lower() or key.lower() in keyword.lower(): # Simplest 'text matching algorithm'
                         return True
                 return False
             
@@ -686,22 +692,24 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
 
             self.__va._speak('What do you want me to play?')
             while True:
-                search_term = self.__va._take_command()
+                search_term = self.__va._take_command('Which Song do you want me to play?')
                 if search_term != 'None':
                     break
             
             music_player = self.__va._stream_online(search_term)
             music_player.play()
 
+            paused = False
             while True:
-                call_VA = self.__va._take_command()
+                call_VA = self.__va._take_command('Waiting for (OK GOOGLE)')
                 if self.__va.VA_NAME in call_VA: # If VA is called
                     music_player.pause()
-                    control = self.__va._take_command()
+                    control = self.__va._take_command('Waiting for Music Control Actions')
                     if any_keyword_match_with_Vocabulary(control, self.__va._Vocabulary.SYNONYMS['PLAY']):  # start from beginning
-                        music_player.play()
+                        music_player.resume() # Eliminated everything from (_Vocabulary.SYNONYMS['PLAY'])
                     elif any_keyword_match_with_Vocabulary(control, self.__va._Vocabulary.SYNONYMS['PAUSE']): # pause
                         music_player.pause()
+                        paused = not paused # To stop replaying when in paused; when VA is called and no query passed
                     elif any_keyword_match_with_Vocabulary(control, self.__va._Vocabulary.SYNONYMS['REPLAY']): # A MODE to restart the song once it finishes
                         replay_song = music_player.replay()
                         music_player.resume()
@@ -715,7 +723,8 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                         self.__va.ytb.flush_media_files_created()
                         break
                     else:
-                        music_player.resume() # If nothing is said after calling VA
+                        if not paused:
+                            music_player.resume() # If nothing is said after calling VA
                 elif '' in call_VA: # If some text from unwanted voice is detected; it will skip and 'restart()' will be called
                     continue
                 elif replay_song and not 'when_song_ends()': # To avoid this just using 'not when_song_ends()' (Means, song will never end) [A . False = False]
@@ -724,7 +733,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         def stackoverflow(self, query):
             self.__va._speak('What to search for?')
             while True:
-                search_term = self.__va._take_command()
+                search_term = self.__va._take_command('What to search in stackoverflow?')
                 if search_term != 'None':
                     break
             query = quote(search_term)
@@ -751,7 +760,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             self.__va.ytb.flush_media_files_created()
 
         def conversation(self): # This the brain of my VA. Read 'datasets/brain.csv'; create and train model to have conversation with user
-            brain = pd.read_csv(self.__va._brain)
+            brain = self.__va._Vocabulary.BRAIN
             self.stop = False
 
             ## Approximating QA system
@@ -777,7 +786,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 def ask():
                     print('Waiting for you!')
                     while True:
-                        question = self.__va._take_command()
+                        question = self.__va._take_command('Waiting for you to have coversation...')
                         if question != 'None':
                             break
                     reply(question)
@@ -871,7 +880,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
 
         while True:
             self.__abilities = self.Abilities()
-            query = self._take_command().lower()
+            query = self._take_command('Waiting for commands in main thread').lower()
             print(f'query: {query}')
             # Logic for executing tasks based on query
             ### if self._substr_in_list_of_strs('can do perform'.split(), query)[0]:

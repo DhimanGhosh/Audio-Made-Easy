@@ -426,7 +426,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             retry_song_search_queries = ['retry', 'search again', 'other', 'new', 'different', 'none of these', 'not these', 'not this'] ## NOTE: not able to handle wrong entry correctly; re-executing searched result
             if search_titles:
                 if search_titles[1]:
-                    self._speak('Which Number Song? (SAY for example, Number 1)')
+                    self._speak('Which Number Song? (SAY for example, Number 1)') ## List not showing ----- still asking which song to play [BUG]
                     while True:
                         song_number = self._take_command('Which Number Song? (SAY for example, Number 1)')
                         if song_number.strip().split()[-1].isdigit() and int(song_number.strip().split()[-1]) in range(1, len(search_titles[0]) + 1):

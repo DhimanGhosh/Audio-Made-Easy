@@ -23,9 +23,10 @@ from random import randint
 from datetime import datetime
 from glob import glob
 from time import sleep
-from Levenshtein import ratio
 from mutagen.mp3 import MP3
 from winsound import Beep
+from Levenshtein import ratio
+from scipy.spatial.distance import cosine
 
 from pdb import set_trace as debug
 
@@ -174,8 +175,12 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             print('tmp folder created')
         except FileExistsError:
             print('tmp folder already present')
-        for f in glob('*.exe'):
-            shutil.copy(cache_dir + f, tmp_dir)
+        try:
+            for f in glob(assets_dir + '*.exe'):
+                print(f'Copying "{f}" to {tmp_dir}')
+                shutil.copy(f, tmp_dir)
+        except Exception:
+            print(f'EXE already copied to {tmp_dir}')
 
     def url_search(self, search_string, max_search): # search youtube and returns list of 5 links
         self.dict = {} # Flushing the buffer for new song request
@@ -208,7 +213,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         #name = "".join(getVals) 
         return name
 
-    def test_url(self, url): # (in folder 'assets\cache')
+    def test_url(self, url): # (in folder 'assets\cache') ## BUG: After song found and copied to cache; continuing to search and download
         os.chdir(tmp_dir)
         try:
             #command = 'youtube-dl -f bestaudio ' + url + ' --exec "ffmpeg -i {}  -codec:a libmp3lame -qscale:a 0 {}.mp3 && del {} " '
@@ -225,7 +230,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     os.rename(song_name, self.clean_file_name(song_name) + '.' + song_name.split('.')[-1])
                     song_name = glob('*.webm')[0]
                     new_name = song_name.split('.')[0] + '.mp3'
-                    command = f"ffmpeg -i {song_name} -vn -ar 44100 -ac 2 -b:a 192k {new_name}"
+                    command = f"ffmpeg -i {song_name} -vn -ar 44100 -ac 2 -b:a 192k -y {new_name}"
                     subprocess.call(command)
                     print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
                 elif glob('*.m4a'):
@@ -234,7 +239,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     os.rename(song_name, self.clean_file_name(song_name) + '.' + song_name.split('.')[-1])
                     song_name = glob('*.m4a')[0]
                     new_name = song_name.split('.')[0] + '.mp3'
-                    command = f'ffmpeg -i {song_name} -codec:v copy -codec:a libmp3lame -q:a 2 {new_name}'
+                    command = f'ffmpeg -i {song_name} -codec:v copy -codec:a libmp3lame -q:a 2 -y {new_name}'
                     subprocess.call(command)
                     print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
                 elif glob('*.mp3'):
@@ -246,8 +251,8 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     os.chdir(cache_dir)
                     print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
                 shutil.copy(new_name, cache_dir)
-                # os.chdir(cache_dir)
-                # shutil.rmtree(os.path.join(cache_dir, tmp_dir))
+                os.chdir(cache_dir)
+                shutil.rmtree(os.path.join(cache_dir, tmp_dir))
                 return new_name
             else:
                 return None
@@ -262,14 +267,42 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         self.player = _Media_Player(audio_file=song_name)
         return self.player
 
-    def play_media_from_cache(self, song_name):
-        '''
+    def play_media_from_cache(self, query):
+        ''' ---- Use Cosine similarity between 'query' and 'cache_dir' matching ---- (length of strings should be similar) [fill the remaining with '-']
         For Cache storing:
         1. Check if the name of the song is there in cache folder or not.
         2. If it is there play from cache or download it and play
-        (Store only the 'initials of song'; not the full name && 'encrypt' them --------- 'decrypt' while using)
-        '''
-        pass
+        ('store' them && 'encrypt' them --------- 'decrypt' while using)
+        ''' # 'q': query; 'c': cache
+        def string_to_vector(string):
+            return [ord(c) for c in string]
+        
+        query = self.clean_file_name(query)
+
+        os.chdir(cache_dir)
+        sq = query
+        sc = glob('*.mp3')
+
+        vq = string_to_vector(sq)
+        vc = [string_to_vector(x) for x in sc]
+        for i in range(len(vc)):
+            if len(sq) < len(sc[i]):
+                sq1 = sq
+                sq1.append('-'*(len(sc[i]) - len(sq)))
+                vq = string_to_vector(sq1)
+            else:
+                sc1 = sc
+                sc1[i] += '-'*(len(sq) - len(sc[i]))
+                vc = [string_to_vector(x) for x in sc1]
+            cosine_similarity = 1 - cosine(vq, vc[i])
+            if cosine_similarity > 0.9:
+                print('Song present in cache')
+                x = sc[0]
+                for x in sc:
+                    if string_to_vector(x) == vc[i]:
+                        print(f'Found Song Name: {x}\n{vc[i]}')
+                        return x
+        return None
 
     def add_playlist(self, search_query):
         url = self.url_search(search_query, max_search=1)
@@ -404,25 +437,33 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
     
     def _stream_online(self, song_name, number=0): # number = song_number to play in the list of search results
         max_search = 5
+        valid_song = False
 
         if number == 0: # direct play; doesn't involve user
             self._speak('Searching Song...')
-            songs_list = self.ytb.url_search(song_name, max_search) ##NOTE: add 'search_more' parameter in 'url_search()' that will hold an integer of 'self.__retry_list'
-            print(f'songs_list: {songs_list}')
-            if songs_list:
-                for sl_no, url in songs_list.items():
-                    print(sl_no, url)
-                    song_name = self.ytb.test_url(url)
-                    if song_name: # valid song found
+            cache_search = self.ytb.play_media_from_cache(song_name)
+            if not cache_search:
+                songs_list = self.ytb.url_search(song_name, max_search) ##NOTE: add 'search_more' parameter in 'url_search()' that will hold an integer of 'self.__retry_list'
+                print(f'songs_list: {songs_list}')
+                if songs_list:
+                    for sl_no, url in songs_list.items():
+                        print(sl_no, url)
+                        song_name = self.ytb.test_url(url)
+                        print(f'song name recv in _stream_online: {song_name}')
+                        if song_name: # valid song found
+                            valid_song = True
+                            break
+                        else:
+                            continue
+                    if valid_song:
                         self.player = self.ytb.play_media(song_name)
-                        break
-                    else:
-                        continue
-                # if not valid_song:
-                #     pass # self.__retry_list += 1 (----if the first 5 searches doesn't contain any media file; then go for next 5 searches----)
-            else:
-                self.player = None
-                pass # Say Again
+                    else: # list of 5 searches exhausted
+                        pass # self.__retry_list += 1 (----if the first 5 searches doesn't contain any media file; then go for next 5 searches----)
+                else:
+                    self.player = None
+                    pass # Say Again
+            else: # Play from cache
+                self.player = self.ytb.play_media(cache_search)
 
         '''else: # Not implemented yet
             song_search_query = [song_name + ' ' + key for key in ('lyric', 'full', 'audio', 'official', '|')]

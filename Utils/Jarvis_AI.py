@@ -166,10 +166,14 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         self.playlist = []
         try:
             os.mkdir(cache_dir)
-            os.mkdir(tmp_dir)
-            print('Cache & tmp folders created')
+            print('Cache folder created')
         except FileExistsError:
-            print('Cache & tmp folders already present')
+            print('Cache folder already present')
+        try:
+            os.mkdir(tmp_dir)
+            print('tmp folder created')
+        except FileExistsError:
+            print('tmp folder already present')
         for f in glob('*.exe'):
             shutil.copy(cache_dir + f, tmp_dir)
 
@@ -399,13 +403,9 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
     
     def _stream_online(self, song_name, number=0): # number = song_number to play in the list of search results
-        '''
-        It calls 'play_media()' of '_Youtube_mp3';; which returns '_Media_Player' object with loaded song.
-        Then, 'Abilities' will control the media-player options with voice
-        '''
         max_search = 5
-        
-        if number == 0: # direct play; don't involve user
+
+        if number == 0: # direct play; doesn't involve user
             self._speak('Searching Song...')
             songs_list = self.ytb.url_search(song_name, max_search) ##NOTE: add 'search_more' parameter in 'url_search()' that will hold an integer of 'self.__retry_list'
             print(f'songs_list: {songs_list}')
@@ -618,16 +618,9 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                         return True
                 return False
             
+            paused = False
             replay_song = False
-
-            '''self.__va._speak('What do you want me to play?')
-            while True:
-                search_term = self.__va._take_command('Which Song do you want me to play?')
-                if search_term != 'none':
-                    break'''
-            
             search_term = ' '.join(query.split()[1:])
-
             music_player = self.__va._stream_online(search_term)
             if music_player:
                 music_player.play()
@@ -636,7 +629,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 retry = self.__va._take_command('Waiting for Search Song Again')
                 self.play_song(retry)
 
-            paused = False
             control = '' # To detect 'STOP'
             while True:
                 call_VA = self.__va._take_command('Waiting for (OK GOOGLE)')

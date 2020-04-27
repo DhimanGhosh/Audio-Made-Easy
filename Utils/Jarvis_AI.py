@@ -8,6 +8,7 @@ import requests
 import json
 import os
 import sys
+import shutil
 import platform
 import subprocess
 import re
@@ -16,6 +17,7 @@ import time
 import urllib.request as request
 from urllib.request import urlopen
 from urllib.parse import quote
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from random import randint
 from datetime import datetime
@@ -27,7 +29,7 @@ from winsound import Beep
 
 from pdb import set_trace as debug
 
-utils_dir = assets_dir = datasets_dir = cache_dir = ''
+utils_dir = assets_dir = datasets_dir = cache_dir = tmp_dir = ''
 # ----- Access Other Directories on Particular Platform ----- #
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
@@ -39,6 +41,8 @@ if platform.system() == 'Linux':
     sys.path.insert(0, datasets_dir)
     cache_dir = os.path.realpath('../assets/cache') + '/'
     sys.path.insert(0, cache_dir)
+    tmp_dir = os.path.realpath('../assets/cache/tmp_dir') + '/'
+    sys.path.insert(0, tmp_dir)
 else:
     root_dir = os.path.realpath('..\\Audio-Made-Easy')
     sys.path.insert(0, root_dir)
@@ -46,6 +50,7 @@ else:
     assets_dir = root_dir + '\\assets\\'
     datasets_dir = assets_dir + 'datasets\\'
     cache_dir = assets_dir + 'cache\\'
+    tmp_dir = cache_dir + 'tmp_dir\\'
 
 features = utils_dir + 'Features.txt'
 brain = datasets_dir + 'brain.csv'
@@ -160,17 +165,21 @@ class _Youtube_mp3:
         self.dict_names = {}
         self.playlist = []
         try:
-            os.mkdir(assets_dir + 'cache')
-            print('Cache folder created under assets')
+            os.mkdir(cache_dir)
+            os.mkdir(tmp_dir)
+            print('Cache & tmp folders created')
         except FileExistsError:
-            print('Cache folder is already present under assets')
-    
+            print('Cache & tmp folders already present')
+        for f in glob('*.exe'):
+            shutil.copy(cache_dir + f, tmp_dir)
+
     def cache_cleanup(self):
         os.chdir(cache_dir)
         if os.path.isfile(cache_dir):
             for cleanup in glob('*.*'):
                 print(cleanup)
-                os.remove(cleanup)
+                if '.gitattributes' not in cleanup:
+                    os.remove(cleanup)
 
     def cache_non_mp3_cleanup(self):
         os.chdir(cache_dir)
@@ -178,7 +187,7 @@ class _Youtube_mp3:
             #Verifies .mp3 file was created, then deletes unneeded files.
             for cleanup in glob('*.*'):
                 print(cleanup)
-                if not cleanup.endswith('.mp3'):
+                if not cleanup.endswith('.mp3') and '.gitattributes' not in cleanup:
                     os.remove(cleanup)
 
     def flush_media_files_created(self): # To clean the cache from device (in folder 'assets\cache')
@@ -209,6 +218,7 @@ class _Youtube_mp3:
         self.dict = {} # Flushing the buffer for new song request
         self.dict_names = {}
         textToSearch = search_string
+        print(f'textToSearch: {textToSearch}')
         query = quote(textToSearch)
         url = "https://www.youtube.com/results?search_query=" + query
         response = urlopen(url)
@@ -251,58 +261,83 @@ class _Youtube_mp3:
         return None
 
     def test_url(self, url): # (in folder 'assets\cache')
-        os.chdir(cache_dir)
+        os.chdir(tmp_dir)
         try:
-            ''' ---- To know the name of the song downloaded ----
-            1. create 'temp_dir' under 'cache_dir' and store the downloaded file inside it
-            2. go inside 'temp_dir' check if it is '.mp3' or not if so copy this file to 'cache_dir' and return this name to the called function
-            3. come out of 'temp_dir' and delete it
-            '''
-            subprocess.call(['youtube-dl','-cit','--embed-thumbnail','--no-warnings','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url])
+            #command = 'youtube-dl -f bestaudio ' + url + ' --exec "ffmpeg -i {}  -codec:a libmp3lame -qscale:a 0 {}.mp3 && del {} " '
+            command = ['youtube-dl','-cit','--embed-thumbnail','--no-warnings','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url]
+            print(f'Download Command: {command}')
+            subprocess.call(command)
             sleep(2)
-            if glob('*.mp3'):
-                #song_name = ''
-                #return song_name
-                return True
+            if glob('*.mp3') or glob('*.webm') or glob('*.m4a'): # song found
+                new_name = song_name = ''
+                print(f"media files:\n{glob('*.*')}")
+                if glob('*.webm'):
+                    song_name = glob('*.webm')[0]
+                    print(f"song_name webm: {song_name}\ncleaned_song_name webm: {self.clean_file_name(song_name) + '.' + song_name.split('.')[-1]}")
+                    os.rename(song_name, self.clean_file_name(song_name) + '.' + song_name.split('.')[-1])
+                    song_name = glob('*.webm')[0]
+                    new_name = song_name.split('.')[0] + '.mp3'
+                    command = f"ffmpeg -i {song_name} -vn -ar 44100 -ac 2 -b:a 192k {new_name}"
+                    subprocess.call(command)
+                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
+                elif glob('*.m4a'):
+                    song_name = glob('*.m4a')[0]
+                    print(f"song_name m4a: {song_name}\ncleaned_song_name m4a: {self.clean_file_name(song_name) + '.' + song_name.split('.')[-1]}")
+                    os.rename(song_name, self.clean_file_name(song_name) + '.' + song_name.split('.')[-1])
+                    song_name = glob('*.m4a')[0]
+                    new_name = song_name.split('.')[0] + '.mp3'
+                    command = f'ffmpeg -i {song_name} -codec:v copy -codec:a libmp3lame -q:a 2 {new_name}'
+                    subprocess.call(command)
+                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
+                elif glob('*.mp3'):
+                    song_name = glob('*.mp3')[0]
+                    print(f"song_name mp3: {song_name}\ncleaned_song_name mp3: {self.clean_file_name(song_name) + '.' + song_name.split('.')[-1]}")
+                    os.rename(song_name, self.clean_file_name(song_name) + '.' + song_name.split('.')[-1])
+                    new_name = glob('*.mp3')[0]
+                    shutil.copy(new_name, cache_dir)
+                    os.chdir(cache_dir)
+                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
+                shutil.copy(new_name, cache_dir)
+                os.chdir(cache_dir)
+                shutil.rmtree(os.path.join(cache_dir, tmp_dir))
+                return new_name
             else:
-                self.cache_non_mp3_cleanup() # clean non-mp3 files; so that only .mp3 files are there [for offline playing later] (cache playing)
-                #return None
-                return False
-        except Exception:
-            #return None
-            return False
+                #self.cache_non_mp3_cleanup() # clean non-mp3 files; so that only .mp3 files are there [for offline playing later] (cache playing)
+                return None
+        except HTTPError:# (Exception) # url is not a song
+            return None
+
+    def clean_file_name(self, name):
+        name = name.replace(' ', '-')
+        name = name.replace('_', '-')
+        name = name.split('--')[0]
+        ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
+        #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
+        '''pattern = re.compile("[A-Za-z0-9 -]+")
+        name = pattern.fullmatch(name)'''
+        #name = "".join(getVals) 
+        return name
 
     def play_media(self, song_name): # Play media based on url; since .mp3 will already be downloaded in 'test_url()'; no need to download it again; ---- Just Returns '_Media_Player' object with loaded song----
-        def clean_file_name(name):
-            name = name.replace(' ', '-')
-            name = name.split('--')[0]
-            ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
-            #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
-            '''pattern = re.compile("[A-Za-z0-9 -]+")
-            name = pattern.fullmatch(name)'''
-            #name = "".join(getVals) 
-            return name
-        
         os.chdir(cache_dir)
-        song_name = clean_file_name(song_name)
-        print(f'song_name: {song_name}')
+        print(f'song_name before cleaning: {song_name}')
+        song_name = self.clean_file_name(song_name)
+        print(f'song_name after cleaning: {song_name}')
         self.player = _Media_Player(audio_file=song_name)
         return self.player
+
+    def play_media_from_cache(self, song_name):
+        '''
+        For Cache storing:
+        1. Check if the name of the song is there in cache folder or not.
+        2. If it is there play from cache or download it and play
+        (Store only the 'initials of song'; not the full name && 'encrypt' them --------- 'decrypt' while using)
+        '''
+        pass
 
     def play_media_old(self, num): # Returns '_Media_Player' object with loaded song
         ## NOTE: 'Pafy()' sometimes cause 'downloading issue';; Use some other 'mp3 downloading API'
         # Or use any sort of web-scrapping technology to get to the source of mp3 to download them 'may be use webmusic.live'
-        def clean_file_name(name):
-            name = name.replace(' ', '-')
-            name = name.replace('|', '-')
-            name = name.split('--')[0]
-            ## ---- Unable to handle non elglish characters ---- ##
-            #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
-            '''pattern = re.compile("[A-Za-z0-9 -]+")
-            name = pattern.fullmatch(name)'''
-            #name = "".join(getVals) 
-            return name
-
         '''
         For Cache storing:
         1. Check if the name of the song is there in cache folder or not.
@@ -319,7 +354,7 @@ class _Youtube_mp3:
         sleep(2)
 
         song_title = glob('*.mp3')[0]
-        song_title = clean_file_name(song_title)
+        song_title = self.clean_file_name(song_title)
         self.player = _Media_Player(audio_file=song_title)
         return self.player
 
@@ -426,6 +461,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         self.search_terms = self._Vocabulary.ABILITIES
         self._song_name = ''
         self.player = _Media_Player()
+        self.__retry_list = 1 # if the first 5 searches doesn't contain any media file; then go for next 5 searches
 
     def _speak(self, audio):
         self.engine.say(audio)
@@ -489,19 +525,25 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         Then, 'Abilities' will control the media-player options with voice
         '''
         max_search = 5
-        valid_song = False
         
         if number == 0: # direct play; don't involve user
             self._speak('Searching Song...')
-            songs_list = self.ytb.url_search(song_name, max_search)
-            for url in songs_list:
-                song_name = self.ytb.test_url(url)
-                if song_name: # valid song found
-                    valid_song = True
-                    #self.ytb.play_media(song_name)
-                    self.player = self.ytb.play_media(glob(cache_dir + '*.mp3')[0])
-                if valid_song:
-                    break
+            songs_list = self.ytb.url_search(song_name, max_search) ##NOTE: add 'search_more' parameter in 'url_search()' that will hold an integer of 'self.__retry_list'
+            print(f'songs_list: {songs_list}')
+            if songs_list:
+                for sl_no, url in songs_list.items():
+                    print(sl_no, url)
+                    song_name = self.ytb.test_url(url)
+                    if song_name: # valid song found
+                        self.player = self.ytb.play_media(song_name)
+                        break
+                    else:
+                        continue
+                # if not valid_song:
+                #     pass # self.__retry_list += 1 (----if the first 5 searches doesn't contain any media file; then go for next 5 searches----)
+            else:
+                self.player = None
+                pass # Say Again
 
         '''else: # Not implemented yet
             song_search_query = [song_name + ' ' + key for key in ('lyric', 'full', 'audio', 'official', '|')]
@@ -526,116 +568,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         
         return self.player
 
-    '''
-        def try_new_song(new=True):
-            if new:
-                self._speak('What do you want me to play?')
-                while True:
-                    search_term = self._take_command('Whice Song to play?')
-                    if search_term != 'none':
-                        break
-            else:
-                search_term = 'continue'
-                #search_term = song_name # don't make a call to 'self._stream_online()' after this; just ask for which number to play
-            #self._stream_online(search_term)
-            return search_term
-            
-        if number == 0: # direct playing song ##BUG: 'None of these' is not handled
-            ### Add support for 'search more'; (increase max_search value by let's say=5; show result from 6-10) [say 'refresh', 'more']
-            self._speak('Searching Song...')
-            self.ytb.url_search(song_name, max_search)
-            search_titles = self.ytb.get_search_items(number) ## NOTE: Don't display the list again when 'retry_song_search_queries[]' called
-            skip_song_search_queries = self._Vocabulary.skip_song_search_queries
-            retry_song_search_queries = self._Vocabulary.retry_song_search_queries
-            if search_titles:
-                if search_titles[1]:
-                    self._speak('Which Number Song? (SAY for example, Number 1)') ##BUG: List not showing ----- still asking which song to play
-                    notified_once = False # If 'Which Number Song?' is spoken once; next time while looping it will keep quiet
-                    while True:
-                        song_number = self._take_command('Which Number Song? (SAY for example, Number 1)') ## BUG: after passing number 1; not accepting; again asking which number?
-                        if song_number.strip().split()[-1].isdigit() and int(song_number.strip().split()[-1]) in range(1, len(search_titles[0]) + 1):
-                            if self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0]: # skip song search; go to main list
-                                main_list = True
-                                break
-                            elif self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]: # try again for another song; not main list
-                                main_list = False
-                                break
-                            elif song_number != 'none' and \
-                                not self._substr_in_list_of_strs(skip_song_search_queries, song_number)[0] and \
-                                not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]: # detect the song and pass it on
-                                break # skip and pass it on for song download
-                        elif not song_number.strip().split()[-1].isdigit():
-                            self._speak('Was expecting a number! Retry...')
-                            search_term = try_new_song(new=False)
-                            if search_term == 'continue':
-                                continue # self._stream_online(song_name)
-                            else:
-                                self._stream_online(search_term) # Recursive call
-                        elif int(song_number.strip().split()[-1]) not in range(1, len(search_titles[0]) + 1): # either 'number <non-digit>' -OR- 'number <greater than number of searched songs>'
-                            if not notified_once:
-                                self._speak(f'Sorry Sir! I found only {len(search_titles[0])} results')
-                                notified_once = True
-                    if not main_list and not self._substr_in_list_of_strs(retry_song_search_queries, song_number)[0]:
-                        if 'number' in song_number and 'user' in search_titles[0][int(song_number.strip().split()[-1])][0]: # If option is not a valid song
-                            self._speak('This is a channel name, not a song! Try again...')
-                            ## NOTE: implement this issue in '_Youtube_mp3.get_search_items()'
-                        elif 'number' not in song_number or 'number' in song_number and len(song_number.strip().split()) == 1: # If input doesn't contain 'number'
-                            self._speak('Was expecting a number! Retry...')
-                            search_term = try_new_song(new=False)
-                            if search_term == 'continue':
-                                self._stream_online(song_name)
-                            else:
-                                self._stream_online(search_term) # Recursive call
-                        elif 'number' in song_number and song_number.strip().split()[-1].isdigit(): # Valid Input
-                            print(f'Song Title: {search_titles[0][int(song_number.strip().split()[-1])][0]}')
-                            self.player = self.ytb.play_media(song_number.strip().split()[-1])
-                            main_list = True # So that 'try_new_song()' will not execute after song successfully start playing
-                        else: ## NOTE: 'number <non-digit>' is not handled properly (NOTE: Now it is handled in last while loop)
-                            print('Say that again please...')
-                            search_term = try_new_song(new=False)
-                            if search_term == 'continue':
-                                self._stream_online(song_name)
-                            else:
-                                self._stream_online(search_term) # Recursive call
-                else: # for No Search results
-                    main_list = False
-                    self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
-            else:
-                main_list = False
-                self._speak(f'No song found with {song_name}! Try Again...') # try again for another song; not main list
-            
-            if not main_list:
-                search_term = try_new_song(new=True)
-                if search_term == 'continue':
-                    self._stream_online(song_name)
-                else:
-                    self._stream_online(search_term) # Recursive call
-        
-        else: # play song from last 'webpage' valid song search
-            ## NOTE: First search the song_name along with ('lyric', 'full', 'audio', 'official', '|'); if no result => display the list (allow more/refresh_list...)
-            song_search_query = [song_name + ' ' + key for key in ('lyric', 'full', 'audio', 'official', '|')]
-            print(f'song_search_query: {song_search_query}')
-            results_found = False
-            for query in song_search_query: # search for 'song_name' + ==> ('lyric', 'full', 'audio', 'official', '|')
-                self.ytb.url_search(query, max_search)
-                search_titles = self.ytb.get_search_items(number) # Return the result list for each 'query';; don't print the list (since, number != 0)
-                if search_titles: # if atleast 1 song found
-                    for num in search_titles[0].keys(): # traverse the list for the search query
-                        if query.split()[-1] in search_titles[0][num][0]: # if any('lyric', 'full', 'audio', 'official', '|') in search_titles[0][num][0] <-- song_title
-                            results_found = True
-                            number = num
-                            break
-                if results_found:
-                    break
-            if results_found:
-                print(f'\n\nsong in wiki search ---- results_found:\n{results_found}\n\n')
-                self.player = self.ytb.play_media(number)
-            else: # If direct song play did not work for 'play_song_from_last_search()' then call 'self._stream_online(song_name, number=0); since here 'number=1'
-                self._stream_online(song_name, number=0)
-
-        return self.player
-    '''
-
     class Abilities: ## NOTE: Handle any type of 'can you <>';; direct perform action rather than telling what to ask
         '''
         Overview:
@@ -645,6 +577,10 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             My 'Abilities' are very limited.
 
         NOTE: A task for you... "Please train me with new 'Abilities' so that I can stand in the real world"
+        '''
+
+        '''
+        NOTE: Add support for wikipedia extract for information like ('Bollywood movies releasing next month')
         '''
 
         '''
@@ -814,7 +750,12 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             search_term = ' '.join(query.split()[1:])
 
             music_player = self.__va._stream_online(search_term)
-            music_player.play()
+            if music_player:
+                music_player.play()
+            else:
+                self.__va._speak('Sorry Sir! Did not get you!')
+                retry = self.__va._take_command('Waiting for Search Song Again')
+                self.play_song(retry)
 
             paused = False
             control = '' # To detect 'STOP'

@@ -43,7 +43,7 @@ if platform.system() == 'Linux':
     sys.path.insert(0, cache_dir)
     tmp_dir = os.path.realpath('../assets/cache/tmp_dir') + '/'
     sys.path.insert(0, tmp_dir)
-else:
+elif platform.system() == 'Windows':
     root_dir = os.path.realpath('..\\Audio-Made-Easy')
     sys.path.insert(0, root_dir)
     utils_dir = root_dir + '\\Utils\\'
@@ -151,7 +151,7 @@ class _Song_Search_and_Download: # Will be implemented LATER
     '''
     pass
 
-class _Youtube_mp3:
+class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
     def __init__(self):
         '''
         Overview:

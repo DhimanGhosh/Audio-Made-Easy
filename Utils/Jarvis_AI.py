@@ -6,6 +6,7 @@ import wikipedia
 import webbrowser
 import requests
 import json
+import string
 import os
 import sys
 import shutil
@@ -26,7 +27,7 @@ from time import sleep
 from mutagen.mp3 import MP3
 from winsound import Beep
 from Levenshtein import ratio
-from scipy.spatial.distance import cosine
+from difflib import SequenceMatcher
 
 from pdb import set_trace as debug
 
@@ -45,7 +46,7 @@ if platform.system() == 'Linux':
     tmp_dir = os.path.realpath('../assets/cache/tmp_dir') + '/'
     sys.path.insert(0, tmp_dir)
 elif platform.system() == 'Windows':
-    root_dir = os.path.realpath('..\\Audio-Made-Easy')
+    root_dir = os.path.realpath('..\\Audio-Made-Easy\\')
     sys.path.insert(0, root_dir)
     utils_dir = root_dir + '\\Utils\\'
     assets_dir = root_dir + '\\assets\\'
@@ -191,7 +192,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         url = "https://www.youtube.com/results?search_query=" + query
         response = urlopen(url)
         html = response.read()
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html, 'lxml') ## Get the title of the song from 'soup' variable (can be use to search 'lyrical', 'full audio', 'official', etc...)
         i = 1
         for vid in soup.findAll(attrs={'class':'yt-uix-tile-link'}):
             if len(self.dict) < max_search:
@@ -205,13 +206,25 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
     def clean_file_name(self, name):
         name = name.replace(' ', '-')
         name = name.replace('_', '-')
+        name = name.replace('(', '-')
         name = name.split('--')[0]
+        if name[-1] == '-':
+            name = name[:-1]
         ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
         #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
         '''pattern = re.compile("[A-Za-z0-9 -]+")
         name = pattern.fullmatch(name)'''
         #name = "".join(getVals) 
         return name
+
+    def adjust_file_name(self, text):
+        text = ''.join([word for word in text if word not in string.punctuation])
+        text = text.lower()
+        #text = ' '.join([word for word in text.split('-') if word not in stopwords])
+        text = text.replace('oo', 'u')
+        text = text.replace('nn', 'n')
+        text = text.replace('aa', 'a')
+        return text
 
     def test_url(self, url): # (in folder 'assets\cache') ## BUG: After song found and copied to cache; continuing to search and download
         os.chdir(tmp_dir)
@@ -232,7 +245,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     new_name = song_name.split('.')[0] + '.mp3'
                     command = f"ffmpeg -i {song_name} -vn -ar 44100 -ac 2 -b:a 192k -y {new_name}"
                     subprocess.call(command)
-                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
+                    print(f'\n\n\nNAME of FILE to PLAY: {new_name}\n\n')
                 elif glob('*.m4a'):
                     song_name = glob('*.m4a')[0]
                     print(f"song_name m4a: {song_name}\ncleaned_song_name m4a: {self.clean_file_name(song_name) + '.' + song_name.split('.')[-1]}")
@@ -241,7 +254,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     new_name = song_name.split('.')[0] + '.mp3'
                     command = f'ffmpeg -i {song_name} -codec:v copy -codec:a libmp3lame -q:a 2 -y {new_name}'
                     subprocess.call(command)
-                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
+                    print(f'\n\n\nNAME of FILE to PLAY: {new_name}\n\n')
                 elif glob('*.mp3'):
                     song_name = glob('*.mp3')[0]
                     print(f"song_name mp3: {song_name}\ncleaned_song_name mp3: {self.clean_file_name(song_name) + '.' + song_name.split('.')[-1]}")
@@ -249,10 +262,12 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     new_name = glob('*.mp3')[0]
                     shutil.copy(new_name, cache_dir)
                     os.chdir(cache_dir)
-                    print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
-                shutil.copy(new_name, cache_dir)
-                os.chdir(cache_dir)
-                shutil.rmtree(os.path.join(cache_dir, tmp_dir))
+                    print(f'\n\n\nNAME of FILE to PLAY: {new_name}\n\n')
+                print(f'Song name just before copying: {new_name}')
+                shutil.copy(new_name.lower(), cache_dir)
+                print(f'Song name just after copying: {new_name}')
+                #os.chdir(cache_dir)
+                #shutil.rmtree(os.path.join(cache_dir, tmp_dir))
                 return new_name
             else:
                 return None
@@ -261,47 +276,59 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
 
     def play_media(self, song_name): # Play media based on url; since .mp3 will already be downloaded in 'test_url()'; no need to download it again; ---- Just Returns '_Media_Player' object with loaded song----
         os.chdir(cache_dir)
-        print(f'song_name before cleaning: {song_name}')
-        song_name = self.clean_file_name(song_name)
-        print(f'song_name after cleaning: {song_name}')
         self.player = _Media_Player(audio_file=song_name)
         return self.player
 
-    def play_media_from_cache(self, query):
-        ''' ---- Use Cosine similarity between 'query' and 'cache_dir' matching ---- (length of strings should be similar) [fill the remaining with '-']
+    def play_media_from_cache(self, query): # String Similarity using SequenceMatcher
+        '''
         For Cache storing:
         1. Check if the name of the song is there in cache folder or not.
         2. If it is there play from cache or download it and play
         ('store' them && 'encrypt' them --------- 'decrypt' while using)
-        ''' # 'q': query; 'c': cache
-        def string_to_vector(string):
-            return [ord(c) for c in string]
+        ''' ## ---- {'q': query, 'c': cache} ---- ##
+
+        def set_sort_join_string(s1):
+            if '.mp3' in s1:
+                s1 = s1.split('.mp3')[0]
+            s1 = self.clean_file_name(s1)
+            s1 = self.adjust_file_name(s1)
+            s1 = ''.join(s1.split('-'))
+            s2 = list(set([x for x in s1]))
+            s2.sort()
+            s1 = ''.join(s2)
+            return s1
         
-        query = self.clean_file_name(query)
-
-        os.chdir(cache_dir)
-        sq = query
-        sc = glob('*.mp3')
-
-        vq = string_to_vector(sq)
-        vc = [string_to_vector(x) for x in sc]
-        for i in range(len(vc)):
-            if len(sq) < len(sc[i]):
-                sq1 = sq
-                sq1 +='-'*(len(sc[i]) - len(sq))
-                vq = string_to_vector(sq1)
+        def sentence_matcher(q, c): # q: ['suna', 'man', 'ka']; s2: ['soona', 'mann', 'ka', 'aangan']
+            q1 = [set_sort_join_string(x) for x in q]
+            c1 = [set_sort_join_string(x) for x in c]
+            min_str_len = len(q1) if len(q1) < len(c1) else len(c1)
+            max_str_len = abs(len(q1) - len(c1)) + min_str_len
+            equal = True
+            i = 0
+            for i in range(min_str_len):
+                if q1[i] != c1[i]:
+                    equal = False
+                    break
+            if equal and i >= max_str_len//2:
+                return True
             else:
-                sc1 = sc
-                sc1[i] += '-'*(len(sq) - len(sc[i]))
-                vc = [string_to_vector(x) for x in sc1]
-            cosine_similarity = 1 - cosine(vq, vc[i])
-            if cosine_similarity > 0.9:
-                print('Song present in cache')
-                x = sc[0]
-                for x in sc:
-                    if string_to_vector(x) == vc[i]:
-                        print(f'Found Song Name: {x}\n{vc[i]}')
-                        return x
+                m = SequenceMatcher(None, q1, c1)
+                if m.ratio() > 0.95:
+                    return True
+                else:
+                    return False
+
+        # 'Format' string and match with 'first word' of 'list' with first word of 'query'; then go to 'second word'; so on...
+        os.chdir(cache_dir)
+        q = query.split(' ')
+        for c in glob('*.mp3'):
+            c = c.lower()
+            c1 = c.split('.mp3')[0]
+            c1 = c1.replace('-', ' ').strip().split(' ')
+            if sentence_matcher(q, c1):
+                print('Playing from your cache')
+                return c
+        
         return None
 
     def add_playlist(self, search_query):
@@ -315,7 +342,7 @@ class _Vocabulary: # Reads data from datasets; Store personalised data
         'PAUSE'     : ['pause', 'hold', 'break', 'suspend', 'interrupt'],
         'RESUME'    : ['resume'],
         'REPLAY'    : ['replay', 'repeat', 'reply'], # 'reply' is added since 'speech_recognition' sometimes hear 'reply' when I say 'replay'... LOL!
-        'RESTART'   : ['restart', 'from beginning', 'from starting', 'start'],
+        'RESTART'   : ['restart', 'beginning', 'starting', 'start from ', 'play from '],
         'STOP'      : ['stop', 'close', 'finish', 'end', 'terminate', 'wind up', 'windup'],
     }
 
@@ -436,7 +463,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
     
     def _stream_online(self, song_name, number=0): # number = song_number to play in the list of search results
-        max_search = 5
+        max_search = 10
         valid_song = False
 
         if number == 0: # direct play; doesn't involve user
@@ -448,21 +475,23 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 if songs_list:
                     for sl_no, url in songs_list.items():
                         print(sl_no, url)
-                        song_name = self.ytb.test_url(url)
-                        print(f'song name recv in _stream_online: {song_name}')
-                        if song_name: # valid song found
+                        os.chdir(cache_dir)
+                        song_name_recv = self.ytb.test_url(url)
+                        print(f'song name recv in _stream_online: {song_name_recv}')
+                        if song_name_recv and self.ytb.play_media_from_cache(song_name.split()[0]): # valid song found
                             valid_song = True
                             break
                         else:
                             continue
                     if valid_song:
-                        self.player = self.ytb.play_media(song_name)
+                        self.player = self.ytb.play_media(song_name_recv)
                     else: # list of 5 searches exhausted
                         pass # self.__retry_list += 1 (----if the first 5 searches doesn't contain any media file; then go for next 5 searches----)
                 else:
                     self.player = None
                     pass # Say Again
             else: # Play from cache
+                self._speak('Playing from your cache')
                 self.player = self.ytb.play_media(cache_search)
 
         '''else: # Not implemented yet
@@ -667,8 +696,12 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 music_player.play()
             else:
                 self.__va._speak('Sorry Sir! Did not get you!')
-                retry = self.__va._take_command('Waiting for Search Song Again')
-                self.play_song(retry)
+                while True:
+                    self.__va._speak('Please say that again!')
+                    retry = self.__va._take_command('Waiting for Search Song Again')
+                    if not retry:
+                        continue
+                    self.play_song(retry)
 
             control = '' # To detect 'STOP'
             while True:

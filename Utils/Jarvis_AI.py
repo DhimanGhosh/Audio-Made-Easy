@@ -173,23 +173,6 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         for f in glob('*.exe'):
             shutil.copy(cache_dir + f, tmp_dir)
 
-    def cache_cleanup(self):
-        os.chdir(cache_dir)
-        if os.path.isfile(cache_dir):
-            for cleanup in glob('*.*'):
-                print(cleanup)
-                if '.gitattributes' not in cleanup:
-                    os.remove(cleanup)
-
-    def cache_non_mp3_cleanup(self):
-        os.chdir(cache_dir)
-        if os.path.isfile(cache_dir):
-            #Verifies .mp3 file was created, then deletes unneeded files.
-            for cleanup in glob('*.*'):
-                print(cleanup)
-                if not cleanup.endswith('.mp3') and '.gitattributes' not in cleanup:
-                    os.remove(cleanup)
-
     def flush_media_files_created(self): # To clean the cache from device (in folder 'assets\cache')
         if glob('song*') or glob('*mp3') or glob('*webm'):
             video_in_dir = glob('song.*')
@@ -302,7 +285,6 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                 # shutil.rmtree(os.path.join(cache_dir, tmp_dir))
                 return new_name
             else:
-                #self.cache_non_mp3_cleanup() # clean non-mp3 files; so that only .mp3 files are there [for offline playing later] (cache playing)
                 return None
         except HTTPError:# (Exception) # url is not a song
             return None

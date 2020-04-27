@@ -9,12 +9,14 @@ if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
     from Music import Music
+    from Jarvis_AI import Voice_Assistant
     assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
 else:
     root_dir = os.path.realpath('..')
     sys.path.insert(0, root_dir)
     from Utils.Music import Music
+    from Utils.Jarvis_AI import Voice_Assistant
     utils_dir = root_dir + '/Utils/'
     assets_dir = root_dir + '/assets/'
 
@@ -74,6 +76,7 @@ class Ui_Dialog(object):
         self.output_label = QLabel(Dialog)
         self.output_text = QLineEdit(Dialog)
         self.reset_button = QPushButton(Dialog)
+        self.va_button = QPushButton(Dialog)
         
         # ----- Music Logic ----- #
         music = Music()
@@ -91,6 +94,9 @@ class Ui_Dialog(object):
         self.select_data = '--Select--'
         self.option_change_detect = ''
         self.input_change_detect = ''
+
+        # ----- Voice Assistant ----- #
+        self.va = Voice_Assistant()
         
     def setupUi(self, Dialog):
         # Notations
@@ -146,16 +152,25 @@ class Ui_Dialog(object):
         self.output_text.setDisabled(True)
         self.output_text.setStyleSheet(self.output_text_style)
 
-        self.padding_top += self.v_space_between_widgets
+        self.padding_top += self.v_space_between_widgets // 2
         # App RESET
         self.reset_button.setFont(self.app_font)
-        self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, self.widget_height + 10))
+        self.reset_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, self.widget_height))
         self.reset_button.setObjectName("reset_button")
         self.reset_button.clicked.connect(self.reset)
         self.reset_button.setIcon(QtGui.QIcon(reset_icon))
         self.reset_button.setIconSize(QtCore.QSize(self.widget_height, self.widget_height))
         self.reset_button.setStyleSheet(self.reset_button_style)
 
+        self.padding_top += self.v_space_between_widgets // 2
+        # Voice Assitant
+        self.va_button.setFont(self.app_font)
+        self.va_button.setGeometry(QtCore.QRect(self.label_padding_left, self.padding_top, self.label_width + self.drop_down_width, self.widget_height))
+        self.va_button.setObjectName("va_button")
+        self.va_button.clicked.connect(self.Voice_Assistant_Call)
+        self.va_button.setIcon(QtGui.QIcon(app_logo))
+        self.va_button.setIconSize(QtCore.QSize(self.widget_height, self.widget_height))
+        self.va_button.setStyleSheet(self.reset_button_style)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
@@ -250,19 +265,17 @@ class Ui_Dialog(object):
         Dialog.setWindowTitle(_translate("Dialog", "Music Theory Guide"))
         self.notation_label.setText(_translate("Dialog", "Notation"))
         self.notation_S.setIcon(QtGui.QIcon(sharp_icon))
-        #self.notation_S.setText(_translate("Dialog", "#"))
         self.notation_b.setIcon(QtGui.QIcon(flat_icon))
-        #self.notation_b.setText(_translate("Dialog", "b"))
         self.option_label.setText(_translate("Dialog", "Options"))
         self.input_label.setText(_translate("Dialog", "Input"))
         self.output_label.setText(_translate("Dialog", "Output"))
         self.output_text.setText(_translate("Dialog", ""))
         self.reset_button.setText(_translate("Dialog", "Reset Application"))
+        self.va_button.setText(_translate("Dialog", "Voice Assistant"))
 
     def set_window_resizable(self, window_obj, width, height, flag=False):
         if not flag:
             window_obj.setGeometry(rect.width()//2-width//2, rect.height()//2-height//2, width, height)
-            #window_obj.resize(width, height)
             window_obj.setMaximumHeight(height)
             window_obj.setMinimumHeight(height)
             window_obj.setMaximumWidth(width)
@@ -275,6 +288,9 @@ class Ui_Dialog(object):
         self.option_menu.setCurrentIndex(0)
         self.input_menu.clear()
         self.output_text.setText('')
+
+    def Voice_Assistant_Call(self):
+        self.va.start_AI_engine()
 
 if __name__ == "__main__": 
     app = QApplication(sys.argv)

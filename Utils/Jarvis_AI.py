@@ -298,8 +298,8 @@ class _Youtube_mp3:
                     os.chdir(cache_dir)
                     print(f'\n\n\nNAME of FILE to PLAY: {song_name}\n{new_name}\n\n')
                 shutil.copy(new_name, cache_dir)
-                os.chdir(cache_dir)
-                shutil.rmtree(os.path.join(cache_dir, tmp_dir))
+                # os.chdir(cache_dir)
+                # shutil.rmtree(os.path.join(cache_dir, tmp_dir))
                 return new_name
             else:
                 #self.cache_non_mp3_cleanup() # clean non-mp3 files; so that only .mp3 files are there [for offline playing later] (cache playing)
@@ -335,58 +335,8 @@ class _Youtube_mp3:
         '''
         pass
 
-    def play_media_old(self, num): # Returns '_Media_Player' object with loaded song
-        ## NOTE: 'Pafy()' sometimes cause 'downloading issue';; Use some other 'mp3 downloading API'
-        # Or use any sort of web-scrapping technology to get to the source of mp3 to download them 'may be use webmusic.live'
-        '''
-        For Cache storing:
-        1. Check if the name of the song is there in cache folder or not.
-        2. If it is there play from cache or download it and play
-        (Store only the 'initials of song'; not the full name && 'encrypt' them --------- 'decrypt' while using)
-        '''
-
-        url = self.dict[int(num)]
-        print('Loading... Please Wait!')
-        try:
-            subprocess.call(['youtube-dl','-cit','--embed-thumbnail','--no-warnings','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url])
-        except Exception as e:
-            print(e)
-        sleep(2)
-
-        song_title = glob('*.mp3')[0]
-        song_title = self.clean_file_name(song_title)
-        self.player = _Media_Player(audio_file=song_title)
-        return self.player
-
     def song_from_cache(self, song_name):
         pass
-
-    def download_media(self, num):
-        url = self.dict[int(num)]
-        info = pafy.new(url)
-        audio = info.getbestaudio(preftype="m4a")
-        song_name = self.dict_names[int(num)]
-        print("Downloading: {0}.".format(self.dict_names[int(num)]))
-        print(song_name)
-        song_name = input("Filename (Enter if as it is): ")
-        file_name = song_name + '.m4a'
-        if song_name == '':
-            audio.download(remux_audio=True)
-        else:
-            audio.download(filepath = file_name, remux_audio=True)
-
-    def bulk_download(self, url, num):
-        info = pafy.new(url)
-        audio = info.getbestaudio(preftype="m4a")
-        song_name = self.dict_names[int(num)]
-        print("Downloading: {0}.".format(self.dict_names[int(num)]))
-        print(song_name)
-        song_name = input("Filename (Enter if as it is): ")
-        file_name = song_name + '.m4a'
-        if song_name == '':
-            audio.download(remux_audio=True)
-        else:
-            audio.download(filepath = file_name, remux_audio=True)
 
     def add_playlist(self, search_query):
         url = self.url_search(search_query, max_search=1)

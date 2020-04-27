@@ -60,7 +60,7 @@ jokes = datasets_dir + 'shortjokes.csv'
 class _Media_Player: # Supports only mp3
     REPLAY = False
 
-    def __init__(self, audio_file=cache_dir + 'KKHBH.mp3'): # If nothing is found; for the time being; just play the initialised value
+    def __init__(self, audio_file=assets_dir + 'welcome.mp3'): # If nothing is found; for the time being; just play the initialised value
         '''
         Play, Pause, Stop, Resume, Restart(Stop + Play), Replay <A MODE to restart the song once it finishes>
 
@@ -288,7 +288,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         for i in range(len(vc)):
             if len(sq) < len(sc[i]):
                 sq1 = sq
-                sq1.append('-'*(len(sc[i]) - len(sq)))
+                sq1 +='-'*(len(sc[i]) - len(sq))
                 vq = string_to_vector(sq1)
             else:
                 sc1 = sc
@@ -728,6 +728,8 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             os.startfile(code_path)
 
         def quit_VA(self, query):
+            os.chdir(cache_dir)
+            shutil.rmtree(tmp_dir, cache_dir)
             hour = int(datetime.now().hour)
             if 0 <= hour <=18:
                 self.__va._speak('Good Bye Sir, Thanks for your time! Have a nice day')

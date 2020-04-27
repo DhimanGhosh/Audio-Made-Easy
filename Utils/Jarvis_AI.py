@@ -173,30 +173,6 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         for f in glob('*.exe'):
             shutil.copy(cache_dir + f, tmp_dir)
 
-    def flush_media_files_created(self): # To clean the cache from device (in folder 'assets\cache')
-        if glob('song*') or glob('*mp3') or glob('*webm'):
-            video_in_dir = glob('song.*')
-            audio_in_dir = glob('*mp3')
-            temp_in_dir = glob('*webm')
-            if video_in_dir:
-                try:
-                    os.remove(video_in_dir[0])
-                except PermissionError: # say 'STOP' will be implemented after creating 'class _Media_Player'
-                    print('Silently quiting app!')
-                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
-            if audio_in_dir:
-                try:
-                    os.remove(audio_in_dir[0])
-                except PermissionError: # say 'STOP' will be implemented after creating 'class _Media_Player'
-                    print('Silently quiting app!')
-                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
-            if temp_in_dir:
-                try:
-                    os.remove(temp_in_dir[0])
-                except PermissionError: # say 'STOP' will be implemented after creating 'class _Media_Player'
-                    print('Silently quiting app!')
-                    #print("Please Wait! The song is being played! Let it finish... say 'STOP' or quit external media player (temp) ")
-
     def url_search(self, search_string, max_search): # search youtube and returns list of 5 links
         self.dict = {} # Flushing the buffer for new song request
         self.dict_names = {}
@@ -217,31 +193,16 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         #return url
         return self.dict
 
-    def get_search_items(self, num): # get the title of the videos on youtube
-        ### 'user' found in url; grab onther search result from self.url_search(string_search, num_of_user_found) and replace those in self.dict
-        #if self.dict != {}:
-        if self.dict:
-            i = 1
-            try:
-                for url in self.dict.values():
-                    info = pafy.new(url)
-                    #self.dict_names[i] = info.title
-                    self.dict_names[i] = (info.title, url)
-                    if num == 0:
-                        print("{0}. {1}".format(i, info.title))
-                    i += 1
-
-            except ValueError:
-                pass
-
-            except OSError:
-                print('This video is unavailable') # Bheege Hont Tere; Dostana Hindi movie; desi boyz
-                # Truncate last key from 'self.dict'
-                del self.dict[list(self.dict.keys())[-1]]
-                self.get_search_items(num)
-            
-            return (self.dict_names, self.dict)
-        return None
+    def clean_file_name(self, name):
+        name = name.replace(' ', '-')
+        name = name.replace('_', '-')
+        name = name.split('--')[0]
+        ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
+        #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
+        '''pattern = re.compile("[A-Za-z0-9 -]+")
+        name = pattern.fullmatch(name)'''
+        #name = "".join(getVals) 
+        return name
 
     def test_url(self, url): # (in folder 'assets\cache')
         os.chdir(tmp_dir)
@@ -286,19 +247,8 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                 return new_name
             else:
                 return None
-        except HTTPError:# (Exception) # url is not a song
+        except Exception:# (HTTPError) # url is not a song
             return None
-
-    def clean_file_name(self, name):
-        name = name.replace(' ', '-')
-        name = name.replace('_', '-')
-        name = name.split('--')[0]
-        ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
-        #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
-        '''pattern = re.compile("[A-Za-z0-9 -]+")
-        name = pattern.fullmatch(name)'''
-        #name = "".join(getVals) 
-        return name
 
     def play_media(self, song_name): # Play media based on url; since .mp3 will already be downloaded in 'test_url()'; no need to download it again; ---- Just Returns '_Media_Player' object with loaded song----
         os.chdir(cache_dir)
@@ -315,9 +265,6 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         2. If it is there play from cache or download it and play
         (Store only the 'initials of song'; not the full name && 'encrypt' them --------- 'decrypt' while using)
         '''
-        pass
-
-    def song_from_cache(self, song_name):
         pass
 
     def add_playlist(self, search_query):
@@ -483,7 +430,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             results_found = False
             for query in song_search_query: # search for 'song_name' + ==> ('lyric', 'full', 'audio', 'official', '|')
                 self.ytb.url_search(query, max_search)
-                search_titles = self.ytb.get_search_items(number) # Return the result list for each 'query';; don't print the list (since, number != 0)
+                #search_titles = self.ytb.get_search_items(number) # Return the result list for each 'query';; don't print the list (since, number != 0)
                 if search_titles: # if atleast 1 song found
                     for num in search_titles[0].keys(): # traverse the list for the search query
                         if query.split()[-1] in search_titles[0][num][0]: # if any('lyric', 'full', 'audio', 'official', '|') in search_titles[0][num][0] <-- song_title
@@ -715,7 +662,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                             elif any_keyword_match_with_Vocabulary(control, self.__va._Vocabulary.SYNONYMS['STOP']): # stop the song && closes the '_Media_Player' instance
                                 music_player.stop()
                                 print(f'Current Position: {music_player.current_time()}\n')
-                                self.__va.ytb.flush_media_files_created()
                                 break
                         wait += 1
                         print(f'waiting for control command... timeout[{wait}]')
@@ -757,7 +703,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     self.__va._speak('Good Bye Sir, Thanks for your time! Good Night!')
                 else:
                     self.__va._speak('Good Bye Sir, Thanks for your time!')
-            self.__va.ytb.flush_media_files_created()
 
         def conversation(self): # This the brain of my VA. Read 'datasets/brain.csv'; create and train model to have conversation with user
             brain = self.__va._Vocabulary.BRAIN
@@ -922,7 +867,6 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     if not self.__abilities.play_song_from_last_search(website=self.__available_webpages['g']):
                         self.__if_any_query_made = False
 
-            #elif 'song' in query or 'music' in query or 'stream' in query:
             elif 'play ' in query:
                 self.__if_any_query_made = True
                 self.__abilities.play_song(query)
@@ -964,5 +908,4 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             elif 'another' in query or 'again' in query:
                 pass
                 #last_thing_asked = self.__get_last_thing_asked()
-        self.ytb.flush_media_files_created()
         return True

@@ -9,11 +9,11 @@ if platform.system() == 'Linux':
     from Jarvis_AI import Voice_Assistant
 else:
     from Utils.Music import Music
-    from Utils.Jarvis_AI import Voice_Assistant
+    #from Utils.Jarvis_AI import Voice_Assistant
 
 class Menu:
     def __init__(self):
-        self.__va = Voice_Assistant()
+        #self.__va = Voice_Assistant()
         print(f'''
         ###########################################
         ###    Welcome to Music Theory Guide    ###
@@ -38,7 +38,7 @@ class Menu:
             17. Record and Playback
             18. Record and Save
             19. Play MP3 Audio
-            20. AI Voice Assistant '{self.__va.VA_NAME}'
+            20. AI Voice Assistant 'GOOGLE'
             21. Best Capo position for easy play (Feature coming soon)
             22. Quit
         ''')
@@ -48,9 +48,9 @@ class Menu:
         if platform.system() == 'Linux':
             music = Music()
             music.linux_speech(text)
-        else:
-            va = Voice_Assistant()
-            va._speak(text)
+        # else:
+        #     va = Voice_Assistant()
+        #     va._speak(text)
 
     def __valid_input(self, input_text): # Control empty user input
         while True:

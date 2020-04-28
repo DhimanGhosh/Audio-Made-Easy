@@ -15,3 +15,4 @@ pygame
 bs4
 python-levenshtein
 mutagen
+selenium

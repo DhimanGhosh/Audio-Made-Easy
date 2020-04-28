@@ -36,7 +36,7 @@ utils_dir = assets_dir = datasets_dir = cache_dir = tmp_dir = ''
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
-    from Music import Music
+    from Music_Stream import Gaana
     assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
     datasets_dir = os.path.realpath('../assets/datasets') + '/'
@@ -48,6 +48,7 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Windows':
     root_dir = os.path.realpath('..\\Audio-Made-Easy\\')
     sys.path.insert(0, root_dir)
+    from Utils.Music_Stream import Gaana
     utils_dir = root_dir + '\\Utils\\'
     assets_dir = root_dir + '\\assets\\'
     datasets_dir = assets_dir + 'datasets\\'
@@ -57,6 +58,24 @@ elif platform.system() == 'Windows':
 features = utils_dir + 'Features.txt'
 brain = datasets_dir + 'brain.csv'
 jokes = datasets_dir + 'shortjokes.csv'
+
+class _Song_Search_and_Stream: # Implemented in 'Music_Stream.py'
+    '''
+    Using bs4: (Web scraping)
+
+    >>>> ---- For example ---- <<<<
+    ---SEARCHING---
+    1. query: 'mithe alo'
+    2. go to https://www.google.com/search?q=mithe+alo
+    3. grep for 'Movie / Album' : <Cockpit>
+    4. open the link to get its information; lets say 'wikipedia'
+    5. grep for 'mithe alo' in the page using 'wikipedia' API -OR- there itself (will help to get the length of this song)
+    6. get the length from there
+    
+    ---DOWNLOADING---
+    1. 
+    '''
+    pass
 
 class _Media_Player: # Supports only mp3
     REPLAY = False
@@ -134,24 +153,6 @@ class _Media_Player: # Supports only mp3
     def __un_used_functions(self):
         pygame.mixer.music.rewind() # restart music
         pygame.mixer.music.queue # queue a sound file to follow the current
-
-class _Song_Search_and_Download: # Will be implemented LATER
-    '''
-    Using bs4: (Web scraping)
-
-    >>>> ---- For example ---- <<<<
-    ---SEARCHING---
-    1. query: 'mithe alo'
-    2. go to https://www.google.com/search?q=mithe+alo
-    3. grep for 'Movie / Album' : <Cockpit>
-    4. open the link to get its information; lets say 'wikipedia'
-    5. grep for 'mithe alo' in the page using 'wikipedia' API -OR- there itself (will help to get the length of this song)
-    6. get the length from there
-    
-    ---DOWNLOADING---
-    1. 
-    '''
-    pass
 
 class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
     def __init__(self):
@@ -405,6 +406,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         self._song_name = ''
         self.player = _Media_Player()
         self.__retry_list = 1 # if the first 5 searches doesn't contain any media file; then go for next 5 searches
+        #self.stream = _Song_Search_and_Stream()
 
     def _speak(self, audio):
         self.engine.say(audio)
@@ -681,6 +683,18 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 self.__va._speak('No song found in search queries! Instead ask to play song...')
                 return False
 
+        def stream_song(self, query): # Selenium in 'gaana.com'
+            '''
+            Use 2 threads:
+            1. 'main thread' to handle the selenium webdriver for song playing (or else not be able to use device or interrupt --- only possible till song ends)
+            2. to handle all the controls
+            ''' # 'STOP' --> 'self.driver.quit()'
+            ## Add support for play songs from the movie / album (sleep for total duration of all songs; and support for play next / prev; stop any)
+            ## For controls actions use selenium itself for; next, prev, pause, play, replay, album play
+            search_term = ' '.join(query.split()[1:])
+            gaana = Gaana(search_term)
+            gaana.play_song()
+
         def play_song(self, query): # Use multi-threading for 'song playing' and 'media-player controls' (2 threads)
             def any_keyword_match_with_Vocabulary(keyword, list_to_search_in):
                 for key in list_to_search_in:
@@ -935,9 +949,14 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     if not self.__abilities.play_song_from_last_search(website=self.__available_webpages['g']):
                         self.__if_any_query_made = False
 
-            elif 'play ' in query:
+            elif 'play ' in query: # Before starting to play; just say the name of the song and its info
                 self.__if_any_query_made = True
-                self.__abilities.play_song(query)
+                #self.__abilities.play_song(query)
+                self.__abilities.stream_song(query)
+
+            elif 'stream ' in query or 'cream ' in query:
+                self.__if_any_query_made = True
+                self.__abilities.stream_song(query)
 
             elif 'open stackoverflow' in query:
                 self.__if_any_query_made = True

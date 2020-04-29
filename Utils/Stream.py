@@ -1,4 +1,4 @@
-import os
+import os, random
 from time import sleep
 from lxml import html ## to get the data of '<div> ... </div>'
 # https://stackoverflow.com/questions/38174490/how-can-i-collect-this-data-from-a-div-using-selenium-and-python
@@ -245,3 +245,25 @@ class DjMaza(Music): # will work on this later due to ad page
 #     song_from_album = 'parbona ami charte toke from borbaad' # 'borbaad' movie song
 #     music = Gaana(song)
 #     music.play_song()
+
+for _ in range(100):
+    driver = webdriver.Chrome('D:\\PYTHON\\Codes\\Audio-Made-Easy\\assets\\chromedriver.exe')
+    driver.get("https://www.youtube.com/watch?v=VBmKsGqemvo")
+    video = driver.find_element_by_xpath("//div[@class='html5-video-container']")
+    hover = ActionChains(driver).move_to_element(video) # Click on search
+    hover.click().perform()
+    try:
+        element_present = EC.presence_of_element_located((By.XPATH, "//button[@title='Mute (m)']"))
+        WebDriverWait(driver, 3).until(element_present)
+    except TimeoutException:
+        print("Timed out waiting for page to load")
+    finally:
+        print("Page loaded")
+    mute = driver.find_element_by_xpath("//button[@title='Mute (m)']")
+    hover = ActionChains(driver).move_to_element(mute) # Click on mute
+    hover.click().perform()
+    sleep(random.randint(150, 220))
+    driver.quit()
+    sleep(random.randint(5, 10))
+
+

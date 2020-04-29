@@ -36,7 +36,7 @@ utils_dir = assets_dir = datasets_dir = cache_dir = tmp_dir = ''
 if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
-    from Music_Stream import Gaana
+    from Stream import Gaana
     assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
     datasets_dir = os.path.realpath('../assets/datasets') + '/'
@@ -48,7 +48,7 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Windows':
     root_dir = os.path.realpath('..\\Audio-Made-Easy\\')
     sys.path.insert(0, root_dir)
-    from Utils.Music_Stream import Gaana
+    from Utils.Stream import Gaana
     utils_dir = root_dir + '\\Utils\\'
     assets_dir = root_dir + '\\assets\\'
     datasets_dir = assets_dir + 'datasets\\'
@@ -59,7 +59,7 @@ features = utils_dir + 'Features.txt'
 brain = datasets_dir + 'brain.csv'
 jokes = datasets_dir + 'shortjokes.csv'
 
-class _Song_Search_and_Stream: # Implemented in 'Music_Stream.py'
+class _Song_Search_and_Stream: # Implemented in 'Stream.py'
     '''
     Using bs4: (Web scraping)
 

@@ -28,6 +28,7 @@ from mutagen.mp3 import MP3
 from winsound import Beep
 from Levenshtein import ratio
 from difflib import SequenceMatcher
+#from pytube import YouTube
 
 from pdb import set_trace as debug
 
@@ -230,6 +231,9 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
     def test_url(self, url): # (in folder 'assets\cache') ## BUG: After song found and copied to cache; continuing to search and download
         os.chdir(tmp_dir)
         try:
+            '''yt = YouTube(url)
+            stream = yt.streams.first()
+            stream.download()'''
             #command = 'youtube-dl -f bestaudio ' + url + ' --exec "ffmpeg -i {}  -codec:a libmp3lame -qscale:a 0 {}.mp3 && del {} " '
             command = ['youtube-dl','-cit','--embed-thumbnail','--no-warnings','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url]
             print(f'Download Command: {command}')
@@ -299,24 +303,37 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             s1 = ''.join(s2)
             return s1
         
-        def sentence_matcher(q, c): # q: ['suna', 'man', 'ka']; s2: ['soona', 'mann', 'ka', 'aangan']
+        def sentence_matcher(q, c): # q: ['suna', 'man', 'ka']; c: ['soona', 'mann', 'ka', 'aangan']
             q1 = [set_sort_join_string(x) for x in q]
+            print(f'Query after cleaning: {q1}')
             c1 = [set_sort_join_string(x) for x in c]
-            min_str_len = len(q1) if len(q1) < len(c1) else len(c1)
-            max_str_len = abs(len(q1) - len(c1)) + min_str_len
-            equal = True
-            i = 0
-            for i in range(min_str_len):
-                if q1[i] != c1[i]:
-                    equal = False
-                    break
-            if equal and i >= max_str_len//2:
-                return True
+            print(f'Cache after cleaning: {c1}')
+
+            if len(q1[0]) != len(c1[0]):
+                min_str = min([q1, c1], key=len)
+                print(f'min_str: {min_str}')
+                max_str = max([q1, c1], key=len)
+                print(f'max_str: {max_str}')
             else:
-                m = SequenceMatcher(None, q1, c1)
+                min_str = q1[0]
+                max_str = c1[0]
+
+            match = True
+            for i in range(len(min_str)):
+                if max_str[i] != min_str[i]:
+                    match = False
+                    break
+            
+            if match:
+                print('Matched!')
+                return True
+            elif i >= len(max_str) // 2:
+                m = SequenceMatcher(None, max_str, min_str)
                 if m.ratio() > 0.95:
+                    print('Matched with Matcher!')
                     return True
                 else:
+                    print('No Match!')
                     return False
 
         # 'Format' string and match with 'first word' of 'list' with first word of 'query'; then go to 'second word'; so on...
@@ -326,8 +343,8 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             c = c.lower()
             c1 = c.split('.mp3')[0]
             c1 = c1.replace('-', ' ').strip().split(' ')
+            print(f'Song Found: {c}')
             if sentence_matcher(q, c1):
-                print('Playing from your cache')
                 return c
         
         return None
@@ -951,8 +968,8 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
 
             elif 'play ' in query: # Before starting to play; just say the name of the song and its info
                 self.__if_any_query_made = True
-                #self.__abilities.play_song(query)
-                self.__abilities.stream_song(query)
+                self.__abilities.play_song(query)
+                #self.__abilities.stream_song(query)
 
             elif 'stream ' in query or 'cream ' in query:
                 self.__if_any_query_made = True

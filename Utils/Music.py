@@ -36,12 +36,12 @@ if platform.system() == 'Linux':
     import os
     from Note_Tone import Note_Tone
     from Audio_Processing import Audio_Process 
-    from Voice_Assitant import Voice_Assistant
+    from Voice_Assistant import Voice_Assistant
 elif platform.system() == 'Windows':
     import winsound
     from Utils.Note_Tone import Note_Tone
     from Utils.Audio_Processing import Audio_Process
-    from Utils.Voice_Assitant import Voice_Assistant
+    from Utils.Voice_Assistant import Voice_Assistant
 
 
 class _Mingus_Helper:

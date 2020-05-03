@@ -189,8 +189,8 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         self.dict = {} # Flushing the buffer for new song request
         self.dict_names = {}
         textToSearch = search_string
-        print(f'textToSearch: {textToSearch}')
         query = quote(textToSearch)
+        print(f'queryToSearch: {query}')
         url = "https://www.youtube.com/results?search_query=" + query
         response = urlopen(url)
         html = response.read()
@@ -206,12 +206,17 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         return self.dict
 
     def clean_file_name(self, name):
+        name = name.title()
         name = name.replace(' ', '-')
         name = name.replace('_', '-')
         name = name.replace('(', '-')
+        name = name.replace('\'', '-')
+        name = name.replace('\"', '-')
         name = name.split('--')[0]
         if name[-1] == '-':
             name = name[:-1]
+        if name[0] == '-':
+            name = name[1:]
         ## ---- Unable to handle non elglish characters ---- ## (Search for song 'Sudhu Tui from Bengali movie Villain')
         #getVals = list([val for val in name if val.isalpha() or val.isnumeric() or val=='-'])
         '''pattern = re.compile("[A-Za-z0-9 -]+")
@@ -228,14 +233,14 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
         text = text.replace('aa', 'a')
         return text
 
-    def test_url(self, url): # (in folder 'assets\cache') ## BUG: After song found and copied to cache; continuing to search and download
+    def test_url(self, url): # (in folder 'assets\cache')
         os.chdir(tmp_dir)
         try:
             '''yt = YouTube(url)
             stream = yt.streams.first()
             stream.download()'''
             #command = 'youtube-dl -f bestaudio ' + url + ' --exec "ffmpeg -i {}  -codec:a libmp3lame -qscale:a 0 {}.mp3 && del {} " '
-            command = ['youtube-dl','-cit','--embed-thumbnail','--no-warnings','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url]
+            command = ['youtube-dl','-cit','--skip-unavailable-fragments','--embed-thumbnail','--no-warnings','--no-playlist','--extract-audio','--audio-quality', '0','--audio-format', 'mp3', url]
             print(f'Download Command: {command}')
             subprocess.call(command)
             sleep(2)
@@ -269,10 +274,11 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                     os.chdir(cache_dir)
                     print(f'\n\n\nNAME of FILE to PLAY: {new_name}\n\n')
                 print(f'Song name just before copying: {new_name}')
-                shutil.copy(new_name.lower(), cache_dir)
-                print(f'Song name just after copying: {new_name}')
-                #os.chdir(cache_dir)
-                #shutil.rmtree(os.path.join(cache_dir, tmp_dir))
+                #shutil.copy(new_name.lower(), cache_dir)
+                print(f'Song name just after copying: {new_name}') ## BUG: value fo 'new_name' after copying is "None"; This returning 'None' after getting value also
+                os.chdir(tmp_dir)
+                #new_name = glob('*.mp3')[0]
+                print(f'Song name just after copying re-created: {new_name}')
                 return new_name
             else:
                 return None
@@ -308,11 +314,14 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             print(f'Query after cleaning: {q1}')
             c1 = [set_sort_join_string(x) for x in c]
             print(f'Cache after cleaning: {c1}')
+            
+            print(f'First word of query: {q1[0]}')
+            print(f'First word of cache: {c1[0]}')
 
             if len(q1[0]) != len(c1[0]):
-                min_str = min([q1, c1], key=len)
+                min_str = min([q1[0], c1[0]], key=len)
                 print(f'min_str: {min_str}')
-                max_str = max([q1, c1], key=len)
+                max_str = max([q1[0], c1[0]], key=len)
                 print(f'max_str: {max_str}')
             else:
                 min_str = q1[0]
@@ -438,7 +447,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         else:
             self._speak('Good Evening!')
         
-        self._speak(f'Hello Sir. I am {self.VA_NAME} - Your personal voice assistant!')
+        #self._speak(f'Hello Sir. I am {self.VA_NAME} - Your personal voice assistant!')
         self._speak('How may I help You?')
     
     def _take_command(self, waiting_for_query=''): ## NOTE: Execution Stopped (hanged)
@@ -496,13 +505,16 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                         print(sl_no, url)
                         os.chdir(tmp_dir)
                         song_name_recv = self.ytb.test_url(url)
+                        os.chdir(cache_dir)
                         #print(f'song name recv in _stream_online: {song_name_recv}')
-                        if song_name_recv and self.ytb.play_media_from_cache(song_name.split()[0]): # valid song found
+                        print(f"\n\nsong_name_recv tmp: {song_name_recv}")
+                        if song_name_recv and [self.ytb.play_media_from_cache(song_name_recv.split('.')[0])]: # valid song found
                             valid_song = True
                             break
                         else:
                             continue
                     if valid_song:
+                        shutil.rmtree(tmp_dir, ignore_errors=True)
                         self.player = self.ytb.play_media(song_name_recv)
                     else: # list of 5 searches exhausted
                         pass # self.__retry_list += 1 (----if the first 5 searches doesn't contain any media file; then go for next 5 searches----)
@@ -511,6 +523,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     pass # Say Again
             else: # Play from cache
                 self._speak('Playing from your cache')
+                shutil.rmtree(tmp_dir, ignore_errors=True)
                 self.player = self.ytb.play_media(cache_search)
 
         '''else: # Not implemented yet

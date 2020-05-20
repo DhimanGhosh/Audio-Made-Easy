@@ -13,10 +13,10 @@ if platform.system() == 'Linux':
     assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
 else:
-    root_dir = os.path.realpath('..')
+    root_dir = os.path.realpath('Audio-Made-Easy')
     sys.path.insert(0, root_dir)
     from Utils.Music import Music
-    from Utils.Jarvis_AI import Voice_Assistant
+    from Utils.Voice_Assistant import Voice_Assistant
     utils_dir = root_dir + '/Utils/'
     assets_dir = root_dir + '/assets/'
 

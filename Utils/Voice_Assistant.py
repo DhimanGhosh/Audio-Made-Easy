@@ -47,7 +47,7 @@ if platform.system() == 'Linux':
     tmp_dir = os.path.realpath('../assets/cache/tmp_dir') + '/'
     sys.path.insert(0, tmp_dir)
 elif platform.system() == 'Windows':
-    root_dir = os.path.realpath('..\\Audio-Made-Easy\\')
+    root_dir = os.path.realpath('Audio-Made-Easy')
     sys.path.insert(0, root_dir)
     from Utils.Stream import Gaana
     utils_dir = root_dir + '\\Utils\\'
@@ -72,7 +72,7 @@ class _Song_Search_and_Stream: # Implemented in 'Stream.py'
     4. open the link to get its information; lets say 'wikipedia'
     5. grep for 'mithe alo' in the page using 'wikipedia' API -OR- there itself (will help to get the length of this song)
     6. get the length from there
-    
+
     ---DOWNLOADING---
     1. 
     '''
@@ -104,7 +104,7 @@ class _Media_Player: # Supports only mp3
         self.__playlist = []
         for track in self.__songtracks:
             self.__playlist.append(track)
-    
+
     def play(self):
         if pygame.mixer.get_init():
             pygame.mixer.quit() # quit it, to make sure it is reinitialized
@@ -130,7 +130,7 @@ class _Media_Player: # Supports only mp3
             pygame.mixer.music.stop()
             pygame.mixer.quit()
         print("Stopped")
-    
+
     def replay(self):
         self.REPLAY = not self.REPLAY
         if self.REPLAY:
@@ -143,7 +143,7 @@ class _Media_Player: # Supports only mp3
         self.stop()
         self.play()
         print(self.__song_name + " ---- Restarting")
-    
+
     def current_time(self):
         timer = 0
         if pygame.mixer.get_init() and pygame.mixer.music.get_busy():
@@ -308,13 +308,13 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             s2.sort()
             s1 = ''.join(s2)
             return s1
-        
+
         def sentence_matcher(q, c): # q: ['suna', 'man', 'ka']; c: ['soona', 'mann', 'ka', 'aangan']
             q1 = [set_sort_join_string(x) for x in q]
             print(f'Query after cleaning: {q1}')
             c1 = [set_sort_join_string(x) for x in c]
             print(f'Cache after cleaning: {c1}')
-            
+
             print(f'First word of query: {q1[0]}')
             print(f'First word of cache: {c1[0]}')
 
@@ -332,7 +332,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
                 if max_str[i] != min_str[i]:
                     match = False
                     break
-            
+
             if match:
                 print('Matched!')
                 return True
@@ -355,7 +355,7 @@ class _Youtube_mp3: # Download songs from youtube and create a mp3 file of that
             print(f'Song Found: {c}')
             if sentence_matcher(q, c1):
                 return c
-        
+
         return None
 
     def add_playlist(self, search_query):
@@ -408,7 +408,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
     '''
     Overview:
         Perform any task just with your voice.
-    
+
     Description:
         This Voice Assistant has a lots of Abilities (mentioned inside sub-class 'Abilities'). Basically when we ask 'AI' engine for any task. Then it asks its own 'Abilities' to perform some task based on input query. Then it takes the output and return it to us.
     '''
@@ -446,10 +446,10 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             self._speak('Good Afternoon!')
         else:
             self._speak('Good Evening!')
-        
+
         #self._speak(f'Hello Sir. I am {self.VA_NAME} - Your personal voice assistant!')
         self._speak('How may I help You?')
-    
+
     def _take_command(self, waiting_for_query=''): ## NOTE: Execution Stopped (hanged)
         '''
         NOTE: <To Solve HANG issue>
@@ -471,7 +471,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             #r.pause_threshold = 1 # let it be as '1'
             r.energy_threshold = 100 # Default: 300 (now less energy reqd. while speaking)
             audio = r.listen(source)
-        
+
         try:
             print('Recognizing...')
             query = r.recognize_google(audio, language='en-in')
@@ -480,7 +480,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             print('Say that again please...')
             return 'none'
         return query.lower()
-    
+
     def _substr_in_list_of_strs(self, lst, substr):
         '''
         Objective: Check if a substring is present in a list of strings
@@ -489,7 +489,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
         '''
         res_lst_of_strs_with_substr = list(filter(lambda x: substr in x, lst))
         return (bool(res_lst_of_strs_with_substr), res_lst_of_strs_with_substr)
-    
+
     def _stream_online(self, song_name, number=0): # number = song_number to play in the list of search results
         max_search = 10
         valid_song = False
@@ -546,7 +546,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 self.player = self.ytb.play_media(number)
             else: # If direct song play did not work for 'play_song_from_last_search()' then call 'self._stream_online(song_name, number=0); since here 'number=1'
                 self._stream_online(song_name, number=0)'''
-        
+
         return self.player
 
     class Abilities: ## NOTE: Handle any type of 'can you <>';; direct perform action rather than telling what to ask
@@ -595,7 +595,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 last = self.__my_abilities_with_index[-1][1]
                 i_can_do = 'Out of many; I can ' + first + '; or even ' + second + ' . Or you can quit this application by ' + last
                 self.__va._speak(i_can_do)
-        
+
         def how_can_you(self, query): # Handles any type of 'How can you <task>'
             what_to_ask = ''
             print(f'query: {query}')
@@ -612,7 +612,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     break
                 else:
                     c += 1
-            
+
             print(f'what to ask: {what_to_ask}')
             if what_to_ask:
                 self.__va._speak('Just say; ' + what_to_ask)
@@ -700,7 +700,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                         else:
                             self.__va._speak('No song searched in wikipedia!')
                     return True
-            
+
             elif website == 'youtube':
                 pass # self.__va._stream_online();; first result
                 return True
@@ -708,7 +708,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             elif website == 'google':
                 pass # self.__va._stream_online();; first result with a song name
                 return True
-            
+
             else:
                 self.__va._speak('No song found in search queries! Instead ask to play song...')
                 return False
@@ -731,7 +731,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                     if keyword.lower() in key.lower() or key.lower() in keyword.lower(): # Simplest 'text matching algorithm'
                         return True
                 return False
-            
+
             paused = False
             replay_song = False
             search_term = ' '.join(query.split()[1:])
@@ -858,9 +858,9 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                         else:
                             self.quit_VA(question)
                             self.stop = True
-                
+
                 ask()
-            
+
             if self.stop:
                 return False
             return True
@@ -894,7 +894,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             with urlopen(url) as response:
                 source = response.read()
                 data = json.loads(source)
-            
+
             sleep(1)
             print(data['articles'][0].keys())
 
@@ -947,11 +947,11 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
             if 'what can you do' in query or 'how can you help' in query:
                 self.__if_any_query_made = False
                 self.__abilities.what_can_you_do(query)
-            
+
             elif 'how can you' in query:
                 self.__if_any_query_made = True
                 self.__abilities.how_can_you(query)
-            
+
             elif 'wikipedia' in query:
                 self.__if_any_query_made = True
                 self.__last_webpage_visited = self.__available_webpages['w']
@@ -966,7 +966,7 @@ class Voice_Assistant: ## NOTE: Play a beep when sub-queries are searched
                 self.__if_any_query_made = True
                 self.__last_webpage_visited = self.__available_webpages['w']
                 self.__abilities.google(query)
-            
+
             elif 'play the song' in query or 'play it' in query or 'play this song' in query or 'hear' in query or 'listen' in query:
                 self.__if_any_query_made = True
                 if 'wiki' in self.__last_webpage_visited:

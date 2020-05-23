@@ -400,7 +400,6 @@ class _Vocabulary: # Reads data from datasets; Store personalised data
             'Open VS Code for you': ['VS', 'Code'],
             'have general conversation with you': ['conversation', 'talk'],
             'Read out live news for you': ['news', 'break', 'hot'],
-
             'saying Goodbye': ['Goodbye'],
         } # {'Ability to speak out' : 'keyword/s'}
 

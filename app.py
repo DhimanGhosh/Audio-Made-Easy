@@ -58,16 +58,16 @@ def run():
 
         elif ch == 6:
             menu.scale_shift_with_capo_position(wrg)
-            
+
         elif ch == 7:
             menu.minor_scale(wrg)
-            
+
         elif ch == 8:
             menu.minor_chord(wrg)
 
         elif ch == 9:
             menu.chords_in_minor_scale(wrg)
-        
+
         elif ch == 10:
             menu.relative_minor_major(wrg)
 
@@ -105,11 +105,11 @@ def run():
         elif ch == 21:
             menu.best_capo_position(wrg)
             count -= 1
-            
+
         elif ch < 1 or ch > menu_length:
             menu.wrong_entry(wrg)
             count -= 1
-            
+
         count += 1
     if count > 1:
         print('Thanks for consulting music theory guide!\nSee you soon!')

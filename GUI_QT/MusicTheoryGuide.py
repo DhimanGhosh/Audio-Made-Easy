@@ -9,7 +9,7 @@ if platform.system() == 'Linux':
     utils_dir = os.path.realpath('../Utils') + '/'
     sys.path.insert(0, utils_dir)
     from Music import Music
-    from Jarvis_AI import Voice_Assistant
+    from Voice_Assistant import Voice_Assistant
     assets_dir = os.path.realpath('../assets') + '/'
     sys.path.insert(0, assets_dir)
 else:
@@ -30,7 +30,6 @@ audio_file = assets_dir + 'Audio.wav'
 class Ui_Dialog(object):
     def __init__(self, Dialog):
         super(Ui_Dialog, self).__init__()
-        
         # ----- App Design ----- #
         # To make this to work in Fullscreen; set 'self.window_width' and 'self.window_height' to 'size.width()' and 'size.height()'
         # To make this to work in Fullscreen-Windowed; set 'self.window_width' and 'self.window_height' to 'rect.width()' and 'rect.height()'
@@ -77,7 +76,7 @@ class Ui_Dialog(object):
         self.output_text = QLineEdit(Dialog)
         self.reset_button = QPushButton(Dialog)
         self.va_button = QPushButton(Dialog)
-        
+
         # ----- Music Logic ----- #
         music = Music()
         self.notesS = music.notesS
@@ -97,7 +96,7 @@ class Ui_Dialog(object):
 
         # ----- Voice Assistant ----- #
         self.va = Voice_Assistant()
-        
+
     def setupUi(self, Dialog):
         # Notations
         self.notation_label.setFont(self.app_font)
@@ -111,7 +110,7 @@ class Ui_Dialog(object):
         self.notation_b.setFont(self.app_font)
         self.notation_b.setGeometry(QtCore.QRect(self.content_padding_left + self.notation_width, self.padding_top, self.notation_width, self.widget_height))
         self.notation_b.setObjectName("notation_b")
-        
+
         self.padding_top += self.v_space_between_widgets
         # Option Menu
         self.option_label.setFont(self.app_font)
@@ -177,7 +176,7 @@ class Ui_Dialog(object):
 
     def option_selection_change(self):
         selected_text = self.option_menu.currentText()
-        
+
         # ----- Detect change in menu selection ----- #
         if self.option_change_detect != selected_text:
             print(self.sub_menu_selected)
@@ -188,7 +187,7 @@ class Ui_Dialog(object):
             print('Input Menu cleared')
             self.option_change_detect = selected_text
             print('New opt change detect set')
-        
+
         # ----- Change Input Menu Values ----- #
         if selected_text != self.select_data:
             print('Option Item Selected:',selected_text)
@@ -221,18 +220,18 @@ class Ui_Dialog(object):
         else:
             self.input_menu.clear()
             self.input_menu.setDisabled(True)
-        
+
         # ----- To Keep track of Selections ----- #
         if self.option_menu.currentText() not in self.sub_menu_selected and self.option_menu.currentText() != self.select_data:
             self.sub_menu_selected[self.option_menu.currentText()] = []
-    
+
     def input_selection_change(self):
         selected_text = self.input_menu.currentText()
-        
+
         # ----- Detect change in menu selection ----- #
         if self.input_change_detect != selected_text:
             self.input_change_detect = selected_text
-        
+
         # ----- Action performed on Input Menu Values ----- #
         if selected_text != self.select_data:
             option_menu_selected_text = self.option_menu.currentText()
@@ -292,7 +291,7 @@ class Ui_Dialog(object):
     def Voice_Assistant_Call(self):
         self.va.start_AI_engine()
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setStyleSheet(qdarkgraystyle.load_stylesheet())
     screen = app.primaryScreen()
@@ -301,7 +300,7 @@ if __name__ == "__main__":
     #print('Size: %d x %d' % (size.width(), size.height()))
     rect = screen.availableGeometry()
     #print('Available: %d x %d' % (rect.width(), rect.height()))
-    
+
     MainWindow = QMainWindow()
     MainWindow.setWindowIcon(QtGui.QIcon(app_logo))
     ui = Ui_Dialog(MainWindow)
@@ -309,7 +308,7 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     ui.retranslateUi(MainWindow)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
-    
+
     #MainWindow.showFullScreen()    # Fullscreen
     MainWindow.show()
     sys.exit(app.exec_())
